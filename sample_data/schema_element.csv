@@ -1,0 +1,16 @@
+#id, scheme, name, type
+
+0,1,color,string
+
+0,2,first,string
+
+1,2,middle,string
+
+2,2,last,string
+
+0,3,number,integer
+
+0,4,region,string
+1,4,flag,string
+
+0,5,number_type,string

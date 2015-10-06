@@ -1,0 +1,386 @@
+
+hide on empty for elements
+
+test array in array etc
+
+test null values
+
+
+
+
+
+
+
+
+
+
+
+
+
+group wrapper
+[
+
+]
+
+or
+
+none
+
+row wrapper
+
+{
+	object
+	=> elements need labels
+}
+
+[
+	array
+	=> elements do not need lables is json
+]
+
+none
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// why not call label seperately?
+// isn't label is part of parent?
+// yes in json
+// but hide on empty logic crosses parent / child boundry
+
+if(data_child_rows_it == data_child_rows_by_set_id_map.end()){
+	if(!(*schema_child_set_it)->hide_when_empty){
+
+		//label
+
+
+		// formatter.writeEmptyGroup(
+		// 	os,
+		// 	(*schema_child_set_it)->group_name,
+		// 	(*schema_child_set_it)->row_name,
+		// 	blank,
+		// 	true,
+		// 	ElementDatatype::type_raw,
+		// 	children_written,
+		//
+		// 	//parent row wrapper
+		// 	schema_set.rowWrapper,
+		// 	(*schema_child_set_it)->groupWrapper
+		//
+		//
+		// 	//if group unwrapped : null
+		// 	//if group wrapped: []
+		//
+		// );
+
+		++children_written;
+	}
+	continue;
+}
+
+// map was created in this class,
+// so trust that if vector exists it contains at least one row
+
+
+// call label seperately
+// group should not include label, label is part of parent
+
+// refactor this out to seperate call
+// with vector of child rows
+// then logic above with null rows can be called with empty vector?
+// no it can't logic for hide on empty crosses parent child boundry
+// formatter.openGroup(
+// 	os,
+// 	(*schema_child_set_it)->group_name,
+// 	(*schema_child_set_it)->row_name,
+// 	first,
+// 	//parent row wrapper
+// 	schema_set.rowWrapper,
+// 	(*schema_child_set_it)->groupWrapper
+// );
+
+bool first_child_row = true;
+
+if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
+
+	auto child_row_ptr_it = data_child_rows_it->second.begin();
+
+	// while (child_row_ptr_it != data_child_rows_it->second.end()){
+	//
+	// 	//recursive call to self
+	// 	(*child_row_ptr_it)->write(os, **schema_child_set_it, formatter, first);
+	//
+	// 	child_row_ptr_it++;
+	// 	first_child_row = false;
+	//
+	// 	if((*schema_child_set_it)->limit_single_child  ){
+	// 		break;
+	// 	}
+	// }
+}
+*/
+//CLOSE GROUP
+//formatter.closeElement(os, (*schema_child_set_it)->name, (*schema_child_set_it)->no_array_wrapper_around_group);
+
+// formatter.closeGroup(
+// 	os,
+// 	(*schema_child_set_it)->group_name,
+// 	(*schema_child_set_it)->row_name,
+// 	//parent row wrapper
+// 	schema_set.rowWrapper,
+// 	(*schema_child_set_it)->groupWrapper
+// );
+
+
+
+
+
+
+
+
+
+				// std::cout << " ------------------\n";
+				// std::cout << line << "\n";
+				//
+				// for (int i = 0; (i < matched.length()) && (i <= 10) ; ++i){
+				// 	std::cout << i << ": " << matched[i]  << "\n";
+				// }
+
+
+				// std::cout << "\n";
+				// std::cout << matched[match_index_id]  << "\n";
+				// std::cout << matched[match_index_parent]  << "\n";
+				// std::cout << matched[match_index_value]  << "\n";
+				// std::cout << matched[match_index_input_filename]  << "\n";
+				// std::cout << matched[match_index_single]  << "\n";
+				// std::cout << matched[match_index_no_array_around_group]  << "\n";
+				//
+				//
+
+
+
+
+								std::cout << "\n";
+								std::cout << matched[match_index_schema_id]  << "\n";
+								std::cout << matched[match_index_schema_parent]  << "\n";
+								std::cout << matched[match_index_group_name]  << "\n";
+								std::cout << matched[match_index_row_name]  << "\n";
+								std::cout << matched[match_index_input_filename]  << "\n";
+								std::cout << matched[match_index_is_root]  << "\n";
+
+								std::cout << matched[match_index_hide_when_empty]  << "\n";
+								std::cout << matched[match_force_single_row_per_parent]  << "\n";
+								std::cout << matched[match_group_wrapper_type]  << "\n";
+								std::cout << matched[match_row_wrapper_type]  << "\n";
+
+
+
+												std::cout << " ------------------\n";
+												std::cout << line << "\n";
+
+												for (int i = 0; (i < matched.length()) && (i <= 10) ; ++i){
+													std::cout << i << ": " << matched[i]  << "\n";
+												}
+
+
+
+														const string tab = "  ";
+														const string newline = "\n";
+														const string blank = "";
+														const string comma = ",";
+														const string double_quote = "\"";
+														const string open_brace = "{";
+														const string close_brace = "}";
+														const string open_bracket = "[";
+														const string close_bracket = "]";
+
+
+
+
+																		virtual void writeElement(
+																			ostream & os,
+																			const string& name,
+																			const string& value,
+																			bool isNull,
+																			ElementDatatype datatype,
+																			RowWrapper row_wrapper,
+																			bool first
+
+
+																		//WRITE CHILD
+
+																		enum class GroupWrapper {
+																			array_wrapper,
+																			no_wrapper
+																		};
+
+																		if (schema_set.rowWrapper = RowWrapper::no_wrapper){
+																			formatter.writeValue(
+																				os,
+																				blank,
+																				data_child_element_it->getValue(),
+																				data_child_element_it->isNull(),
+																				schema_child_element_it->datatype,
+																				first
+																			);
+																		}
+																		else{
+
+
+
+																		formatter.openGroup(
+																			os,
+																			(*schema_child_set_it)->group_name,
+																			(*schema_child_set_it)->row_name,
+																			blank,
+																			true,
+																			first,
+																			(*schema_child_set_it)->groupWrapper,
+																			(*schema_child_set_it)->rowWrapper
+																		);
+
+																		formatter.writeValue(os, blank, blank, true, ElementDatatype::type_raw,  first);
+																		first = false;
+
+
+
+
+
+
+																						// auto data_child_rows_it = data_child_rows_by_set_id_map.find((*schema_child_set_it)->id);
+																						//
+																						// // i don't this this can happen but lets be careful
+																						// if(data_child_rows_it == data_child_rows_by_set_id_map.end()){
+																						// 	if(!(*schema_child_set_it)->hide_when_empty){
+																						// 		formatter.writeSimpleGroup(
+																						// 			os,
+																						// 			(*schema_child_set_it)->group_name,
+																						// 			(*schema_child_set_it)->row_name,
+																						// 			blank,
+																						// 			true,
+																						// 			ElementDatatype::type_raw,
+																						// 			first,
+																						// 			(*schema_child_set_it)->groupWrapper,
+																						// 			(*schema_child_set_it)->rowWrapper
+																						// 		);
+																						// 		first = false;
+																						// 	}
+																						// 	continue;
+																						// }
+
+
+																							bool first_child_row = true;
+
+																						SchemaSets::iterator & schema_set_it
+
+
+
+																						else
+																						{
+
+																						}
+																						//WRITE SET
+																						//FACTOR OUT
+
+																						formatter.openGroup(
+																							os,
+																							(*schema_child_set_it)->group_name,
+																							(*schema_child_set_it)->row_name,
+																							first,
+																							(*schema_child_set_it)->groupWrapper,
+																							(*schema_child_set_it)->rowWrapper
+																						);
+
+
+
+																						//does child dataset have rows?
+																						auto data_child_rows_it = data_child_rows_by_set_id_map.find((*schema_child_set_it)->id);
+
+																						bool first_child_row = true;
+
+																						if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
+
+																							auto child_row_ptr_it = data_child_rows_it->second.begin();
+
+																							while (child_row_ptr_it != data_child_rows_it->second.end()){
+
+																								cout << "x";
+																								formatter.openRow(
+																									os,
+																									(*schema_child_set_it)->name,
+																									first_child_row,
+																									(*schema_child_set_it)->no_object_wrapper_around_row,
+																									(*schema_child_set_it)->array_wrap_around_row
+
+																								);
+																								cout << "z";
+																								//recursive call to self
+																								(*child_row_ptr_it)->write(os, **schema_child_set_it, formatter, first);
+
+																								formatter.closeRow(
+																									os,
+																									(*schema_child_set_it)->name,
+																									(*schema_child_set_it)->no_object_wrapper_around_row,
+																									(*schema_child_set_it)->array_wrap_around_row
+																								);
+
+																								if((*schema_child_set_it)->limit_single_child  ){
+																									break;
+																								}
+																								child_row_ptr_it++;
+																								first_child_row = false;
+																							}
+																						}
+
+
+																						//FRAGILE
+																						// this catches child sets that have been written without an array wrapper that have no rows
+																						// without adding 'null'
+																						// this would be invalid json
+																						else{
+																							if ((*schema_child_set_it)->no_array_wrapper_around_group){
+																								formatter.writeValue(os, blank, blank, true, ElementDatatype::type_raw,  first);
+																							}
+																						}
+
+																						//CLOSE GROUP
+																						formatter.closeElement(os, (*schema_child_set_it)->name, (*schema_child_set_it)->no_array_wrapper_around_group);
+
+
+
+
+																						std::cout  << "group : ";
+																						if (groupWrapper == GroupWrapper::array_wrapper){
+																							//stepDown(os);
+																							std::cout  << "array\n";
+																						}
+																						else if (groupWrapper == GroupWrapper::no_wrapper){
+																							//stepDown(os);
+																							std::cout  << "none\n";
+																						}
+
+																						std::cout  << "row : ";
+																						if (rowWrapper == RowWrapper::object_wrapper){
+																							//stepDown(os);
+																							std::cout  << "object\n";
+																						}
+																						else if (rowWrapper == RowWrapper::array_wrapper){
+																							//stepDown(os);
+																							std::cout  << "array\n";
+																						}
+																						else if (rowWrapper == RowWrapper::no_wrapper){
+																							//stepDown(os);
+																							std::cout  << "none\n";
+																						}
