@@ -213,21 +213,62 @@ namespace datastream {
 
 		typedef std::sregex_token_iterator pattern_iterator;
 
-		template <typename T>
-		T* point(T const& obj )
-		{
-			return &obj;
-		}
-
-		template <typename T>
-		T& unpoint(T * obj )
-		{
-			return *obj;
-		}
+		// template <typename T>
+		// T* point(T const& obj )
+		// {
+		// 	return &obj;
+		// }
+		//
+		// template <typename T>
+		// T& unpoint(T * obj )
+		// {
+		// 	return *obj;
+		// }
 
 		//errors
 		const string error_text_not_understood("sorry, the data cannot be understood");
 		const string error_text_missing_parent("sorry, the data cannot be understood : a section is missing.");
+
+
+
+
+		#include <type_traits>
+		#include <memory>
+		#include <functional>
+
+		template<typename T>
+		T& deref(T &v) {
+		  return v;
+		}
+
+		template<typename T>
+		const T& deref(const T& v) {
+		  return v;
+		}
+
+		template<typename T>
+		typename std::enable_if<!std::is_function<T>::value, T&>::type deref(T* v) {
+		  return deref(*v);
+		}
+
+		template<typename T>
+		const T& deref(const std::shared_ptr<T>& v) {
+		  return deref(*v);
+		}
+
+		template<typename T>
+		const T& deref(const std::weak_ptr<T>& v) {
+		  return deref(*v);
+		}
+
+
+
+
+
+
+
+
+
 }
 
 #endif

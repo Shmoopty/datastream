@@ -55,13 +55,14 @@ namespace datastream {
 			unsigned int siblings_written = 0;
 			formatter.open(os, schema_set_ptr->groupWrapper);
 
-			for (
-				auto row_it = rows.begin();
-				row_it != rows.end();
-				++row_it
-			){
-				row_it->write(os, *schema_set_ptr, formatter, siblings_written);
-			}
+			writeRows (
+				os,
+				RowWrapper::no_wrapper, //parent row wrapper - root has not parent
+				*schema_set_ptr, //schema set for rows
+				rows,    //rows
+				formatter,
+				siblings_written
+			);
 
 			formatter.close(os, schema_set_ptr->groupWrapper);
 
