@@ -1,0 +1,14 @@
+
+multi iterator range based for
+on variadic template
+
+
+
+template <typename T>
+typename std::enable_if<is_row_containter<T>::value>::type
+friend writeRows(T const& rows )
+{
+	for (auto& row : rows) {
+		std::cout << deref(row).id << " has parent " << deref(row).parent << std::endl;
+	}
+}

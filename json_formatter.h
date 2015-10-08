@@ -148,11 +148,6 @@ namespace datastream {
 
 
 		virtual void open(ostream & os, GroupWrapper groupWrapper){
-			if (groupWrapper == GroupWrapper::array_wrapper){
-				os  << open_array_token;
-				clean = false;
-				up();
-			}
 		};
 
 
@@ -263,16 +258,10 @@ namespace datastream {
 		};
 
 		virtual void close(ostream & os, GroupWrapper groupWrapper) {
-			if (groupWrapper == GroupWrapper::array_wrapper){
-				os  << close_array_token;
-				clean = false;
-				down();
-			}
 		};
+		
 	protected:
 		bool clean = true;
 	};
-
-
 }
 #endif

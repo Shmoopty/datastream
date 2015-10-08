@@ -15,6 +15,39 @@ namespace datastream {
 	using std::map;
 	using std::list;
 	using std::ostream;
+	class DataRow;
+
+	template <typename T>
+	struct is_row_containter {
+	    enum { value = false };
+	};
+
+	template <>
+	struct is_row_containter <std::vector<std::shared_ptr<DataRow>>> {
+	    enum { value = true };
+	};
+
+	template <>
+	struct is_row_containter <std::vector<std::weak_ptr<DataRow>>> {
+	    enum { value = true };
+	};
+
+	template <>
+	struct is_row_containter <std::vector<DataRow>> {
+	    enum { value = true };
+	};
+
+	template <>
+	struct is_row_containter <std::list<DataRow>> {
+	    enum { value = true };
+	};
+
+	template <>
+	struct is_row_containter <std::vector<DataRow*>> {
+	    enum { value = true };
+	};
+
+
 
 	class DataRow{
 	public:
@@ -29,18 +62,18 @@ namespace datastream {
 
 		map<int, vector<DataRow*>> data_child_rows_by_set_id_map;
 
-		friend void writeGroup (
+		template <typename T>
+		typename std::enable_if<is_row_containter<T>::value>::type
+		friend writeRows(
 			ostream & os,
 			RowWrapper parent_row_wrapper_type,
 			SchemaSet& schema_set,
-			const vector<DataRow*>* row_ptrs_ptr,
+			T const& rows ,
 			Formatter& formatter,
 			unsigned int & siblings_written
-		){
-			if(
-				row_ptrs_ptr == nullptr ||
-				row_ptrs_ptr->size() < 1
-			){
+		)
+		{
+			if( rows.size() == 0 ){
 				if (schema_set.hide_when_empty == false){
 
 					formatter.writeEmptyGroup(
@@ -73,8 +106,8 @@ namespace datastream {
 
 			unsigned int children_written = 0;
 
-			for (auto child_row_ptr : *row_ptrs_ptr){
-				child_row_ptr->write(os, schema_set, formatter, children_written);
+			for (auto& row : rows){
+				deref(row).write(os, schema_set, formatter, children_written);
 			}
 
 			formatter.closeGroup(
@@ -193,16 +226,28 @@ namespace datastream {
 
 				if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 					rows_ptr = &data_child_rows_it->second;
-				}
+					//writeRows (data_child_rows_it->second);
 
-				writeGroup (
-					os,
-					schema_set.rowWrapper, //parent row wrapper
-					*schema_child_set_ptr, //schema set for rows
-					rows_ptr,              //can be called with nullptr for empty group
-					formatter,
-					children_written       //number of siblings written
-				);
+
+					writeRows (
+						os,
+						schema_set.rowWrapper, //parent row wrapper
+						*schema_child_set_ptr, //schema set for rows
+						data_child_rows_it->second,    //rows
+						formatter,
+						children_written       //number of siblings written
+					);
+				}
+				else{
+					writeRows (
+						os,
+						schema_set.rowWrapper, //parent row wrapper
+						*schema_child_set_ptr, //schema set for rows
+						vector<DataRow*>{},    //empty rows
+						formatter,
+						children_written       //number of siblings written
+					);
+				}
 			}
 
 			formatter.closeRow(
