@@ -173,6 +173,19 @@ namespace datastream {
 
 		){};
 
+		virtual void writeEmptyGroup(
+			ostream & os,
+			const string& group_label,
+			const string& row_label,
+			unsigned int & siblings_written,
+
+			RowWrapper parent_row_wrapper,
+
+			bool single_child_per_parent,
+			GroupWrapper groupWrapper,
+			RowWrapper rowWrapper
+		){};
+
 		virtual void open(ostream & os, GroupWrapper groupWrapper){};
 		virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
 		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){}

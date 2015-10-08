@@ -43,25 +43,19 @@ namespace datastream {
 			){
 				if (schema_set.hide_when_empty == false){
 
-					//DEV FIX!!
-					// formatter.writeGroupWithValue(
-					// 	os,
-					// 	schema_set.group_name,
-					// 	schema_set.row_name,
-					// 	parent_row_wrapper_type,
-					// 	schema_set.groupWrapper,
-					// 	schema_set.rowWrapper
-					//
-					// 	//if group unwrapped : null
-					// 	//if group wrapped: []
-					//
-					// 	//move these to end and make default
-					// 		blank,
-					// 		true,
-					// 		ElementDataType::type_raw,
-					// );
-				}
+					formatter.writeEmptyGroup(
+						os,
+						schema_set.group_name,
+						schema_set.row_name,
+						siblings_written,
 
+						parent_row_wrapper_type,
+
+						schema_set.limit_single_child,
+						schema_set.groupWrapper,
+						schema_set.rowWrapper
+					);
+				}
 				return;
 			}
 

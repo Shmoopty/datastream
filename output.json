@@ -268,7 +268,9 @@
 	],
 	"number_type" : [
 		{
-			"number_type" : "imaginary"
+			"number_type" : "imaginary",
+			"number" : [
+			]
 		},
 		{
 			"number_type" : "even",
