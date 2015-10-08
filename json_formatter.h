@@ -108,7 +108,7 @@ namespace datastream {
 			}
 		};
 
-		virtual void writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDatatype datatype, unsigned int & siblings_written){
+		virtual void writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, unsigned int & siblings_written){
 
 			if (isNull){
 				os << null_keyword;
@@ -116,10 +116,10 @@ namespace datastream {
 			}
 			else{
 				if (
-					datatype == ElementDatatype::type_string ||
-					datatype == ElementDatatype::type_datetime ||
-					datatype == ElementDatatype::type_date ||
-					datatype == ElementDatatype::type_time
+					data_type == ElementDataType::type_string ||
+					data_type == ElementDataType::type_datetime ||
+					data_type == ElementDataType::type_date ||
+					data_type == ElementDataType::type_time
 				){
 					os << Quote(value, quote);
 				}
@@ -136,14 +136,14 @@ namespace datastream {
 			const string& name,
 			const string& value,
 			bool isNull,
-			ElementDatatype datatype,
+			ElementDataType data_type,
 			RowWrapper parent_row_wrapper,
 			unsigned int & siblings_written
 
 		){
 			step(os, siblings_written);
 			label(os, name, parent_row_wrapper, siblings_written);
-			writeValue(os, name, value, isNull, datatype, siblings_written);
+			writeValue(os, name, value, isNull, data_type, siblings_written);
 		};
 
 
@@ -186,7 +186,7 @@ namespace datastream {
 
 
 		/*
-		virtual void writeElement(ostream & os, const string& name, const string& value, bool isNull, ElementDatatype datatype, bool first){
+		virtual void writeElement(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, bool first){
 
 			if(!first){
 				os  << seperator;
@@ -196,7 +196,7 @@ namespace datastream {
 			<< new_line_token << Indent(indent,depth + 1)
 			<< Quote(name, quote) << divider;
 
-			writeValue(os, name, value, isNull, datatype, first);
+			writeValue(os, name, value, isNull, data_type, first);
 		};
 		*/
 

@@ -13,37 +13,15 @@ namespace datastream {
 	using std::map;
 	using namespace datastream;
 
-	class DataSet;
-	typedef list<DataSet> DataSets;
-	typedef DataSet* DataSetPointer;
-	typedef map<int, DataSetPointer> DataSetPointersMap;
-
 	class DataSet{
 	public:
-		// not all will be needed keep for now
-		// cull unused in subsequent iteration
-		// not a big waste because number of sets is low
-		//
-		unsigned int sort;
+
 		// unsigned int id; // <- in schema
 		// unsigned int parent; //<- in schema
-		SchemaSet* schema_set_ptr;
 
-		DataRows rows;
-		DataRowPointersMap id_to_rows_map;
-
-		DataSet(
-				unsigned int sort,
-				//unsigned int id,
-				//unsigned int parent,
-				SchemaSet* schema_set_ptr
-			):
-		sort(sort),
-		// id(id),
-		// parent(parent),
-		schema_set_ptr(schema_set_ptr)
+		DataSet(SchemaSet* schema_set_ptr):
+			schema_set_ptr(schema_set_ptr)
 		{
-			//cout << sort << "\n";
 		};
 
 		void load(list<SchemaElement> & schema_elements, const string & line){
@@ -60,19 +38,18 @@ namespace datastream {
 			}
 
 			rows.emplace_back(
-				//rows.size(),
 				std::stoi(matched[match_index_data_row_id]),
 				std::stoi(matched[match_index_data_parent])
 			);
 
 			//current data row is last added
-			rows.rbegin()
-			->load(
+			rows.rbegin()->load(
 				schema_elements,
 				matched[match_index_data_element_values]
 			);
 		}
 
+		//template this to use merge with writeRows
 		void write (ostream & os, Formatter& formatter) const
 		{
 			unsigned int siblings_written = 0;
@@ -90,38 +67,22 @@ namespace datastream {
 
 		}
 
-		void weave(DataSet& parent)
+		void weave(DataSet& parent_set)
 		{
-			weaveToRows(parent.id_to_rows_map);
-		}
-
-		void weaveToRows(DataRowPointersMap& parent_id_to_parent_rows_map)
-		{
-			for(
-				auto
-				row_it = rows.begin();
-				row_it != rows.end();
-				++row_it
-			) {
-
+			for(DataRow& row : rows )
+			{
 				// parent id may match multiple rows
 				// ids are present in the data
 				// not by this process
 				// this process must handle cases where id is not unique
 
-				auto parent_rows_search = parent_id_to_parent_rows_map.find(row_it->parent);
-				if(parent_rows_search != parent_id_to_parent_rows_map.end()){
-
+				auto parent_rows_search = parent_set.id_to_rows_map.find(row.parent);
+				if(parent_rows_search != parent_set.id_to_rows_map.end()){
 					auto parent_rows = parent_rows_search->second;
 
-
-					for(
-						auto
-						parent_row_it = parent_rows.begin();
-						parent_row_it != parent_rows.end();
-						++parent_row_it
-					){
-						(*parent_row_it)->nestChildRow(getId(), &(*row_it));
+					for(DataRow* parent_row : parent_rows)
+					{
+						parent_row->nestChildRow(getId(), row);
 					}
 				}
 			}
@@ -140,13 +101,11 @@ namespace datastream {
 			}
 
 			//push pointer to rows from list into vector
-			DataRowPointers row_ptrs;
-			for(
-				auto row_it = rows.begin();
-				row_it != rows.end();
-				++row_it
-			){
-				row_ptrs.push_back(&(*row_it));
+			vector<DataRow*> row_ptrs;
+
+			for(DataRow& row : rows )
+			{
+				row_ptrs.push_back(&row);
 			}
 
 			//sort vector by element row id
@@ -157,25 +116,18 @@ namespace datastream {
 			);
 
 			// map of vectors caters for multiple appearances of same id!
-			for (
-				auto
-				row_ptrs_it = row_ptrs.begin();
-				row_ptrs_it != row_ptrs.end();
-				++row_ptrs_it
-			){
-				map_row((*row_ptrs_it)->id, *row_ptrs_it);
+			for (DataRow* row_ptr : row_ptrs){
+
+				if (id_to_rows_map.find(row_ptr->id) == id_to_rows_map.end()){
+					id_to_rows_map.emplace_hint(
+						id_to_rows_map.end(),
+						row_ptr->id,
+						vector<DataRow*>{row_ptr});
+				}
+				else{
+					id_to_rows_map[row_ptr->id].push_back(row_ptr);
+				}
 			}
-		}
-
-		void map_row(int row_id, DataRow* row_ptr){
-
-			// optimisation
-			// try emplace_hint on id_to_rows_map.rend()?
-
-			if (id_to_rows_map.find(row_id) == id_to_rows_map.end()){
-				id_to_rows_map.emplace(row_id, DataRowPointers());
-			}
-			id_to_rows_map[row_id].push_back(row_ptr);
 		}
 
 		bool isRoot() const {
@@ -200,10 +152,9 @@ namespace datastream {
 		}
 
 		private:
+			SchemaSet* schema_set_ptr;
+			list<DataRow> rows;
+			map<int, vector<DataRow*>> id_to_rows_map;
 	};
 }
 #endif
-
-
-
-//, string&& value

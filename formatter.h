@@ -58,9 +58,6 @@ namespace datastream {
 
 	public:
 
-		Formatter(){
-		}
-
 		virtual void up(unsigned int i = 1){
 			depth += i;
 		}
@@ -80,15 +77,13 @@ namespace datastream {
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		){
-		}
+		){}
 
 		virtual void step(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		){
-		}
+		){}
 
 		virtual void stepUp(
 			ostream & os,
@@ -118,9 +113,7 @@ namespace datastream {
 
 			bool single_child_per_parent,
 			GroupWrapper groupWrapper
-
-		){
-		};
+		){};
 
 		virtual void closeGroup(
 			ostream & os,
@@ -166,13 +159,15 @@ namespace datastream {
 			RowWrapper row_wrapper,
 			unsigned int & siblings_written
 		){};
-		virtual void writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDatatype datatype, unsigned int & siblings_written){};
+
+		virtual void writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, unsigned int & siblings_written){};
+
 		virtual void writeElement(
 			ostream & os,
 			const string& name,
 			const string& value,
 			bool isNull,
-			ElementDatatype datatype,
+			ElementDataType data_type,
 			RowWrapper parent_row_wrapper,
 			unsigned int & siblings_written
 

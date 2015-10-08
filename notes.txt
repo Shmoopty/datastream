@@ -9,7 +9,9 @@ test null values
 
 
 
+the_map[x] = boost::reference_wrapper<T>(ZZ);
 
+the_map.insert(make_pair(x, ZZ));
 
 
 
@@ -72,7 +74,7 @@ if(data_child_rows_it == data_child_rows_by_set_id_map.end()){
 		// 	(*schema_child_set_it)->row_name,
 		// 	blank,
 		// 	true,
-		// 	ElementDatatype::type_raw,
+		// 	ElementDataType::type_raw,
 		// 	children_written,
 		//
 		// 	//parent row wrapper
@@ -214,7 +216,7 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 																			const string& name,
 																			const string& value,
 																			bool isNull,
-																			ElementDatatype datatype,
+																			ElementDataType data_type,
 																			RowWrapper row_wrapper,
 																			bool first
 
@@ -232,7 +234,7 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 																				blank,
 																				data_child_element_it->getValue(),
 																				data_child_element_it->isNull(),
-																				schema_child_element_it->datatype,
+																				schema_child_element_it->data_type,
 																				first
 																			);
 																		}
@@ -251,7 +253,7 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 																			(*schema_child_set_it)->rowWrapper
 																		);
 
-																		formatter.writeValue(os, blank, blank, true, ElementDatatype::type_raw,  first);
+																		formatter.writeValue(os, blank, blank, true, ElementDataType::type_raw,  first);
 																		first = false;
 
 
@@ -270,7 +272,7 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 																						// 			(*schema_child_set_it)->row_name,
 																						// 			blank,
 																						// 			true,
-																						// 			ElementDatatype::type_raw,
+																						// 			ElementDataType::type_raw,
 																						// 			first,
 																						// 			(*schema_child_set_it)->groupWrapper,
 																						// 			(*schema_child_set_it)->rowWrapper
@@ -283,7 +285,7 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 
 																							bool first_child_row = true;
 
-																						SchemaSets::iterator & schema_set_it
+																						list<SchemaSet>::iterator & schema_set_it
 
 
 
@@ -351,7 +353,7 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 																						// this would be invalid json
 																						else{
 																							if ((*schema_child_set_it)->no_array_wrapper_around_group){
-																								formatter.writeValue(os, blank, blank, true, ElementDatatype::type_raw,  first);
+																								formatter.writeValue(os, blank, blank, true, ElementDataType::type_raw,  first);
 																							}
 																						}
 
@@ -384,3 +386,203 @@ if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
 																							//stepDown(os);
 																							std::cout  << "none\n";
 																						}
+
+
+
+
+
+
+																							//typedef SchemaSet* SchemaSetPtr;
+																							//typedef map<int, SchemaSet> SchemaSetPtrs;
+
+																							//
+
+																							//map<int, SchemaSet>
+
+																							//using MappedSet = std::map<int, std::reference_wrapper<SchemaSet>>
+
+
+																							// typedef list<SchemaElement> SchemaElements;
+																							// typedef SchemaElement* SchemaElementPtr;
+																							// typedef vector<SchemaElementPtr> SchemaElementPtrs;
+																							class SchemaSet;
+
+//typedef SchemaSet* SchemaSetPtr;
+// typedef list<SchemaSet> list<SchemaSet>;
+
+//typedef map<int, SchemaSet*> SchemaSetPtrs;
+
+
+// for (
+// 	auto
+// 	schema_set_it = schema_set_list.begin();
+// 	schema_set_it != schema_set_list.end();
+// 	++schema_set_it
+// ){
+// 	schema_set_ptr_map.emplace(
+// 		int(schema_set_it->id),
+// 		SchemaSetPtr(&(*schema_set_it))
+// 	);
+// }
+
+
+
+
+
+
+
+			//std::vector<std::reference_wrapper<SchemaSet>> v (schema_set_list.begin(), schema_set_list.end());
+
+			//std::sort(v.begin(),v.end() , [](SchemaSet& a,  SchemaSet& b)->bool{ return a.id < b.id; });
+
+
+			//std::sort(intArr, intArr + len -1, [](int a, int b)
+
+
+
+
+			//SchemaSetPtrs schema_set_ptrs_2;
+
+			// auto fp = []( SchemaSet& schema_set)->std::pair<int, SchemaSetPtr>{
+			// 	return std::make_pair(schema_set.id, &schema_set);
+			// };
+			//
+			// SchemaSetPtrs schema_set_ptrs_2 = std::map<int, SchemaSetPtr> (
+			// 	boost::make_transform_iterator(schema_set_list.begin(), fp),
+			// 	boost::make_transform_iterator(schema_set_list.end(),   fp )
+			// );
+
+			// auto fp = []( SchemaSet& schema_set)->std::pair<int, SchemaSetPtr>{
+			// 	return make_pair(schema_set.id, &schema_set);
+			// };
+			//
+
+
+			// auto f = []( SchemaSet& schema_set)->std::pair<int, std::reference_wrapper<SchemaSet>>{
+			// 	return make_pair(schema_set.id, std::ref(schema_set));
+			// };
+
+
+
+
+
+			//
+			// schema_set_map = std::map<int, std::reference_wrapper<SchemaSet>> (
+			// 	boost::make_transform_iterator(schema_set_list.begin(), f),
+			// 	boost::make_transform_iterator(schema_set_list.end(),   f )
+			// );
+
+			 //std::transform (schema_set_list.begin(), schema_set_list.end(), schema_set_map.begin(), f);
+
+			// for (auto& mi : schema_set_map) {
+			// 	std::cout << mi.first << " has value " << mi.second.get().group_name << std::endl;
+			// }
+
+			// for insert into map<int, std::reference_wrapper<SchemaSet>>
+
+	    	// auto f = [](SchemaSet&& schema_set) {
+			// 	return make_pair(schema_set.id, std::ref(schema_set));
+			// };
+			//
+			// map<int, std::reference_wrapper<SchemaSet>> m (
+			// 	boost::make_transform_iterator(schema_set_list.begin(), f),
+		    //     boost::make_transform_iterator(schema_set_list.end(), f)
+			// );
+			// //schema_set_refs =
+
+
+			//auto set_search = schema_set_map.find(element_set_id);
+			//auto set_search = schema_set_map.find(element_set_id);
+
+							// std::cout << " ------------------\n";
+							// std::cout << line << "\n";
+							//
+							// for (int i = 0; (i < matched.length()) && (i <= 10) ; ++i){
+							// 	std::cout << i << ": " << matched[i]  << "\n";
+							// }
+
+// for(
+// 	auto schema_set_it = schema_set_list.begin();
+// 	schema_set_it != schema_set_list.end();
+// 	++schema_set_it
+// ) {
+//
+// 	// root has no parent - do not weave
+// 	if (schema_set_it->isRoot()){
+// 		continue;
+// 	}
+//
+// 	int parent_set_id = schema_set_it->parent;
+//
+// 	if (schema_set_ptr_map.find(parent_set_id) == schema_set_ptr_map.end()){
+// 		throw std::domain_error("the data schema is not valid, parent not found");
+// 	}
+// 	schema_set_ptr_map[parent_set_id]->nestChildSet(&(*schema_set_it));
+// }
+
+/* not currently used
+
+		void setValue (string&& v)
+		{
+			value = v;
+		}
+
+		void setValue (const string& v)
+		{
+			value = v;
+		}
+
+		void setNull (bool n)
+		{
+			null_value = n;
+			if (n){
+				value = blank;
+			}
+		}
+*/
+
+
+
+
+//sort by id for fast insert into map
+sort(
+	dot_ptrs.begin(),
+	dot_ptrs.end(),
+	[](Dot * a,  Dot * b)->bool
+	{
+		return a->id < b->id;
+	}
+);
+
+//insert pairs into map
+for ( Dot * dot_ptr : dot_ptrs ){
+	dot_ptr_map.emplace_hint(
+		dot_ptr_map.end(),
+		int(dot_ptr->id),
+		dot_ptr
+	);
+}
+
+
+
+The c++11 range based for is nice:
+
+    for (lick : ice_cream){
+        lickIceCream(lick);
+    }
+
+any way to use it to iterate over two containers?
+
+    auto hotdog_it = hotdogs.begin();
+	auto bun_it = buns.begin();
+
+	for(;
+		hotdog_it != hotdogs.end() &&
+		bun_it != buns.end();
+
+		hotdog_it++,
+		bun_it++
+
+	){
+		mouth.putIn(assemble(bun_it(hotdog_it),{onions(),mustard()}));
+	}

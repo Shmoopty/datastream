@@ -16,33 +16,30 @@ namespace datastream {
 	using std::list;
 	using std::ostream;
 
-	class DataRow;
-
-	typedef list<DataRow> DataRows;
-	typedef vector<DataRow*> DataRowPointers;
-	typedef map<int, DataRowPointers> DataRowPointersMap;
-
 	class DataRow{
 	public:
 
 		unsigned int id;
 		unsigned int parent;
-		DataElements child_elements;
-		DataRowPointersMap data_child_rows_by_set_id_map;
+		list<DataElement> child_elements;
 
-		//maybe look at using std reference wrapper to use refernces instead of pointers
+		// this should not be a concrete member
+		// but a reference, perhaps shared pointer
+		// so it can be shared by rows with the same id
+
+		map<int, vector<DataRow*>> data_child_rows_by_set_id_map;
 
 		friend void writeGroup (
 			ostream & os,
 			RowWrapper parent_row_wrapper_type,
 			SchemaSet& schema_set,
-			const vector<DataRow*>* rows_ptr,  //so can be called with nullptr for empty group
+			const vector<DataRow*>* row_ptrs_ptr,
 			Formatter& formatter,
 			unsigned int & siblings_written
 		){
 			if(
-				rows_ptr == nullptr ||
-				rows_ptr->size() < 1
+				row_ptrs_ptr == nullptr ||
+				row_ptrs_ptr->size() < 1
 			){
 				if (schema_set.hide_when_empty == false){
 
@@ -61,14 +58,12 @@ namespace datastream {
 					// 	//move these to end and make default
 					// 		blank,
 					// 		true,
-					// 		ElementDatatype::type_raw,
+					// 		ElementDataType::type_raw,
 					// );
 				}
 
 				return;
 			}
-
-
 
 			formatter.openGroup(
 				os,
@@ -82,18 +77,11 @@ namespace datastream {
 				schema_set.groupWrapper
 			);
 
-			auto child_row_ptr_it = rows_ptr->begin();
-
 			unsigned int children_written = 0;
 
-			while (child_row_ptr_it != rows_ptr->end()){
-
-				(*child_row_ptr_it)->write(os, schema_set, formatter, children_written);
-				child_row_ptr_it++;
-
+			for (auto child_row_ptr : *row_ptrs_ptr){
+				child_row_ptr->write(os, schema_set, formatter, children_written);
 			}
-
-			//if rows:
 
 			formatter.closeGroup(
 				os,
@@ -101,17 +89,12 @@ namespace datastream {
 				schema_set.row_name,
 				siblings_written,
 
-				//parent row wrapper
-				parent_row_wrapper_type, //schema_set.rowWrapper,
-				//schema_set.limit_single_child,
+				parent_row_wrapper_type,
 				schema_set.groupWrapper
 			);
 
 			++siblings_written;
 		}
-
-
-
 
 		DataRow (unsigned int id, unsigned int parent):
 			id(id),
@@ -122,7 +105,6 @@ namespace datastream {
 		void load(list<SchemaElement> & schema_elements, const string & line_values){
 
 			auto schema_elements_it = schema_elements.begin();
-			auto schema_elements_it_end = schema_elements.end();
 
 			pattern_iterator const regex_end;
 			pattern_iterator regex_it(
@@ -137,12 +119,9 @@ namespace datastream {
 				schema_elements_it != schema_elements.end() &&
 				regex_it != regex_end
 			){
-
-				// this development version of the code interprets the string 'null'
-				// to be a null value
-				// the live version will not do this
-
-				// add child element with no value
+				//DEV ONLY
+				//db version will not do this
+				//null value is explicit not a string compare
 				if (*regex_it == null_keyword){
 					child_elements.emplace_back();
 				}
@@ -158,8 +137,8 @@ namespace datastream {
 			}
 		};
 
-		void write(ostream & os, SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const {
-
+		void write(ostream & os, SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const
+		{
 			formatter.openRow(
 				os,
 				schema_set.row_name,
@@ -167,12 +146,13 @@ namespace datastream {
 				siblings_written
 			);
 
+			unsigned int children_written = 0;
+
 			auto schema_child_element_it = schema_set.child_elements.begin();
 			auto data_child_element_it = child_elements.begin();
 
-			unsigned int children_written = 0;
-
 			//WRITE CHILD ELEMENTS
+			//make template for both http://stackoverflow.com/questions/12552277
 			for(;
 				schema_child_element_it != schema_set.child_elements.end() &&
 				data_child_element_it != child_elements.end();
@@ -181,16 +161,12 @@ namespace datastream {
 				data_child_element_it++
 
 			){
-				//what matters:
-
-				// parent row format : does this need a label?
-
 				formatter.writeElement(
 					os,
 					schema_child_element_it->name,
 					data_child_element_it->getValue(),
 					data_child_element_it->isNull(),
-					schema_child_element_it->datatype,
+					schema_child_element_it->data_type,
 
 					//parent row wrapper
 					schema_set.rowWrapper,
@@ -212,29 +188,26 @@ namespace datastream {
 			// but we still may want to add an empty label
 
 			// 2.
-			// because this ensure that the sets are presented in the correct order
-			// no the order which the map is sorted
+			// because this ensures that the sets are presented in the correct order
+			// not the order which the map is sorted
 
-			auto schema_child_set_it = schema_set.child_sets.begin();
-			for (;
-				schema_child_set_it < schema_set.child_sets.end();
-				schema_child_set_it++
-			){
-				auto data_child_rows_it = data_child_rows_by_set_id_map.find((*schema_child_set_it)->id);
+			for (auto schema_child_set_ptr : schema_set.child_sets){
+
+				auto data_child_rows_it = data_child_rows_by_set_id_map.find(schema_child_set_ptr->id);
 
 				const vector<DataRow*> * rows_ptr = nullptr;
 
 				if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
-						rows_ptr = &data_child_rows_it->second;
+					rows_ptr = &data_child_rows_it->second;
 				}
 
 				writeGroup (
-					os,	//stream
+					os,
 					schema_set.rowWrapper, //parent row wrapper
-					**schema_child_set_it, //schema set for rows
-					rows_ptr,  //so can be called with nullptr for empty group
+					*schema_child_set_ptr, //schema set for rows
+					rows_ptr,              //can be called with nullptr for empty group
 					formatter,
-					children_written //number of siblings written
+					children_written       //number of siblings written
 				);
 			}
 
@@ -247,14 +220,16 @@ namespace datastream {
 			++siblings_written;
 		}
 
-		void nestChildRow(int set_id, DataRow* row_ptr){
+		void nestChildRow(int set_id, DataRow& child_row){
 			if(
 				data_child_rows_by_set_id_map.find(set_id) ==
 				data_child_rows_by_set_id_map.end()
 			){
-				data_child_rows_by_set_id_map.emplace(set_id, DataRowPointers());
+				data_child_rows_by_set_id_map.emplace(set_id, vector<DataRow*>{&child_row});
 			}
-			data_child_rows_by_set_id_map[set_id].push_back(row_ptr);
+			else{
+				data_child_rows_by_set_id_map[set_id].push_back(&child_row);
+			}
 		}
 	};
 }
