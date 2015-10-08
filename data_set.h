@@ -109,7 +109,7 @@ namespace datastream {
 				row_ptrs.push_back(&row);
 			}
 
-			//sort vector by element row id
+			//sort vector by row id
 			std::sort(
 				row_ptrs.begin(),
 				row_ptrs.end(),
@@ -129,6 +129,15 @@ namespace datastream {
 					id_to_rows_map[row_ptr->id].push_back(row_ptr);
 				}
 			}
+
+			//sort vector by row parent
+			std::sort(
+				row_ptrs.begin(),
+				row_ptrs.end(),
+				[](const DataRow* a, const DataRow* b){return a->parent < b->parent;}
+			);
+
+
 		}
 
 		bool isRoot() const {
