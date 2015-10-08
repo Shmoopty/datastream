@@ -6,51 +6,31 @@
 
 namespace datastream {
 
-	class DataElement;
-
-	typedef list<DataElement> DataElements;
-
 	class DataElement{
 	public:
 
-		DataElement (string&& value):value(value), is_null(false)
+		DataElement(string&& value):
+			value(value),
+			is_null(false)
 		{
 		}
 
-		DataElement ():value(""), is_null(true)
+		DataElement():
+			value(blank),
+			is_null(true)
 		{
 		}
 
-		bool isNull () const
+		bool isNull() const
 		{
 			return is_null;
 		}
 
-		const string& getValue () const
+		const string& getValue() const
 		{
 			return is_null?blank:value;
 		}
 
-/* not currently used
-
-		void setValue (string&& v)
-		{
-			value = v;
-		}
-
-		void setValue (const string& v)
-		{
-			value = v;
-		}
-
-		void setNull (bool n)
-		{
-			null_value = n;
-			if (n){
-				value = blank;
-			}
-		}
-*/
 	private:
 
 		string value = blank;

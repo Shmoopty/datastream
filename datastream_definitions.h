@@ -29,7 +29,7 @@ namespace datastream {
 
 	//element data types
 
-	enum class ElementDatatype {
+	enum class ElementDataType {
 		type_boolean,
 		type_integer,
 		type_double,
@@ -52,22 +52,22 @@ namespace datastream {
 	};
 
 	//look up maps
-	std::map<string, ElementDatatype> element_datatype_map = {
-		{"bool", 		ElementDatatype::type_boolean },
-		{"boolean", 	ElementDatatype::type_boolean },
+	std::map<string, ElementDataType> element_data_type_map = {
+		{"bool", 		ElementDataType::type_boolean },
+		{"boolean", 	ElementDataType::type_boolean },
 
-		{"int", 		ElementDatatype::type_integer },
-		{"integer", 	ElementDatatype::type_integer },
+		{"int", 		ElementDataType::type_integer },
+		{"integer", 	ElementDataType::type_integer },
 
-		{"decimal", 	ElementDatatype::type_double  },
-		{"double", 		ElementDatatype::type_double  },
+		{"decimal", 	ElementDataType::type_double  },
+		{"double", 		ElementDataType::type_double  },
 
-		{"string", 		ElementDatatype::type_string  },
+		{"string", 		ElementDataType::type_string  },
 
-		{"datetime", 	ElementDatatype::type_datetime},
-		{"date", 		ElementDatatype::type_date    },
-		{"time", 		ElementDatatype::type_time    },
-		{"raw", 		ElementDatatype::type_raw     }    //raw string, do not quote
+		{"datetime", 	ElementDataType::type_datetime},
+		{"date", 		ElementDataType::type_date    },
+		{"time", 		ElementDataType::type_time    },
+		{"raw", 		ElementDataType::type_raw     }    //raw string, do not quote
 	 };
 
 	 std::map<string, GroupWrapper> group_wrapper_map = {
@@ -87,7 +87,7 @@ namespace datastream {
 	const string rx_bit 		= "([01])";
 	const string rx_int         = "([0-9]{1,8})";
 	const string rx_any         = "(.*)";
-	const string rx_datatype 	= "(bool|boolean|int|integer|decimal|double|string|datetime|date|time|raw)";
+	const string rx_data_type 	= "(bool|boolean|int|integer|decimal|double|string|datetime|date|time|raw)";
 	const string rx_group_wrap	= "(array|none)";
 	const string rx_row_wrap	= "(object|array|none)";
 
@@ -101,7 +101,7 @@ namespace datastream {
 	const string rx_comma_bit 	= rx_comma + rx_bit;
 	const string rx_comma_int   = rx_comma + rx_int;
 	const string rx_comma_any   = rx_comma + rx_any;
-	const string rx_comma_datatype  = rx_comma + rx_datatype;
+	const string rx_comma_data_type  = rx_comma + rx_data_type;
 	const string rx_comma_row_wrap = rx_comma + rx_row_wrap;
 	const string rx_comma_group_wrap = rx_comma + rx_group_wrap;
 
@@ -122,7 +122,7 @@ namespace datastream {
 	const unsigned int match_index_element_id = 1;
 	const unsigned int match_index_element_set = 2;
 	const unsigned int match_index_element_name = 3;
-	const unsigned int match_index_element_datatype = 4;
+	const unsigned int match_index_element_data_type = 4;
 
 	const unsigned int match_index_data_row_id = 1;
 	const unsigned int match_index_data_parent = 2;
@@ -180,8 +180,8 @@ namespace datastream {
 			// name,
 			rx_comma_any +
 
-			// datatype,
-			rx_comma + rx_datatype +
+			// data_type,
+			rx_comma + rx_data_type +
 
 			// end
 			rx_end
@@ -212,6 +212,22 @@ namespace datastream {
 		}
 
 		typedef std::sregex_token_iterator pattern_iterator;
+
+		template <typename T>
+		T* point(T const& obj )
+		{
+			return &obj;
+		}
+
+		template <typename T>
+		T& unpoint(T * obj )
+		{
+			return *obj;
+		}
+
+		//errors
+		const string error_text_not_understood("sorry, the data cannot be understood");
+		const string error_text_missing_parent("sorry, the data cannot be understood : a section is missing.");
 }
 
 #endif

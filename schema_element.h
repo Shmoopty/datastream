@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 #include "datastream_definitions.h"
 #include "reader.h"
@@ -21,57 +22,55 @@ namespace datastream {
 			//some database stuff to retrieve value
 
 			//then return data
-			return (*reader)(name, value);
+			return (*reader)(name, value, precision);
 		}
 
 
-		SchemaElement(unsigned int id,  unsigned int parent, string&& name, ElementDatatype datatype, unsigned int precision=0):
-		id(id),
-		parent(parent),
-		name(name),
-		datatype(datatype),
-		precision(precision)
+		SchemaElement(unsigned int id,  unsigned int parent, string&& name, ElementDataType data_type, unsigned int precision=0):
+			id(id),
+			parent(parent),
+			name(name),
+			data_type(data_type),
+			precision(precision)
 		{
-			if(datatype == ElementDatatype::type_boolean) {
+
+			if(data_type == ElementDataType::type_boolean) {
 				reader = &read_bool;
 			}
-			else if(datatype == ElementDatatype::type_integer)	{
+			else if(data_type == ElementDataType::type_integer)	{
 				reader = &read_int;
 			}
-			else if(datatype == ElementDatatype::type_double)	{
-				reader = &read_int;
+			else if(data_type == ElementDataType::type_double)	{
+				reader = &read_double;
 			}
 			else if(
-				datatype == ElementDatatype::type_string ||
-				datatype == ElementDatatype::type_datetime ||
-				datatype == ElementDatatype::type_date ||
-				datatype == ElementDatatype::type_time
+				data_type == ElementDataType::type_string ||
+				data_type == ElementDataType::type_datetime ||
+				data_type == ElementDataType::type_date ||
+				data_type == ElementDataType::type_time
 			)	{
 				reader = &read_string;
 			}
-			else if(datatype == ElementDatatype::type_raw)	{
+			else if(data_type == ElementDataType::type_raw)	{
 				reader = &read_string;
 			}
 		}
 
 		int getId () const {return id;}
 		int getParent () const {return parent;}
-		string getName () const {return name;}
-		ElementDatatype getDatatype () const {return datatype;}
+		const string& getName () const {return name;}
+		ElementDataType getDataType () const {return data_type;}
 
 	private:
 
-		//unsigned int sort;
 		unsigned int id;
 		unsigned int parent;
 		string name;
-		ElementDatatype datatype;
 
+		ElementDataType data_type;
 		unsigned int precision;
 
-		string (*reader)(const string &, const string &);
-
-
+		string (*reader)(const string &, const string &, const unsigned int);
 	};
 }
 #endif

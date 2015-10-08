@@ -22,7 +22,6 @@ int main(int argc, char *argv[]){
 	using namespace datastream;
 
 	try {
-
 		if (argc < 3){
 			throw std::invalid_argument("schema and schema elements filenames required");
 		}
@@ -34,14 +33,9 @@ int main(int argc, char *argv[]){
 			argv[arg_schema_elements_file_name]
 		);
 
-		std::cout <<
-		Datastream(
-			model,
-			formatter
-		);
-
+		std::cout << Datastream(model,formatter);
 	}
-	catch( const std::exception& e ) {
+	catch( const std::exception& e ){
 		 std::cout << e.what();
 		 return -1;
 	 }

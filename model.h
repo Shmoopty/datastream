@@ -1,9 +1,6 @@
 #ifndef datastream_model_h
 #define datastream_model_h
 
-#include "schema_set.h"
-#include "data_set.h"
-#include "datastream_definitions.h"
 #include "schema.h"
 #include "data.h"
 #include "formatter.h"
@@ -29,12 +26,10 @@ namespace datastream {
 		}
 
 	private:
-// 
+
 		Schema schema;
 		Data data;
 	};
-
-
 }
 
 #endif
