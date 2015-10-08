@@ -182,25 +182,58 @@ namespace datastream {
 
 		}
 
+		virtual void writeEmptyGroup(
+			ostream & os,
+			const string& group_label,
+			const string& row_label,
+			unsigned int & siblings_written,
 
+			RowWrapper parent_row_wrapper,
 
+			bool single_child_per_parent,
+			GroupWrapper groupWrapper,
+			RowWrapper rowWrapper
+		){
 
-		/*
-		virtual void writeElement(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, bool first){
+			openGroup(
+				os,
+				group_label,
+				row_label,
+				siblings_written,
 
-			if(!first){
-				os  << seperator;
+				parent_row_wrapper,
+
+				single_child_per_parent,
+				groupWrapper
+			);
+
+			closeGroup(
+				os,
+				group_label,
+				row_label,
+				siblings_written,
+
+				parent_row_wrapper,
+				groupWrapper
+			);
+
+			if (groupWrapper == GroupWrapper::array_wrapper){
+				return;
 			}
 
-			os
-			<< new_line_token << Indent(indent,depth + 1)
-			<< Quote(name, quote) << divider;
+			//override
+			unsigned int none = 0;
 
-			writeValue(os, name, value, isNull, data_type, first);
+			openRow(os, row_label, rowWrapper, none);
+			closeRow(os, row_label, rowWrapper);
+
+			if (rowWrapper != RowWrapper::no_wrapper){
+				return;
+			}
+
+			writeValue(os, blank, blank, true, ElementDataType::type_raw, none);
+
 		};
-		*/
-
-
 
 		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper){
 			if (rowWrapper == RowWrapper::object_wrapper){
