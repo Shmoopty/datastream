@@ -15,6 +15,7 @@ namespace datastream {
 	using std::map;
 	using std::list;
 	using std::ostream;
+
 	class DataRow;
 
 	template <typename T>
@@ -26,11 +27,6 @@ namespace datastream {
 	struct is_row_containter <std::vector<std::shared_ptr<DataRow>>> {
 	    enum { value = true };
 	};
-
-	// template <>
-	// struct is_row_containter <std::vector<std::shared_ptr<DataRow>>> {
-	//     enum { value = true };
-	// };
 
 	template <>
 	struct is_row_containter <std::vector<std::weak_ptr<DataRow>>> {
@@ -57,11 +53,11 @@ namespace datastream {
 
 		unsigned int id;
 		unsigned int parent;
-		unsigned int sort;
+		unsigned int order;
 		list<DataElement> child_elements;
 
-		// this should not be a concrete member
-		// but a reference, perhaps shared pointer
+		// this is not a concrete member
+		// but a reference,
 		// so it can be shared by rows with the same id
 
 		std::map<int, std::shared_ptr<std::vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
@@ -127,12 +123,15 @@ namespace datastream {
 			++siblings_written;
 		}
 
-		DataRow (unsigned int id, unsigned int parent, unsigned int sort):
-			id(id),
-			parent(parent),
-			sort(sort)
-		{
-		};
+
+
+		// constructor
+		DataRow (unsigned int id, unsigned int parent, unsigned int order):
+		id(id),
+		parent(parent),
+		order(order)
+		{};
+
 
 		void load(list<SchemaElement> & schema_elements, const string & line_values){
 
@@ -169,6 +168,10 @@ namespace datastream {
 			}
 		};
 
+		void connect(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows_ptr){
+			data_child_rows_ptr_by_set_id_map.emplace(set_id, child_rows_ptr);
+		}
+
 		void write(ostream & os, SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const
 		{
 			formatter.openRow(
@@ -178,13 +181,12 @@ namespace datastream {
 				siblings_written
 			);
 
-			unsigned int children_written = 0;
-
 			auto schema_child_element_it = schema_set.child_elements.begin();
 			auto data_child_element_it = child_elements.begin();
 
 			//WRITE CHILD ELEMENTS
 			//make template for both http://stackoverflow.com/questions/12552277
+			unsigned int children_written = 0;
 			for(;
 				schema_child_element_it != schema_set.child_elements.end() &&
 				data_child_element_it != child_elements.end();
@@ -208,21 +210,7 @@ namespace datastream {
 				++children_written;
 			}
 
-			// the schema tells us which sets nest within the current set
-
-			// we use the integer id from the child set to retrieve rows
-			// from a map which is a member of this object
-
-			// why such a convoluted path to the data we alreay have in this object?
-
-			// 1.
-			// because there may not be any child rows in the data for this row,
-			// but we still may want to add an empty label
-
-			// 2.
-			// because this ensures that the sets are presented in the correct order
-			// not the order which the map is sorted
-
+			//WRITE CHILD ROWS
 			for (auto schema_child_set_ptr : schema_set.child_sets){
 
 				auto child_rows_ptr_it =  data_child_rows_ptr_by_set_id_map.find(schema_child_set_ptr->id);
@@ -257,9 +245,6 @@ namespace datastream {
 			++siblings_written;
 		}
 
-		void nestChildRows(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows_ptr){
-			data_child_rows_ptr_by_set_id_map.emplace(set_id, child_rows_ptr);
-		}
 	};
 }
 #endif

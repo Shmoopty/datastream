@@ -25,15 +25,13 @@ namespace datastream {
 			return (*reader)(name, value, precision);
 		}
 
-
 		SchemaElement(unsigned int id,  unsigned int parent, string&& name, ElementDataType data_type, unsigned int precision=0):
-			id(id),
-			parent(parent),
-			name(name),
-			data_type(data_type),
-			precision(precision)
+		id(id),
+		parent(parent),
+		name(name),
+		data_type(data_type),
+		precision(precision)
 		{
-
 			if(data_type == ElementDataType::type_boolean) {
 				reader = &read_bool;
 			}
