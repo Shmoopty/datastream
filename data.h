@@ -93,12 +93,12 @@ namespace datastream {
 		void mapDataSets(list<SchemaSet>& schema_set_list){
 
 			for (DataSet& data_set : data_set_list){
+
 				//map set rows
 				data_set.mapRows();
 
 				//map sets
 				data_set_ptr_map.emplace(
-
 					data_set.getId(),
 					&data_set
 				);
