@@ -27,7 +27,7 @@ namespace datastream {
 			schema_set_list.clear();
 		}
 
-		void load(
+		void build(
 			const string & schema_sets_filename,
 			const string & schema_elements_filename
 		){
