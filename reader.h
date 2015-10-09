@@ -17,12 +17,7 @@ namespace datastream {
 		// value will probably be repaced with handle to db cursor
 		// and name might be needed to retrieve value
 
-		if ((bool)std::stoi(value)){
-			return "true";
-		}
-		else{
-			return "false";
-		}
+		return (bool)std::stoi(value)?"true":"false";
 	}
 
 	string read_int(const string & name, const string & value, unsigned int precision = 0){

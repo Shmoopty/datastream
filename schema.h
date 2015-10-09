@@ -91,10 +91,7 @@ namespace datastream {
 					}
 					rootFound = true;
 				}
-
-				//downgrade for c++ 03
-				//schema_set_list.push_back(SchemaSet(etc....))
-
+				
 				schema_set_list.emplace_back(
 					is_root,
 					std::stoi(matched[match_index_schema_id]),
@@ -114,7 +111,6 @@ namespace datastream {
 			if (!rootFound){
 				throw std::domain_error("data does not match expected format. : document root not specified");
 			}
-
 		}
 
 		void map()
