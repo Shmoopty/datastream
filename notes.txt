@@ -12,3 +12,85 @@ friend writeRows(T const& rows )
 		std::cout << deref(row).id << " has parent " << deref(row).parent << std::endl;
 	}
 }
+
+
+redo this:
+
+data_set.h 71
+
+void weave(DataSet& parent_set)
+{
+	for(DataRow& row : rows )
+	{
+		// parent id may match multiple rows
+		// ids are present in the data
+		// not by this process
+		// this process must handle cases where id is not unique
+
+		auto parent_rows_search = parent_set.id_to_rows_map.find(row.parent);
+		if(parent_rows_search != parent_set.id_to_rows_map.end()){
+			auto parent_rows = parent_rows_search->second;
+
+			for(DataRow* parent_row : parent_rows)
+			{
+				parent_row->nestChildRow(getId(), row);
+			}
+		}
+	}
+}
+
+
+'shared_ptr<std::__1::vector<datastream::DataRow *,
+	 std::__1::allocator<datastream::DataRow *> >>' to '
+
+	 const shared_ptr<datastream::DataRow *>' for 2nd argument
+
+   pair(const _T1& __x, const _T2& __y)
+
+   // if (parent_id_to_rows_map.find(row_ptr->parent) == parent_id_to_rows_map.end()){
+   // 	//parent_id_to_rows_map.emplace_hint(
+   //
+   // 	//	parent_id_to_rows_map.end(),
+   // 		row_ptr->parent,
+   // 		//std::shared_ptr<SceneNode>(subnode_p)
+   // 		std::shared_ptr<vector<DataRow*>> (new vector<DataRow*>{row_ptr})
+   // 	);
+   // }
+   // else{
+   // 	///parent_id_to_rows_map[row_ptr->id].push_back(row_ptr);
+   // }
+
+
+
+
+
+   // if (parent_id_to_rows_map.find(row_ptr->parent) == parent_id_to_rows_map.end()){
+   // 	//parent_id_to_rows_map.emplace_hint(
+   // 	parent_id_to_rows_map.emplace(
+   // 	//	parent_id_to_rows_map.end(),
+   // 		row_ptr->parent,
+   // 		//std::shared_ptr<SceneNode>(subnode_p)
+   // 		std::shared_ptr<vector<DataRow*>> (new vector<DataRow*>{row_ptr})
+   // 	);
+   // }
+   // else{
+   // 	///parent_id_to_rows_map[row_ptr->id].push_back(row_ptr);
+   // }
+
+
+
+
+// std::shared_ptr<vector<DataRow*>> sp (new vector<DataRow*>{row_ptr});
+//
+//  std::pair < unsigned int , std::shared_ptr<vector<DataRow*>>> p
+//  = std::make_pair (row_ptr->parent , sp );
+//
+//  parent_id_to_rows_map.insert (
+// 	 parent_id_to_rows_map.end(),
+//   	 sp
+//);
+
+// parent_id_to_rows_map.emplace(
+// 	row_ptr->parent,
+// 	sp
+// );

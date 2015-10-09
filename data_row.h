@@ -27,6 +27,11 @@ namespace datastream {
 	    enum { value = true };
 	};
 
+	// template <>
+	// struct is_row_containter <std::vector<std::shared_ptr<DataRow>>> {
+	//     enum { value = true };
+	// };
+
 	template <>
 	struct is_row_containter <std::vector<std::weak_ptr<DataRow>>> {
 	    enum { value = true };
@@ -47,20 +52,19 @@ namespace datastream {
 	    enum { value = true };
 	};
 
-
-
 	class DataRow{
 	public:
 
 		unsigned int id;
 		unsigned int parent;
+		unsigned int sort;
 		list<DataElement> child_elements;
 
 		// this should not be a concrete member
 		// but a reference, perhaps shared pointer
 		// so it can be shared by rows with the same id
 
-		map<int, vector<DataRow*>> data_child_rows_by_set_id_map;
+		std::map<int, std::shared_ptr<std::vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
 
 		template <typename T>
 		typename std::enable_if<is_row_containter<T>::value>::type
@@ -123,9 +127,10 @@ namespace datastream {
 			++siblings_written;
 		}
 
-		DataRow (unsigned int id, unsigned int parent):
+		DataRow (unsigned int id, unsigned int parent, unsigned int sort):
 			id(id),
-			parent(parent)
+			parent(parent),
+			sort(sort)
 		{
 		};
 
@@ -220,25 +225,18 @@ namespace datastream {
 
 			for (auto schema_child_set_ptr : schema_set.child_sets){
 
-				auto data_child_rows_it = data_child_rows_by_set_id_map.find(schema_child_set_ptr->id);
+				auto child_rows_ptr_it =  data_child_rows_ptr_by_set_id_map.find(schema_child_set_ptr->id);
 
-				const vector<DataRow*> * rows_ptr = nullptr;
-
-				if(data_child_rows_it != data_child_rows_by_set_id_map.end()){
-					rows_ptr = &data_child_rows_it->second;
-					//writeRows (data_child_rows_it->second);
-
-
+				if(child_rows_ptr_it != data_child_rows_ptr_by_set_id_map.end()){
 					writeRows (
 						os,
 						schema_set.rowWrapper, //parent row wrapper
 						*schema_child_set_ptr, //schema set for rows
-						data_child_rows_it->second,    //rows
+						*child_rows_ptr_it->second,    //rows
 						formatter,
 						children_written       //number of siblings written
 					);
-				}
-				else{
+				} else{
 					writeRows (
 						os,
 						schema_set.rowWrapper, //parent row wrapper
@@ -259,16 +257,8 @@ namespace datastream {
 			++siblings_written;
 		}
 
-		void nestChildRow(int set_id, DataRow& child_row){
-			if(
-				data_child_rows_by_set_id_map.find(set_id) ==
-				data_child_rows_by_set_id_map.end()
-			){
-				data_child_rows_by_set_id_map.emplace(set_id, vector<DataRow*>{&child_row});
-			}
-			else{
-				data_child_rows_by_set_id_map[set_id].push_back(&child_row);
-			}
+		void nestChildRows(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows_ptr){
+			data_child_rows_ptr_by_set_id_map.emplace(set_id, child_rows_ptr);
 		}
 	};
 }
