@@ -16,13 +16,9 @@ namespace datastream {
 	class DataSet{
 	public:
 
-		// unsigned int id; // <- in schema
-		// unsigned int parent; //<- in schema
-
-		DataSet(SchemaSet* schema_set_ptr):
-			schema_set_ptr(schema_set_ptr)
-		{
-		};
+		DataSet(SchemaSet& schema_set):
+		schema_set(schema_set)
+		{};
 
 		void load(list<SchemaElement> & schema_elements, const string & line){
 
@@ -50,43 +46,6 @@ namespace datastream {
 			);
 		}
 
-		void write (ostream & os, Formatter& formatter) const
-		{
-			unsigned int siblings_written = 0;
-			formatter.open(os, schema_set_ptr->groupWrapper);
-
-			writeRows (
-				os,
-				RowWrapper::no_wrapper, //parent row wrapper - root has not parent
-				*schema_set_ptr, //schema set for rows
-				rows,    //rows
-				formatter,
-				siblings_written
-			);
-
-			formatter.close(os, schema_set_ptr->groupWrapper);
-
-		}
-
-		void connect(DataSet& parent_set)
-		{
-
-			for (auto& parent_id_child_rows : rows_by_parent_map){
-
-				auto parent_rows_search = parent_set.id_to_rows_map.find(parent_id_child_rows.first);
-
-				if(parent_rows_search != parent_set.id_to_rows_map.end()){
-
-					auto parent_rows = parent_rows_search->second;
-
-					for(DataRow* parent_row : parent_rows)
-					{
-						parent_row->connect(getId(), parent_id_child_rows.second);
-					}
-				}
-			}
-		}
-
 		// rows are stored in a list to give us a stable address
 		// now put pointers to rows into vector
 		// for sorting and random access
@@ -103,7 +62,7 @@ namespace datastream {
 				row_ptrs.push_back(&row);
 			}
 
-			if(schema_set_ptr->child_sets.size() > 0){
+			if(schema_set.child_sets.size() > 0){
 
 				//sort vector by row id
 				std::sort(
@@ -133,7 +92,7 @@ namespace datastream {
 				}
 			}
 
-			if(!schema_set_ptr->isRoot()){
+			if(!schema_set.isRoot()){
 				//sort vector by row parent
 				std::sort(
 					row_ptrs.begin(),
@@ -147,7 +106,7 @@ namespace datastream {
 					}
 				);
 
-				// map rows by their parent
+				// map rows by parent
 				for (DataRow* row_ptr : row_ptrs){
 
 					auto rows_by_parent_map_search = rows_by_parent_map.find(row_ptr->parent);
@@ -164,34 +123,54 @@ namespace datastream {
 				}
 			}
 		}
+		
+		void connect(DataSet& parent_set)
+		{
+			for (auto& parent_id_child_rows : rows_by_parent_map){
+				auto parent_rows_search = parent_set.id_to_rows_map.find(parent_id_child_rows.first);
+				if(parent_rows_search != parent_set.id_to_rows_map.end()){
+					auto parent_rows = parent_rows_search->second;
+					for(DataRow* parent_row : parent_rows)
+					{
+						parent_row->connect(getId(), parent_id_child_rows.second);
+					}
+				}
+			}
+		}
+
+		void write (ostream & os, Formatter& formatter) const
+		{
+			unsigned int siblings_written = 0;
+			formatter.open(os, schema_set.groupWrapper);
+
+			writeRows (
+				os,
+				RowWrapper::no_wrapper, //parent row wrapper - root has no parent
+				schema_set, 			//schema set for rows
+				rows,
+				formatter,
+				siblings_written
+			);
+
+			formatter.close(os, schema_set.groupWrapper);
+		}
 
 		bool isRoot() const {
-			if(schema_set_ptr == nullptr){
-				throw std::domain_error("data structure is invalid. schema details not found. root unknown");
-			}
-			return schema_set_ptr->isRoot();
+			return schema_set.isRoot();
 		}
 
 		int getParentId() const {
-			if(schema_set_ptr == nullptr){
-				throw std::domain_error("data structure is invalid. schema details not found. parent unknown");
-			}
-			return schema_set_ptr->parent;
+			return schema_set.parent;
 		}
 
 		int getId() const {
-			if(schema_set_ptr == nullptr){
-				throw std::domain_error("data structure is invalid. schema details not found. schema id unknown");
-			}
-			return schema_set_ptr->id;
+			return schema_set.id;
 		}
 
 		private:
-			SchemaSet* schema_set_ptr;
+			SchemaSet& schema_set;
 			list<DataRow> rows;
 			map<int, vector<DataRow*>> id_to_rows_map;
-			//std::map<unsigned int, std::shared_ptr<DataRow*>> rows_by_parent_map;
-
 			std::map<int, std::shared_ptr<std::vector<DataRow*>>> rows_by_parent_map;
 
 

@@ -10,8 +10,6 @@ namespace datastream {
 
 	class Data{
 
-		//DataSet* root = nullptr;
-
 	public:
 
 		void clear(){
@@ -19,16 +17,16 @@ namespace datastream {
 			data_set_list.clear();
 		}
 
-		void load(Schema& schema){
-			loadDataSets(schema.getSets());
-			mapDataSets(schema.getSets());
-			connectData();
+		void build(Schema& schema){
+			load(schema.getSets());
+			map(schema.getSets());
+			connect();
 		}
 
 		void write(ostream & os, Formatter& formatter ) const {
 
-			// gentle return with no output
-			// if no data loaded
+			// no data loaded
+			//throw error?
 			if (!data_set_ptr_map.size()){
 				return;
 			}
@@ -53,44 +51,38 @@ namespace datastream {
 		list<DataSet> data_set_list;
 		map<int, DataSet*> data_set_ptr_map;
 
-		void loadDataSets(list<SchemaSet>& schema_set_list){
+		void load(list<SchemaSet>& schema_set_list){
 
 			clear();
 
 			for(SchemaSet& schema_set : schema_set_list){
-				loadDataSet(schema_set);
-			}
-		}
 
-		void loadDataSet(SchemaSet& schema_set ){
+				ifstream file (schema_set.input_filename);
 
-			ifstream file (schema_set.input_filename);
-
-			if (!file.is_open()){
-				throw std::domain_error("cannot open schema file");
-			}
-
-			//refactor to data_set when moving to db code
-
-			data_set_list.emplace_back(
-				&schema_set
-			);
-
-			string line;
-			while (std::getline(file, line)){
-
-				if(isBlank(line) || isComment(line)){
-				 	continue;
+				if (!file.is_open()){
+					throw std::domain_error("cannot open schema file");
 				}
 
-				// current data set is last added,
-				// load rows
-				data_set_list.rbegin()->load(schema_set.child_elements, line);
+				data_set_list.emplace_back(
+					schema_set
+				);
+
+				string line;
+				while (std::getline(file, line)){
+
+					if(isBlank(line) || isComment(line)){
+					 	continue;
+					}
+
+					// current data set is last added,
+					// load rows
+					data_set_list.rbegin()->load(schema_set.child_elements, line);
+				}
+				file.close();
 			}
-			file.close();
 		}
 
-		void mapDataSets(list<SchemaSet>& schema_set_list){
+		void map(list<SchemaSet>& schema_set_list){
 
 			for (DataSet& data_set : data_set_list){
 
@@ -105,7 +97,7 @@ namespace datastream {
 			}
 		}
 
-		void connectData(){
+		void connect(){
 			for (DataSet& data_set : data_set_list){
 				//root has no parent and does not need to be woven into tree
 				if(data_set.isRoot()){

@@ -17,8 +17,8 @@ namespace datastream {
 		}
 
 		void load(const string & schema_sets_filename, const string & schema_elements_filename){
-			schema.load(schema_sets_filename, schema_elements_filename);
-			data.load(schema);
+			schema.build(schema_sets_filename, schema_elements_filename);
+			data.build(schema);
 		}
 
 		void write(ostream & os, Formatter& formatter) const{
