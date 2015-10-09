@@ -38,26 +38,20 @@ namespace datastream {
 
 			GroupWrapper groupWrapper = GroupWrapper::array_wrapper,
 			RowWrapper rowWrapper = RowWrapper::object_wrapper
-
 		):
-			root(root),
-			id(id),
-			parent(parent),
-			group_name(group_name),
-			row_name(row_name),
-			input_filename (filename),
+		root(root),
+		id(id),
+		parent(parent),
+		group_name(group_name),
+		row_name(row_name),
+		input_filename (filename),
 
-			hide_when_empty(hide_when_empty),
-			limit_single_child(limit_single_child),
+		hide_when_empty(hide_when_empty),
+		limit_single_child(limit_single_child),
 
-			groupWrapper (groupWrapper),
-			rowWrapper (rowWrapper)
+		groupWrapper (groupWrapper),
+		rowWrapper (rowWrapper)
 		{};
-
-		bool getId()
-		{
-			return id;
-		};
 
 		void connect(SchemaSet& child_set)
 		{
@@ -78,6 +72,11 @@ namespace datastream {
 		{
 			return root;
 		}
+
+		bool getId()
+		{
+			return id;
+		};
 
 	private:
 		bool root;

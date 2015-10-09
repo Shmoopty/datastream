@@ -200,7 +200,6 @@ namespace datastream {
 
 		void connect(){
 
-			// this connects each schema set to its parent
 			for ( SchemaSet& schema_set : schema_set_list ){
 
 				// root has no parent - do not connect

@@ -49,18 +49,8 @@ namespace datastream {
 	};
 
 	class DataRow{
-	public:
 
-		unsigned int id;
-		unsigned int parent;
-		unsigned int order;
-		list<DataElement> child_elements;
-
-		// this is not a concrete member
-		// but a reference,
-		// so it can be shared by rows with the same id
-
-		std::map<int, std::shared_ptr<std::vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
+		friend class DataSet;
 
 		template <typename T>
 		typename std::enable_if<is_row_containter<T>::value>::type
@@ -123,15 +113,13 @@ namespace datastream {
 			++siblings_written;
 		}
 
+	public:
 
-
-		// constructor
 		DataRow (unsigned int id, unsigned int parent, unsigned int order):
 		id(id),
 		parent(parent),
 		order(order)
 		{};
-
 
 		void load(list<SchemaElement> & schema_elements, const string & line_values){
 
@@ -144,7 +132,6 @@ namespace datastream {
 				comma_pattern,
 				-1
 			);
-
 
 			while(
 				schema_elements_it != schema_elements.end() &&
@@ -244,6 +231,19 @@ namespace datastream {
 
 			++siblings_written;
 		}
+
+	private:
+
+		unsigned int id;
+		unsigned int parent;
+		unsigned int order;
+		list<DataElement> child_elements;
+
+		// this is not a concrete member
+		// but a reference,
+		// so it can be shared with other rows in this set with the same id
+
+		std::map<int, std::shared_ptr<std::vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
 
 	};
 }
