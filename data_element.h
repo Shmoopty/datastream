@@ -1,7 +1,6 @@
 #ifndef datastream_data_element_h
 #define datastream_data_element_h
 
-#include "schema_element.h"
 #include "datastream_definitions.h"
 
 namespace datastream {
@@ -10,16 +9,14 @@ namespace datastream {
 	public:
 
 		DataElement(string&& value):
-			value(value),
-			is_null(false)
-		{
-		}
+		value(value),
+		is_null(false)
+		{}
 
 		DataElement():
-			value(blank),
-			is_null(true)
-		{
-		}
+		value(blank),
+		is_null(true)
+		{}
 
 		bool isNull() const
 		{

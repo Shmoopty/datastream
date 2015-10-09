@@ -147,12 +147,6 @@ namespace datastream {
 			unsigned int & siblings_written
 		){};
 
-		// {
-		// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
-		// 		os << Quote(label, quote) << divider;
-		// 	}
-		// };
-
 		virtual void openElement(
 			ostream & os,
 			const string& label,

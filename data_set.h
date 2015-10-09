@@ -68,7 +68,7 @@ namespace datastream {
 
 		}
 
-		void weave(DataSet& parent_set)
+		void connect(DataSet& parent_set)
 		{
 
 			for (auto& parent_id_child_rows : rows_by_parent_map){
@@ -81,7 +81,7 @@ namespace datastream {
 
 					for(DataRow* parent_row : parent_rows)
 					{
-						parent_row->nestChildRows(getId(), parent_id_child_rows.second);
+						parent_row->connect(getId(), parent_id_child_rows.second);
 					}
 				}
 			}
@@ -112,7 +112,7 @@ namespace datastream {
 					[](const DataRow* a, const DataRow* b){
 						if (a->id == b->id)
 						{
-							return a->sort < b->sort;
+							return a->order < b->order;
 						}
 						return a->id < b->id;
 					}
@@ -141,7 +141,7 @@ namespace datastream {
 					[](const DataRow* a, const DataRow* b){
 						if (a->parent == b->parent)
 						{
-							return a->sort < b->sort;
+							return a->order < b->order;
 						}
 						return a->parent < b->parent;
 					}

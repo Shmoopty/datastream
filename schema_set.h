@@ -38,29 +38,22 @@ namespace datastream {
 
 			GroupWrapper groupWrapper = GroupWrapper::array_wrapper,
 			RowWrapper rowWrapper = RowWrapper::object_wrapper
-
 		):
-			root(root),
-			id(id),
-			parent(parent),
-			group_name(group_name),
-			row_name(row_name),
-			input_filename (filename),
+		root(root),
+		id(id),
+		parent(parent),
+		group_name(group_name),
+		row_name(row_name),
+		input_filename (filename),
 
-			hide_when_empty(hide_when_empty),
-			limit_single_child(limit_single_child),
+		hide_when_empty(hide_when_empty),
+		limit_single_child(limit_single_child),
 
-			groupWrapper (groupWrapper),
-			rowWrapper (rowWrapper)
-		{
-		};
+		groupWrapper (groupWrapper),
+		rowWrapper (rowWrapper)
+		{};
 
-		bool getId()
-		{
-			return id;
-		};
-
-		void nestChildSet(SchemaSet& child_set)
+		void connect(SchemaSet& child_set)
 		{
 			child_sets.push_back(&child_set);
 		}
@@ -79,6 +72,11 @@ namespace datastream {
 		{
 			return root;
 		}
+
+		bool getId()
+		{
+			return id;
+		};
 
 	private:
 		bool root;
@@ -99,22 +97,3 @@ namespace datastream {
 };
 
 #endif
-
-// some day we are going to need this.
-// but if you use it you need to be aware
-// of the possible consequences
-
-// advanced features
-// use at your peril
-// expect that when used for json
-// schema validator will require:
-
-// hide_when_empty to true
-// when
-// SetWrappper : no_wrapper
-// expect that when used for json or xml
-// schema validator will require:
-
-// limit_single_child to true
-// when
-// rowWrapper : no_wrapper

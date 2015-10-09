@@ -20,9 +20,9 @@ namespace datastream {
 		}
 
 		void load(Schema& schema){
-			loadDataSets(schema.getSchemaSets());
-			mapDataSets(schema.getSchemaSets());
-			weaveData();
+			loadDataSets(schema.getSets());
+			mapDataSets(schema.getSets());
+			connectData();
 		}
 
 		void write(ostream & os, Formatter& formatter ) const {
@@ -105,7 +105,7 @@ namespace datastream {
 			}
 		}
 
-		void weaveData(){
+		void connectData(){
 			for (DataSet& data_set : data_set_list){
 				//root has no parent and does not need to be woven into tree
 				if(data_set.isRoot()){
@@ -116,7 +116,7 @@ namespace datastream {
 				if ( parent_search == data_set_ptr_map.end()){
 					throw std::domain_error("data structure is invalid. parent unknown");
 				}
-				data_set.weave(*parent_search->second);
+				data_set.connect(*parent_search->second);
 			}
 		}
 	};

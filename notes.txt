@@ -94,3 +94,59 @@ void weave(DataSet& parent_set)
 // 	row_ptr->parent,
 // 	sp
 // );
+
+
+
+// the schema tells us which sets nest within the current set
+
+// we use the integer id from the child set to retrieve rows
+// from a map which is a member of this object
+
+// why such a convoluted path to the data we alreay have in this object?
+
+// 1.
+// because there may not be any child rows in the data for this row,
+// but we still may want to add an empty label
+
+// 2.
+// because this ensures that the sets are presented in the correct order
+// not the order which the map is sorted
+
+
+// map
+// schema sets are stored in list container
+// this guarantees items will not be moved
+// and pointers to these objects will reliable
+// but it does not permit us fast random access
+// for this purpose a map of pointers is created
+//
+// this should always we quick, not enough rows to be focus of optimisation
+// but could try re factoring so it can occur after loadElementSchema
+// to end database connection sooner
+//
+// cyclic references are prevented because tree mapped from child to parent
+// but read parent to child.
+// as root will not be connected to a parent, any cyclic references are not traversed
+
+
+
+
+
+// some day we are going to need this.
+// but if you use it you need to be aware
+// of the possible consequences
+
+// advanced features
+// use at your peril
+// expect that when used for json
+// schema validator will require:
+
+// hide_when_empty to true
+// when
+// SetWrappper : no_wrapper
+// expect that when used for json or xml
+// schema validator will require:
+
+// limit_single_child to true
+// when
+// rowWrapper : no_wrapper

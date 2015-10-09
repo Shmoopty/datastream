@@ -31,13 +31,13 @@ namespace datastream {
 			const string & schema_sets_filename,
 			const string & schema_elements_filename
 		){
-			loadSchemaSets(schema_sets_filename);
-			mapSchemaSets();
-			loadSchemaElements(schema_elements_filename);
-			weaveSchema();
+			loadSets(schema_sets_filename);
+			map();
+			loadElements(schema_elements_filename);
+			connect();
 		}
 
-		list<SchemaSet>& getSchemaSets()
+		list<SchemaSet>& getSets()
 		{
 			return schema_set_list;
 		}
@@ -47,7 +47,7 @@ namespace datastream {
 		list<SchemaSet> schema_set_list;
 		map<int, SchemaSet*> schema_set_ptr_map;
 
-		void loadSchemaSets(const string & schema_sets_filename){
+		void loadSets(const string & schema_sets_filename){
 
 			clear();
 
@@ -117,22 +117,7 @@ namespace datastream {
 
 		}
 
-		// map
-		// schema sets are stored in list container
-		// this guarantees items will not be moved
-		// and pointers to these objects will reliable
-		// but it does not permit us fast random access
-		// for this purpose a map of pointers is created
-		//
-		// this should always we quick, not enough rows to be focus of optimisation
-		// but could try re factoring so it can occur after loadElementSchema
-		// to end database connection sooner
-		//
-		// cyclic references are prevented because tree mapped from child to parent
-		// but read parent to child.
-		// as root will not be connected to a parent, any cyclic references are not traversed
-
-		void mapSchemaSets()
+		void map()
 		{
 			//copy pointers to temporary vector
 			vector <SchemaSet*> schema_set_ptrs;
@@ -148,8 +133,7 @@ namespace datastream {
 			sort(
 				schema_set_ptrs.begin(),
 				schema_set_ptrs.end(),
-				[](SchemaSet * a,  SchemaSet * b)->bool
-				{
+				[](SchemaSet * a,  SchemaSet * b)->bool{
 					return a->id < b->id;
 				}
 			);
@@ -164,7 +148,7 @@ namespace datastream {
 			}
 		}
 
-		void loadSchemaElements(const string & schema_elements_filename)
+		void loadElements(const string & schema_elements_filename)
 		{
 			ifstream file (schema_elements_filename);
 		    if ( !file.is_open()){
@@ -214,24 +198,22 @@ namespace datastream {
 			file.close();
 		}
 
-		void weaveSchema(){
+		void connect(){
 
-			// this connects each schema set to its parent
 			for ( SchemaSet& schema_set : schema_set_list ){
 
-				// root has no parent - do not weave
+				// root has no parent - do not connect
 				if (schema_set.isRoot()){
 					continue;
 				}
 
 				int parent_set_id = schema_set.parent;
 
-				if (schema_set_ptr_map.find(parent_set_id) == schema_set_ptr_map.end()){
+				auto schema_set_ptr_map_search = schema_set_ptr_map.find(parent_set_id);
+				if ( schema_set_ptr_map_search == schema_set_ptr_map.end()){
 					throw std::domain_error(error_text_missing_parent);
 				}
-
-				schema_set_ptr_map[parent_set_id]->nestChildSet(schema_set);
-
+				schema_set_ptr_map_search->second->connect(schema_set);
 			}
 		}
 	};
