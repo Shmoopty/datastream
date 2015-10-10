@@ -43,6 +43,7 @@ namespace datastream {
 				throw std::domain_error("cannot find root element to begin writing");
 			}
 
+			//only support one root for now
 			root_set->write(os, formatter);
 		}
 

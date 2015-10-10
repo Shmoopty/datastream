@@ -18,13 +18,6 @@ namespace datastream {
 
 	public:
 
-		string read(const string & value){
-			//some database stuff to retrieve value
-
-			//then return data
-			return (*reader)(name, value, precision);
-		}
-
 		SchemaElement(unsigned int id,  unsigned int parent, string&& name, ElementDataType data_type, unsigned int precision=0):
 		id(id),
 		parent(parent),
@@ -54,6 +47,16 @@ namespace datastream {
 			}
 		}
 
+		string read(const string & value){
+			//some database stuff to retrieve value
+
+			//then return data
+			return (*reader)(name, value, precision);
+		}
+
+		// if usae of this class is limited to friend classes
+		// maybe this is a redundant mix of patterns
+		
 		int getId () const {return id;}
 		int getParent () const {return parent;}
 		const string& getName () const {return name;}

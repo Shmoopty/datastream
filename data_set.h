@@ -117,18 +117,21 @@ namespace datastream {
 							row_ptr->parent,
 							std::shared_ptr<std::vector<DataRow*>>(new std::vector<DataRow*>{row_ptr})
 						);
-					} else {
+					}
+					else {
 						rows_by_parent_map_search->second.get()->push_back(row_ptr);
 					}
 				}
 			}
 		}
-		
+
 		void connect(DataSet& parent_set)
 		{
 			for (auto& parent_id_child_rows : rows_by_parent_map){
+
 				auto parent_rows_search = parent_set.id_to_rows_map.find(parent_id_child_rows.first);
 				if(parent_rows_search != parent_set.id_to_rows_map.end()){
+					
 					auto parent_rows = parent_rows_search->second;
 					for(DataRow* parent_row : parent_rows)
 					{
@@ -172,8 +175,6 @@ namespace datastream {
 			list<DataRow> rows;
 			map<int, vector<DataRow*>> id_to_rows_map;
 			std::map<int, std::shared_ptr<std::vector<DataRow*>>> rows_by_parent_map;
-
-
 	};
 }
 #endif
