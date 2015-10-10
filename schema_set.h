@@ -24,7 +24,6 @@ namespace datastream {
 		friend class Data;
 
 	public:
-
 		SchemaSet(
 			bool root,
 			unsigned int id,
@@ -53,6 +52,23 @@ namespace datastream {
 		rowWrapper (rowWrapper)
 		{};
 
+	private:
+
+		bool root;
+		unsigned int id;
+		unsigned int parent;
+		string group_name;
+		string row_name;
+		string input_filename;
+
+		bool hide_when_empty;
+		bool limit_single_child;
+		GroupWrapper groupWrapper;
+		RowWrapper rowWrapper;
+
+		list<SchemaElement> child_elements;
+		vector<SchemaSet*> child_sets;
+
 		void connect(SchemaSet& child_set)
 		{
 			child_sets.push_back(&child_set);
@@ -77,22 +93,6 @@ namespace datastream {
 		{
 			return id;
 		};
-
-	private:
-		bool root;
-		unsigned int id;
-		unsigned int parent;
-		string group_name;
-		string row_name;
-		string input_filename;
-
-		bool hide_when_empty;
-		bool limit_single_child;
-		GroupWrapper groupWrapper;
-		RowWrapper rowWrapper;
-
-		list<SchemaElement> child_elements;
-		vector<SchemaSet*> child_sets;
 	};
 };
 

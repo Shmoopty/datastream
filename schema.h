@@ -19,27 +19,20 @@ namespace datastream {
 
 	class Schema{
 
-	public:
+		friend class Data;
 
-		void clear()
-		{
-			schema_set_ptr_map.clear();
-			schema_set_list.clear();
-		}
+	public:
 
 		void build(
 			const string & schema_sets_filename,
 			const string & schema_elements_filename
 		){
+			clear();
+
 			loadSets(schema_sets_filename);
 			map();
 			loadElements(schema_elements_filename);
 			connect();
-		}
-
-		list<SchemaSet>& getSets()
-		{
-			return schema_set_list;
 		}
 
 	private:
@@ -47,9 +40,18 @@ namespace datastream {
 		list<SchemaSet> schema_set_list;
 		map<int, SchemaSet*> schema_set_ptr_map;
 
-		void loadSets(const string & schema_sets_filename){
+		list<SchemaSet>& getSets()
+		{
+			return schema_set_list;
+		}
 
-			clear();
+		void clear()
+		{
+			schema_set_ptr_map.clear();
+			schema_set_list.clear();
+		}
+
+		void loadSets(const string & schema_sets_filename){
 
 			ifstream file (schema_sets_filename);
 		    if (!file.is_open()){
@@ -91,7 +93,7 @@ namespace datastream {
 					}
 					rootFound = true;
 				}
-				
+
 				schema_set_list.emplace_back(
 					is_root,
 					std::stoi(matched[match_index_schema_id]),

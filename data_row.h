@@ -10,9 +10,13 @@
 #include "datastream_definitions.h"
 #include "formatter.h"
 
+#include <boost/range/algorithm_ext/for_each.hpp>
+
 namespace datastream {
 
 	using std::map;
+	using std::vector;
+	using std::shared_ptr;
 	using std::list;
 	using std::ostream;
 
@@ -54,6 +58,7 @@ namespace datastream {
 
 		template <typename T>
 		typename std::enable_if<is_row_containter<T>::value>::type
+		
 		friend writeRows(
 			ostream & os,
 			RowWrapper parent_row_wrapper_type,
@@ -168,34 +173,29 @@ namespace datastream {
 				siblings_written
 			);
 
-			auto schema_child_element_it = schema_set.child_elements.begin();
-			auto data_child_element_it = child_elements.begin();
-
-			//WRITE CHILD ELEMENTS
-			//make template for both http://stackoverflow.com/questions/12552277
 			unsigned int children_written = 0;
-			for(;
-				schema_child_element_it != schema_set.child_elements.end() &&
-				data_child_element_it != child_elements.end();
 
-				schema_child_element_it++,
-				data_child_element_it++
+			boost::range::for_each(
+				schema_set.child_elements,
+                child_elements,
+				[&](
+					const SchemaElement& schema_child,
+					const DataElement& data_child
+				){
+					formatter.writeElement(
+						os,
+						schema_child.name,
+						data_child.getValue(),
+						data_child.isNull(),
+						schema_child.data_type,
 
-			){
-				formatter.writeElement(
-					os,
-					schema_child_element_it->name,
-					data_child_element_it->getValue(),
-					data_child_element_it->isNull(),
-					schema_child_element_it->data_type,
-
-					//parent row wrapper
-					schema_set.rowWrapper,
-					children_written
-				);
-
-				++children_written;
-			}
+						//parent row wrapper
+						schema_set.rowWrapper,
+						children_written
+					);
+					++children_written;
+				}
+			);
 
 			//WRITE CHILD ROWS
 			for (auto schema_child_set_ptr : schema_set.child_sets){
@@ -205,20 +205,20 @@ namespace datastream {
 				if(child_rows_ptr_it != data_child_rows_ptr_by_set_id_map.end()){
 					writeRows (
 						os,
-						schema_set.rowWrapper, //parent row wrapper
-						*schema_child_set_ptr, //schema set for rows
-						*child_rows_ptr_it->second,    //rows
+						schema_set.rowWrapper, 		//parent row wrapper
+						*schema_child_set_ptr, 		//schema set for rows
+						*child_rows_ptr_it->second, //rows
 						formatter,
-						children_written       //number of siblings written
+						children_written       		//number of siblings written
 					);
 				} else{
 					writeRows (
 						os,
-						schema_set.rowWrapper, //parent row wrapper
-						*schema_child_set_ptr, //schema set for rows
-						vector<DataRow*>{},    //empty rows
+						schema_set.rowWrapper, 		//parent row wrapper
+						*schema_child_set_ptr, 		//schema set for rows
+						vector<DataRow*>{},    		//empty rows
 						formatter,
-						children_written       //number of siblings written
+						children_written       		//number of siblings written
 					);
 				}
 			}
@@ -239,11 +239,8 @@ namespace datastream {
 		unsigned int order;
 		list<DataElement> child_elements;
 
-		// this is not a concrete member
-		// but a reference,
-		// so it can be shared with other rows in this set with the same id
-
-		std::map<int, std::shared_ptr<std::vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
+		// shared with other rows in this set with the same id
+		map<int, shared_ptr<vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
 
 	};
 }
