@@ -29,7 +29,7 @@ namespace datastream {
 		){
 			clear();
 			loadSets(schema_sets_filename);
-			map();
+			mapSets();
 			loadElements(schema_elements_filename);
 
 		}
@@ -103,11 +103,13 @@ namespace datastream {
 				);
 			}
 			file.close();
-
 		}
 
-		void map()
+		void mapSets()
 		{
+			/*
+				copy pointers to a vector for sorting & processing
+			*/
 			//copy pointers to temporary vector
 			vector <SchemaSet*> set_ptrs;
 			set_ptrs.reserve(schema_set_list_.size());
@@ -119,6 +121,9 @@ namespace datastream {
 				);
 			}
 
+			/*
+				create row id : * map
+			*/
 			//sort by id for fast insert into map
 			sort(
 				set_ptrs.begin(),
@@ -137,6 +142,16 @@ namespace datastream {
 				);
 			}
 
+			/*
+				validate the structure of connected set
+				it must form a tree:
+					it must have one root
+					it must be acyclic
+					all nodes must be connected
+			*/
+
+			// test 1:
+			// does structure have one root?
 			//find a quick way to do this on std::find_if iterator and this can be cut
 			int root_count = std::count_if(
 				schema_set_list_.begin(),
@@ -150,6 +165,7 @@ namespace datastream {
 				throw std::domain_error("sorry, the data does not contain a starting point to begin writing");
 			}
 
+			//locate the root
 			auto root_search = std::find_if(
 				schema_set_list_.begin(),
 				schema_set_list_.end(),
@@ -173,8 +189,13 @@ namespace datastream {
 			// guess it depend on how many levels we nest
 			// but it probably won't hurt
 
-			// reuse vector
+			/*
+				create parent : * map
 
+			// step 1
+			// reuse vector
+			// sort by parent id, original order
+			*/
 			std::sort(
 				set_ptrs.begin(),
 				set_ptrs.end(),
@@ -186,6 +207,10 @@ namespace datastream {
 				}
 			);
 
+			/*
+				//step 2
+				insert records into the parent row id : * map
+			*/
 			std::map<unsigned int, std::vector<unsigned int>> set_ids_by_parent_map;
 
 			for (SchemaSet* set_ptr : set_ptrs){
@@ -208,7 +233,15 @@ namespace datastream {
 				}
 			}
 
-			// recursive lambda to walk the tree
+			/*
+				validate structure
+				// step 2
+				// walk the tree
+				// look for cycles
+
+				while walking the tree build dependancy graph
+			*/
+			// recursive lambda to walk the tree and validate structure
 			std::function<void(unsigned int)> walk = [&](unsigned int set_id){
 
 				//cyclic dependancy check
@@ -225,7 +258,6 @@ namespace datastream {
 
 				dependency_graph_.push_back(set_id);
 
-
 			  	auto child_ids_search = set_ids_by_parent_map.find(set_id);
 
 				if (child_ids_search != set_ids_by_parent_map.end()){
@@ -235,10 +267,14 @@ namespace datastream {
 				}
 			};
 
+			// now use the lambda,
 			//walk the tree populating dependency graph
 			dependency_graph_.reserve(set_ptrs.size());
 			walk(root_search->id());
 
+			// validate step 3
+			// this should be redundant given that we have checked for multiple roots
+			// check that all nodes have been visited by walk
 			if (dependency_graph_.size() != set_ptrs.size()){
 				throw std::domain_error("sorry about this, the data doesn't seem to be connected into a single document");
 			}
