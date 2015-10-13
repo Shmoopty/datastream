@@ -54,34 +54,32 @@ namespace datastream {
 
 	class DataRow{
 
-		friend class DataSet;
-
 		template <typename T>
 		typename std::enable_if<is_row_containter<T>::value>::type
-		
+
 		friend writeRows(
 			ostream & os,
 			RowWrapper parent_row_wrapper_type,
-			SchemaSet& schema_set,
+			const SchemaSet& schema_set,
 			T const& rows ,
 			Formatter& formatter,
 			unsigned int & siblings_written
 		)
 		{
 			if( rows.size() == 0 ){
-				if (schema_set.hide_when_empty == false){
+				if (schema_set.hideWhenEmpty() == false){
 
 					formatter.writeEmptyGroup(
 						os,
-						schema_set.group_name,
-						schema_set.row_name,
+						schema_set.groupName(),
+						schema_set.rowName(),
 						siblings_written,
 
 						parent_row_wrapper_type,
 
-						schema_set.limit_single_child,
-						schema_set.groupWrapper,
-						schema_set.rowWrapper
+						schema_set.limitSingleChild(),
+						schema_set.groupWrapper(),
+						schema_set.rowWrapper()
 					);
 				}
 				return;
@@ -89,14 +87,14 @@ namespace datastream {
 
 			formatter.openGroup(
 				os,
-				schema_set.group_name,
-				schema_set.row_name,
+				schema_set.groupName(),
+				schema_set.rowName(),
 				siblings_written,
 
 				//parent row wrapper
 				parent_row_wrapper_type, //schema_set.rowWrapper,
-				schema_set.limit_single_child,
-				schema_set.groupWrapper
+				schema_set.limitSingleChild(),
+				schema_set.groupWrapper()
 			);
 
 			unsigned int children_written = 0;
@@ -107,12 +105,12 @@ namespace datastream {
 
 			formatter.closeGroup(
 				os,
-				schema_set.group_name,
-				schema_set.row_name,
+				schema_set.groupName(),
+				schema_set.rowName(),
 				siblings_written,
 
 				parent_row_wrapper_type,
-				schema_set.groupWrapper
+				schema_set.groupWrapper()
 			);
 
 			++siblings_written;
@@ -121,12 +119,12 @@ namespace datastream {
 	public:
 
 		DataRow (unsigned int id, unsigned int parent, unsigned int order):
-		id(id),
-		parent(parent),
-		order(order)
+		id_(id),
+		parent_(parent),
+		order_(order)
 		{};
 
-		void load(list<SchemaElement> & schema_elements, const string & line_values){
+		void load(const list<SchemaElement> & schema_elements, const string & line_values){
 
 			auto schema_elements_it = schema_elements.begin();
 
@@ -164,19 +162,19 @@ namespace datastream {
 			data_child_rows_ptr_by_set_id_map.emplace(set_id, child_rows_ptr);
 		}
 
-		void write(ostream & os, SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const
+		void write(ostream & os, const SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const
 		{
 			formatter.openRow(
 				os,
-				schema_set.row_name,
-				schema_set.rowWrapper,
+				schema_set.rowName(),
+				schema_set.rowWrapper(),
 				siblings_written
 			);
 
 			unsigned int children_written = 0;
 
 			boost::range::for_each(
-				schema_set.child_elements,
+				schema_set.childElements(),
                 child_elements,
 				[&](
 					const SchemaElement& schema_child,
@@ -184,13 +182,13 @@ namespace datastream {
 				){
 					formatter.writeElement(
 						os,
-						schema_child.name,
+						schema_child.name(),
 						data_child.getValue(),
 						data_child.isNull(),
-						schema_child.data_type,
+						schema_child.dataType(),
 
 						//parent row wrapper
-						schema_set.rowWrapper,
+						schema_set.rowWrapper(),
 						children_written
 					);
 					++children_written;
@@ -198,14 +196,14 @@ namespace datastream {
 			);
 
 			//WRITE CHILD ROWS
-			for (auto schema_child_set_ptr : schema_set.child_sets){
+			for (auto schema_child_set_ptr : schema_set.childSets()){
 
-				auto child_rows_ptr_it =  data_child_rows_ptr_by_set_id_map.find(schema_child_set_ptr->id);
+				auto child_rows_ptr_it =  data_child_rows_ptr_by_set_id_map.find(schema_child_set_ptr->id());
 
 				if(child_rows_ptr_it != data_child_rows_ptr_by_set_id_map.end()){
 					writeRows (
 						os,
-						schema_set.rowWrapper, 		//parent row wrapper
+						schema_set.rowWrapper(), 		//parent row wrapper
 						*schema_child_set_ptr, 		//schema set for rows
 						*child_rows_ptr_it->second, //rows
 						formatter,
@@ -214,7 +212,7 @@ namespace datastream {
 				} else{
 					writeRows (
 						os,
-						schema_set.rowWrapper, 		//parent row wrapper
+						schema_set.rowWrapper(), 		//parent row wrapper
 						*schema_child_set_ptr, 		//schema set for rows
 						vector<DataRow*>{},    		//empty rows
 						formatter,
@@ -225,18 +223,22 @@ namespace datastream {
 
 			formatter.closeRow(
 				os,
-				schema_set.row_name,
-				schema_set.rowWrapper
+				schema_set.rowName(),
+				schema_set.rowWrapper()
 			);
 
 			++siblings_written;
 		}
 
+		unsigned int id() const {return id_;}
+		unsigned int parent() const {return parent_;}
+		unsigned int order() const {return order_;}
+
 	private:
 
-		unsigned int id;
-		unsigned int parent;
-		unsigned int order;
+		unsigned int id_;
+		unsigned int parent_;
+		unsigned int order_;
 		list<DataElement> child_elements;
 
 		// shared with other rows in this set with the same id

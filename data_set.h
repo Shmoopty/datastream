@@ -16,11 +16,11 @@ namespace datastream {
 	class DataSet{
 	public:
 
-		DataSet(SchemaSet& schema_set):
+		DataSet(const SchemaSet& schema_set):
 		schema_set(schema_set)
 		{};
 
-		void load(list<SchemaElement> & schema_elements, const string & line){
+		void load(const list<SchemaElement> & schema_elements, const string & line){
 
 			std::smatch matched;
 			std::regex_match(
@@ -62,32 +62,32 @@ namespace datastream {
 				row_ptrs.push_back(&row);
 			}
 
-			if(schema_set.child_sets.size() > 0){
+			if(schema_set.hasChildSets()){
 
 				//sort vector by row id
 				std::sort(
 					row_ptrs.begin(),
 					row_ptrs.end(),
 					[](const DataRow* a, const DataRow* b){
-						if (a->id == b->id)
+						if (a->id() == b->id())
 						{
-							return a->order < b->order;
+							return a->order() < b->order();
 						}
-						return a->id < b->id;
+						return a->id() < b->id();
 					}
 				);
 
 				// map of vectors caters for multiple appearances of same id!
 				for (DataRow* row_ptr : row_ptrs){
 
-					if (id_to_rows_map.find(row_ptr->id) == id_to_rows_map.end()){
+					if (id_to_rows_map.find(row_ptr->id()) == id_to_rows_map.end()){
 						id_to_rows_map.emplace_hint(
 							id_to_rows_map.end(),
-							row_ptr->id,
+							row_ptr->id(),
 							vector<DataRow*>{row_ptr});
 					}
 					else{
-						id_to_rows_map[row_ptr->id].push_back(row_ptr);
+						id_to_rows_map[row_ptr->id()].push_back(row_ptr);
 					}
 				}
 			}
@@ -98,23 +98,29 @@ namespace datastream {
 					row_ptrs.begin(),
 					row_ptrs.end(),
 					[](const DataRow* a, const DataRow* b){
-						if (a->parent == b->parent)
+						if (a->parent() == b->parent())
 						{
-							return a->order < b->order;
+							return a->order() < b->order();
 						}
-						return a->parent < b->parent;
+						return a->parent() < b->parent();
 					}
 				);
 
 				// map rows by parent
+				// if we use a dependancy algorithm to determine correct processing order for sets
+				// we will not need to retain in a member variable
+				// we will be able to use it here and dispose of it
+				// we can't do that now because we don't know whether parent set has been processed yet
+
+				// more notes in data.h
 				for (DataRow* row_ptr : row_ptrs){
 
-					auto rows_by_parent_map_search = rows_by_parent_map.find(row_ptr->parent);
+					auto rows_by_parent_map_search = rows_by_parent_map.find(row_ptr->parent());
 
 					if (rows_by_parent_map_search == rows_by_parent_map.end()){
 						rows_by_parent_map.emplace_hint(
 							rows_by_parent_map.end(),
-							row_ptr->parent,
+							row_ptr->parent(),
 							std::shared_ptr<std::vector<DataRow*>>(new std::vector<DataRow*>{row_ptr})
 						);
 					}
@@ -131,11 +137,11 @@ namespace datastream {
 
 				auto parent_rows_search = parent_set.id_to_rows_map.find(parent_id_child_rows.first);
 				if(parent_rows_search != parent_set.id_to_rows_map.end()){
-					
+
 					auto parent_rows = parent_rows_search->second;
 					for(DataRow* parent_row : parent_rows)
 					{
-						parent_row->connect(getId(), parent_id_child_rows.second);
+						parent_row->connect(id(), parent_id_child_rows.second);
 					}
 				}
 			}
@@ -144,7 +150,7 @@ namespace datastream {
 		void write (ostream & os, Formatter& formatter) const
 		{
 			unsigned int siblings_written = 0;
-			formatter.open(os, schema_set.groupWrapper);
+			formatter.open(os, schema_set.groupWrapper());
 
 			writeRows (
 				os,
@@ -155,23 +161,23 @@ namespace datastream {
 				siblings_written
 			);
 
-			formatter.close(os, schema_set.groupWrapper);
+			formatter.close(os, schema_set.groupWrapper());
 		}
 
 		bool isRoot() const {
 			return schema_set.isRoot();
 		}
 
-		int getParentId() const {
-			return schema_set.parent;
+		unsigned int parent() const {
+			return schema_set.parent();
 		}
 
-		int getId() const {
-			return schema_set.id;
+		unsigned int id() const {
+			return schema_set.id();
 		}
 
 		private:
-			SchemaSet& schema_set;
+			const SchemaSet& schema_set;
 			list<DataRow> rows;
 			map<int, vector<DataRow*>> id_to_rows_map;
 			std::map<int, std::shared_ptr<std::vector<DataRow*>>> rows_by_parent_map;

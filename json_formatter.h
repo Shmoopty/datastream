@@ -39,14 +39,14 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 
 			bool single_child_per_parent,
-			GroupWrapper groupWrapper
+			GroupWrapper group_wrapper
 
 		){
 			step(os, siblings_written);
 
 			labelElement(os, group_label, row_label, single_child_per_parent, parent_row_wrapper, siblings_written );
 
-			if (groupWrapper == GroupWrapper::array_wrapper){
+			if (group_wrapper == GroupWrapper::array_wrapper){
 				os  << open_array_token;
 				up();
 			}
@@ -59,9 +59,9 @@ namespace datastream {
 			unsigned int & siblings_written,
 
 			RowWrapper parent_row_wrapper,
-			GroupWrapper groupWrapper
+			GroupWrapper group_wrapper
 		){
-			if (groupWrapper == GroupWrapper::array_wrapper){
+			if (group_wrapper == GroupWrapper::array_wrapper){
 				stepDown(os);
 				os << close_array_token;
 				clean = false;
@@ -147,7 +147,7 @@ namespace datastream {
 		};
 
 
-		virtual void open(ostream & os, GroupWrapper groupWrapper){
+		virtual void open(ostream & os, GroupWrapper group_wrapper){
 		};
 
 
@@ -186,7 +186,7 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 
 			bool single_child_per_parent,
-			GroupWrapper groupWrapper,
+			GroupWrapper group_wrapper,
 			RowWrapper rowWrapper
 		){
 
@@ -199,7 +199,7 @@ namespace datastream {
 				parent_row_wrapper,
 
 				single_child_per_parent,
-				groupWrapper
+				group_wrapper
 			);
 
 			closeGroup(
@@ -209,10 +209,10 @@ namespace datastream {
 				siblings_written,
 
 				parent_row_wrapper,
-				groupWrapper
+				group_wrapper
 			);
 
-			if (groupWrapper == GroupWrapper::array_wrapper){
+			if (group_wrapper == GroupWrapper::array_wrapper){
 				return;
 			}
 
@@ -257,9 +257,9 @@ namespace datastream {
 			}
 		};
 
-		virtual void close(ostream & os, GroupWrapper groupWrapper) {
+		virtual void close(ostream & os, GroupWrapper group_wrapper) {
 		};
-		
+
 	protected:
 		bool clean = true;
 	};

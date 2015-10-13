@@ -9,6 +9,7 @@
 #					            		limit_single_child,
 #						   	      		 wrapper_around_group,
 # 								       		  wrapper_around_row
+
 0,0,roots,root,./sample_data/0.csv,1,0,1,none,object
 
 1,2,colors,color,./sample_data/1.csv,0,0,0,array,none

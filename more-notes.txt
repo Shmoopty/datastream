@@ -1,0 +1,41 @@
+naive algorithm
+
+
+loop all sets
+
+	start with set
+		has no parent
+			is root
+		has parent
+			parent not found
+				fail
+			parent found
+				if in visited temp list
+					fail
+				if in visited perm list
+					continue
+
+				add to visited list perm list
+				add to visited temp list
+					recurse to grand parent
+
+
+
+
+
+a
+
+b
+
+c
+
+d
+
+e
+
+flat list:
+
+
+reach nod
+if self parent or no parent:
+	add to roots

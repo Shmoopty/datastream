@@ -18,11 +18,6 @@ namespace datastream {
 
 	class SchemaSet {
 
-		friend class Schema;
-		friend class DataRow;
-		friend class DataSet;
-		friend class Data;
-
 	public:
 		SchemaSet(
 			bool root,
@@ -38,45 +33,53 @@ namespace datastream {
 			GroupWrapper groupWrapper = GroupWrapper::array_wrapper,
 			RowWrapper rowWrapper = RowWrapper::object_wrapper
 		):
-		root(root),
-		id(id),
-		parent(parent),
-		group_name(group_name),
-		row_name(row_name),
-		input_filename (filename),
+		root_(root),
+		id_(id),
+		parent_(parent),
+		group_name_(group_name),
+		row_name_(row_name),
+		input_filename_ (filename),
 
-		hide_when_empty(hide_when_empty),
-		limit_single_child(limit_single_child),
+		hide_when_empty_ (hide_when_empty),
+		limit_single_child_ (limit_single_child),
 
-		groupWrapper (groupWrapper),
-		rowWrapper (rowWrapper)
+		group_wrapper_ (groupWrapper),
+		row_wrapper_ (rowWrapper)
 		{};
 
-	private:
+		bool isRoot() const
+		{
+			return root_;
+		}
 
-		bool root;
-		unsigned int id;
-		unsigned int parent;
-		string group_name;
-		string row_name;
-		string input_filename;
+		unsigned int id() const
+		{
+			return id_;
+		};
 
-		bool hide_when_empty;
-		bool limit_single_child;
-		GroupWrapper groupWrapper;
-		RowWrapper rowWrapper;
+		unsigned int parent() const
+		{
+			return parent_;
+		}
 
-		list<SchemaElement> child_elements;
-		vector<SchemaSet*> child_sets;
+		const string & groupName () const { return group_name_;}
+		const string & rowName () const { return row_name_;}
+		const string & inputFileName() const { return input_filename_;}
+		bool hideWhenEmpty() const {return hide_when_empty_;}
+		bool limitSingleChild() const {return limit_single_child_;}
+
+		RowWrapper rowWrapper () const {return row_wrapper_;}
+		GroupWrapper groupWrapper () const {return group_wrapper_;}
+
 
 		void connect(SchemaSet& child_set)
 		{
-			child_sets.push_back(&child_set);
+			child_sets_.push_back(&child_set);
 		}
 
 		void addElement(int element_id, int element_parent, string&& element_name, ElementDataType element_data_type)
 		{
-			child_elements.emplace_back(
+			child_elements_.emplace_back(
 				element_id,
 				element_parent,
 				std::move(element_name),
@@ -84,15 +87,28 @@ namespace datastream {
 			);
 		}
 
-		bool isRoot()
-		{
-			return root;
-		}
+		bool hasChildSets() const { return child_sets_.size() > 0;}
+		//can do better than this
+		const vector<SchemaSet*>& childSets() const {return child_sets_;}
+		const list<SchemaElement>& childElements() const {return child_elements_;}
 
-		bool getId()
-		{
-			return id;
-		};
+	private:
+
+		bool root_;
+		unsigned int id_;
+		unsigned int parent_;
+		string group_name_;
+		string row_name_;
+		string input_filename_;
+
+		bool hide_when_empty_;
+		bool limit_single_child_;
+		GroupWrapper group_wrapper_;
+		RowWrapper row_wrapper_;
+
+		list<SchemaElement> child_elements_;
+		vector<SchemaSet*> child_sets_;
+
 	};
 };
 
