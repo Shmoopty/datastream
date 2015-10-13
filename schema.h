@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
+#include <set>
 
 #include "schema_set.h"
 #include "datastream_definitions.h"
@@ -16,10 +17,9 @@ namespace datastream {
 
 	using std::ifstream;
 	using std::sort;
+	using std::set;
 
 	class Schema{
-
-		friend class Data;
 
 	public:
 
@@ -28,27 +28,29 @@ namespace datastream {
 			const string & schema_elements_filename
 		){
 			clear();
-
 			loadSets(schema_sets_filename);
 			map();
 			loadElements(schema_elements_filename);
 			connect();
 		}
 
+		const list<SchemaSet> & schemaSets() const { return schema_set_list_;}
+
 	private:
 
-		list<SchemaSet> schema_set_list;
+		list<SchemaSet> schema_set_list_;
 		map<int, SchemaSet*> schema_set_ptr_map;
+		vector<int> schema_dependency_graph;
 
 		list<SchemaSet>& getSets()
 		{
-			return schema_set_list;
+			return schema_set_list_;
 		}
 
 		void clear()
 		{
 			schema_set_ptr_map.clear();
-			schema_set_list.clear();
+			schema_set_list_.clear();
 		}
 
 		void loadSets(const string & schema_sets_filename){
@@ -94,7 +96,7 @@ namespace datastream {
 					rootFound = true;
 				}
 
-				schema_set_list.emplace_back(
+				schema_set_list_.emplace_back(
 					is_root,
 					std::stoi(matched[match_index_schema_id]),
 					std::stoi(matched[match_index_schema_parent]),
@@ -119,9 +121,10 @@ namespace datastream {
 		{
 			//copy pointers to temporary vector
 			vector <SchemaSet*> schema_set_ptrs;
-			schema_set_ptrs.reserve(schema_set_list.size());
+			schema_set_ptrs.reserve(schema_set_list_.size());
 
-			for ( SchemaSet& schema_set : schema_set_list ){
+			for ( SchemaSet& schema_set : schema_set_list_ ){
+
 				schema_set_ptrs.emplace_back(
 					&schema_set
 				);
@@ -132,7 +135,7 @@ namespace datastream {
 				schema_set_ptrs.begin(),
 				schema_set_ptrs.end(),
 				[](SchemaSet * a,  SchemaSet * b)->bool{
-					return a->id < b->id;
+					return a->id() < b->id();
 				}
 			);
 
@@ -140,11 +143,13 @@ namespace datastream {
 			for ( SchemaSet* schema_set_ptr : schema_set_ptrs ){
 				schema_set_ptr_map.emplace_hint(
 					schema_set_ptr_map.end(),
-					int(schema_set_ptr->id),
+					int(schema_set_ptr->id()),
 					schema_set_ptr
 				);
 			}
 		}
+
+
 
 		void loadElements(const string & schema_elements_filename)
 		{
@@ -198,14 +203,16 @@ namespace datastream {
 
 		void connect(){
 
-			for ( SchemaSet& schema_set : schema_set_list ){
+			for ( SchemaSet& schema_set : schema_set_list_ ){
 
+
+				//
 				// root has no parent - do not connect
 				if (schema_set.isRoot()){
 					continue;
 				}
 
-				int parent_set_id = schema_set.parent;
+				int parent_set_id = schema_set.parent();
 
 				auto schema_set_ptr_map_search = schema_set_ptr_map.find(parent_set_id);
 				if ( schema_set_ptr_map_search == schema_set_ptr_map.end()){
@@ -213,6 +220,49 @@ namespace datastream {
 				}
 				schema_set_ptr_map_search->second->connect(schema_set);
 			}
+
+
+			//check for cyclic dependancy
+
+			// create process order with
+			// topological sort
+
+			//vector<int> schema_dependency_graph;
+
+
+			//schema_set_ptr_map
+
+			//check is acyclic directed graph with single root
+
+			//topological sort
+
+
+			// set<int> traversed;
+			//
+			// for ( SchemaSet& schema_set : schema_set_list_ ){
+			//
+			// 	set<int> dive;
+			//
+			// 	traverse(schema_set, traversed);
+			//
+			// 	// schema_set_ptrs.emplace_back(
+			// 	// 	&schema_set
+			// 	// );
+			// }
+
+			//traversed set must be a reference, dive must be a copy
+			// void traverse (const SchemaSet& schema_set, set<int>& traversed, set<int> dive){
+			//
+			// 	if (dive.find(schema_set.id()) != dive.end()){
+			// 		throw std::domain_error("data format is invalid. : data strucure does not form a tree");
+			// 	}
+			//
+			// 	if (dive.find(schema_set.id()) != dive.end()){
+			// 		throw std::domain_error("data format is invalid. : data strucure does not form a tree");
+			// 	}
+			// 	traversed.insert(schema_set.id());
+			//
+			// }
 		}
 	};
 }

@@ -9,29 +9,29 @@ namespace datastream {
 	public:
 
 		DataElement(string&& value):
-		value(value),
-		is_null(false)
+		value_(value),
+		is_null_(false)
 		{}
 
 		DataElement():
-		value(blank),
-		is_null(true)
+		value_(blank),
+		is_null_(true)
 		{}
 
 		bool isNull() const
 		{
-			return is_null;
+			return is_null_;
 		}
 
 		const string& getValue() const
 		{
-			return is_null?blank:value;
+			return is_null_?blank:value_;
 		}
 
 	private:
 
-		string value = blank;
-		bool   is_null = true;
+		string value_ = blank;
+		bool   is_null_ = true;
 	};
 }
 #endif

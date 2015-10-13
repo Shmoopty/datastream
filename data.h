@@ -18,8 +18,8 @@ namespace datastream {
 		}
 
 		void build(Schema& schema){
-			load(schema.getSets());
-			map(schema.getSets());
+			load(schema.schemaSets());
+			map(); //schema.schemaSets());
 			connect();
 		}
 
@@ -52,13 +52,13 @@ namespace datastream {
 		list<DataSet> data_set_list;
 		map<int, DataSet*> data_set_ptr_map;
 
-		void load(list<SchemaSet>& schema_set_list){
+		void load(const list<SchemaSet>& schema_set_list){
 
 			clear();
 
-			for(SchemaSet& schema_set : schema_set_list){
+			for(const SchemaSet& schema_set : schema_set_list){
 
-				ifstream file (schema_set.input_filename);
+				ifstream file (schema_set.inputFileName());
 
 				if (!file.is_open()){
 					throw std::domain_error("cannot open schema file");
@@ -77,13 +77,28 @@ namespace datastream {
 
 					// current data set is last added,
 					// load rows
-					data_set_list.rbegin()->load(schema_set.child_elements, line);
+					data_set_list.rbegin()->load(schema_set.childElements(), line);
 				}
 				file.close();
 			}
 		}
 
-		void map(list<SchemaSet>& schema_set_list){
+		//with a little work we can
+		// combine map and connect
+		// and get rid of a member variable conatiner in data_row
+
+		// to do this we must understand the dependancies in the
+		// set graph
+
+		// first is it cyclic?
+		// http://www.geeksforgeeks.org/detect-cycle-in-a-graph/
+		// throw if it is!
+
+		// then perform a topological sort
+		// https://en.wikipedia.org/wiki/Topological_sorting
+
+		// see schema.h
+		void map(){ //} const list<SchemaSet>& schema_set_list){
 
 			for (DataSet& data_set : data_set_list){
 
@@ -92,7 +107,7 @@ namespace datastream {
 
 				//map sets
 				data_set_ptr_map.emplace(
-					data_set.getId(),
+					data_set.id(),
 					&data_set
 				);
 			}
@@ -105,7 +120,7 @@ namespace datastream {
 					continue;
 				}
 
-				auto parent_search = data_set_ptr_map.find(data_set.getParentId());
+				auto parent_search = data_set_ptr_map.find(data_set.parent());
 				if ( parent_search == data_set_ptr_map.end()){
 					throw std::domain_error("data structure is invalid. parent unknown");
 				}

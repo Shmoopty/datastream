@@ -1,3 +1,15 @@
+parameters
+
+action
+output format
+
+request parameters
+parameters
+
+
+
+
+
 access from friend class only
 
 
@@ -36,7 +48,7 @@ void weave(DataSet& parent_set)
 
 			for(DataRow* parent_row : parent_rows)
 			{
-				parent_row->nestChildRow(getId(), row);
+				parent_row->nestChildRow(id(), row);
 			}
 		}
 	}

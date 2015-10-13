@@ -112,7 +112,7 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 
 			bool single_child_per_parent,
-			GroupWrapper groupWrapper
+			GroupWrapper group_wrapper
 		){};
 
 		virtual void closeGroup(
@@ -122,7 +122,7 @@ namespace datastream {
 			unsigned int & siblings_written,
 
 			RowWrapper parent_row_wrapper,
-			GroupWrapper groupWrapper
+			GroupWrapper group_wrapper
 		){};
 
 		virtual void labelElement(
@@ -176,17 +176,17 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 
 			bool single_child_per_parent,
-			GroupWrapper groupWrapper,
+			GroupWrapper group_wrapper,
 			RowWrapper rowWrapper
 		){};
 
-		virtual void open(ostream & os, GroupWrapper groupWrapper){};
+		virtual void open(ostream & os, GroupWrapper group_wrapper){};
 		virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
 		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){}
 		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper){};
 		virtual void closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
 		virtual void closeElement(ostream & os, const string& name, bool no_array_wrapper_around_group = false){};
-		virtual void close(ostream & os, GroupWrapper groupWrapper){};
+		virtual void close(ostream & os, GroupWrapper group_wrapper){};
 
 	protected:
 
