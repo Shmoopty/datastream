@@ -268,7 +268,7 @@ namespace datastream {
 			};
 
 			// now use the lambda,
-			//walk the tree populating dependency graph
+			// walk the tree populating dependency graph
 			dependency_graph_.reserve(set_ptrs.size());
 			walk(root_search->id());
 

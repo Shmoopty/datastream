@@ -75,7 +75,7 @@ namespace datastream {
 					}
 				);
 
-				// map of vectors caters for multiple appearances of same id!
+				// map of vectors handles multiple appearances of same id
 				for (DataRow* row_ptr : row_ptrs){
 
 					if (id_to_rows_map.find(row_ptr->id()) == id_to_rows_map.end()){
@@ -106,6 +106,9 @@ namespace datastream {
 					}
 				);
 
+				/*
+					create a parent : vector of *  map
+				*/
 				std::map<int, std::shared_ptr<std::vector<DataRow*>>> rows_by_parent_map;
 
 				for (DataRow* row_ptr : row_ptrs){
@@ -124,6 +127,8 @@ namespace datastream {
 					}
 				}
 
+				// now nest rows into parent by passing a shared pointer
+				// to any matching parent rows
 				for (auto& parent_id_child_rows : rows_by_parent_map){
 
 					auto parent_rows_search = parent_set_ptr->id_to_rows_map.find(parent_id_child_rows.first);
@@ -155,10 +160,6 @@ namespace datastream {
 			);
 
 			formatter.close(os, schema_set.groupWrapper());
-		}
-
-		bool isRoot() const {
-			return !schema_set.hasParent();
 		}
 
 		bool hasParent() const {
