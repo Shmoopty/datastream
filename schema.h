@@ -31,16 +31,18 @@ namespace datastream {
 			loadSets(schema_sets_filename);
 			map();
 			loadElements(schema_elements_filename);
-			connect();
+
 		}
 
 		const list<SchemaSet> & schemaSets() const { return schema_set_list_;}
+		const vector<int> & dependencyGraph() const {return dependency_graph_;}
+		const map<int, SchemaSet*> & schemaSetsMap() { return schema_set_ptr_map;}
 
 	private:
 
 		list<SchemaSet> schema_set_list_;
 		map<int, SchemaSet*> schema_set_ptr_map;
-		vector<int> schema_dependency_graph;
+		vector<int> dependency_graph_;
 
 		list<SchemaSet>& getSets()
 		{
@@ -59,8 +61,6 @@ namespace datastream {
 		    if (!file.is_open()){
 				throw std::domain_error("cannot open schema.");
 			}
-
-			bool rootFound = false;
 
 			string line;
 			while (std::getline(file, line)){
@@ -88,17 +88,9 @@ namespace datastream {
 				}
 				RowWrapper row_wrapper = row_wrapper_lookup->second;
 
-				bool is_root = (bool)std::stoi(matched[match_index_is_root]);
-				if (is_root){
-					if (rootFound){
-						throw std::domain_error("data does not match expected format. : document root defined multiple times");
-					}
-					rootFound = true;
-				}
-
 				schema_set_list_.emplace_back(
-					is_root,
 					std::stoi(matched[match_index_schema_id]),
+					schema_set_list_.size(),
 					std::stoi(matched[match_index_schema_parent]),
 					std::move(matched[match_index_group_name]),
 					std::move(matched[match_index_row_name]),
@@ -112,44 +104,165 @@ namespace datastream {
 			}
 			file.close();
 
-			if (!rootFound){
-				throw std::domain_error("data does not match expected format. : document root not specified");
-			}
 		}
 
 		void map()
 		{
 			//copy pointers to temporary vector
-			vector <SchemaSet*> schema_set_ptrs;
-			schema_set_ptrs.reserve(schema_set_list_.size());
+			vector <SchemaSet*> set_ptrs;
+			set_ptrs.reserve(schema_set_list_.size());
 
 			for ( SchemaSet& schema_set : schema_set_list_ ){
 
-				schema_set_ptrs.emplace_back(
+				set_ptrs.emplace_back(
 					&schema_set
 				);
 			}
 
 			//sort by id for fast insert into map
 			sort(
-				schema_set_ptrs.begin(),
-				schema_set_ptrs.end(),
+				set_ptrs.begin(),
+				set_ptrs.end(),
 				[](SchemaSet * a,  SchemaSet * b)->bool{
 					return a->id() < b->id();
 				}
 			);
 
  			//insert pairs into map
-			for ( SchemaSet* schema_set_ptr : schema_set_ptrs ){
+			for ( SchemaSet* set_ptr : set_ptrs ){
 				schema_set_ptr_map.emplace_hint(
 					schema_set_ptr_map.end(),
-					int(schema_set_ptr->id()),
-					schema_set_ptr
+					int(set_ptr->id()),
+					set_ptr
 				);
 			}
+
+			//find a quick way to do this on std::find_if iterator and this can be cut
+			int root_count = std::count_if(
+				schema_set_list_.begin(),
+				schema_set_list_.end(),
+				[](const SchemaSet& set){
+					return !set.hasParent();
+				}
+			);
+
+			if (root_count != 1){
+				throw std::domain_error("sorry, the data does not contain a starting point to begin writing");
+			}
+
+			auto root_search = std::find_if(
+				schema_set_list_.begin(),
+				schema_set_list_.end(),
+				[](const SchemaSet& set){
+					return !set.hasParent();
+				}
+			);
+
+			if (root_search == schema_set_list_.end()){
+				throw std::domain_error("sorry about this, i cannot find the starting point to begin writing.");
+			}
+
+			// now we have a root make a map of parent to child to begin
+			// cyclic check and topographical sort
+			// why do this now and not just walk the tree when we are ready to write
+			// this means we find the error quicker
+			// and means we can flatten the writing loop
+			// sometimes that can save on memory required when compared to
+			// a recursive algorithm
+			// will that matter here?
+			// guess it depend on how many levels we nest
+			// but it probably won't hurt
+
+			// reuse vector
+
+			std::sort(
+				set_ptrs.begin(),
+				set_ptrs.end(),
+				[](const SchemaSet* a, const SchemaSet* b){
+					if (a->parent() == b->parent()){
+						return a->order() < b->order();
+					}
+					return a->parent() < b->parent();
+				}
+			);
+
+			std::map<unsigned int, std::vector<unsigned int>> set_ids_by_parent_map;
+
+			for (SchemaSet* set_ptr : set_ptrs){
+
+				if (!set_ptr->hasParent()){
+					continue;
+				}
+
+				auto set_ids_by_parent_map_search = set_ids_by_parent_map.find(set_ptr->parent());
+
+				if (set_ids_by_parent_map_search == set_ids_by_parent_map.end()){
+					set_ids_by_parent_map.emplace_hint(
+						set_ids_by_parent_map.end(),
+						set_ptr->parent(),
+						std::vector<unsigned int>{set_ptr->id()}
+					);
+				}
+				else {
+					set_ids_by_parent_map_search->second.push_back(set_ptr->id());
+				}
+			}
+
+			// recursive lambda to walk the tree
+			std::function<void(unsigned int)> walk = [&](unsigned int set_id){
+
+				//cyclic dependancy check
+				if (
+					std::find(
+						dependency_graph_.begin(),
+						dependency_graph_.end(),
+						set_id
+					) != dependency_graph_.end()
+				){
+					//oh dear this doesn't look good
+					throw std::domain_error("sorry about this, the data seems to be connected in an endless loop");
+				}
+
+				dependency_graph_.push_back(set_id);
+
+
+			  	auto child_ids_search = set_ids_by_parent_map.find(set_id);
+
+				if (child_ids_search != set_ids_by_parent_map.end()){
+					for (int child_id : child_ids_search->second){
+						walk(child_id);
+					}
+				}
+			};
+
+			//walk the tree populating dependency graph
+			dependency_graph_.reserve(set_ptrs.size());
+			walk(root_search->id());
+
+			if (dependency_graph_.size() != set_ptrs.size()){
+				throw std::domain_error("sorry about this, the data doesn't seem to be connected into a single document");
+			}
+			connect();
 		}
 
+		void connect(){
 
+			// for schema using dependancy graph for connect has no advantage
+			// will be useful when connecting data row
+
+			for ( SchemaSet& schema_set : schema_set_list_ ){
+
+				if (!schema_set.hasParent()){
+					continue;
+				}
+
+				auto schema_set_ptr_map_search = schema_set_ptr_map.find(schema_set.parent());
+				if ( schema_set_ptr_map_search == schema_set_ptr_map.end()){
+					throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
+				}
+				schema_set_ptr_map_search->second->connect(schema_set);
+			}
+		}
 
 		void loadElements(const string & schema_elements_filename)
 		{
@@ -199,70 +312,6 @@ namespace datastream {
 				element_count++;
 			}
 			file.close();
-		}
-
-		void connect(){
-
-			for ( SchemaSet& schema_set : schema_set_list_ ){
-
-
-				//
-				// root has no parent - do not connect
-				if (schema_set.isRoot()){
-					continue;
-				}
-
-				int parent_set_id = schema_set.parent();
-
-				auto schema_set_ptr_map_search = schema_set_ptr_map.find(parent_set_id);
-				if ( schema_set_ptr_map_search == schema_set_ptr_map.end()){
-					throw std::domain_error(error_text_missing_parent);
-				}
-				schema_set_ptr_map_search->second->connect(schema_set);
-			}
-
-
-			//check for cyclic dependancy
-
-			// create process order with
-			// topological sort
-
-			//vector<int> schema_dependency_graph;
-
-
-			//schema_set_ptr_map
-
-			//check is acyclic directed graph with single root
-
-			//topological sort
-
-
-			// set<int> traversed;
-			//
-			// for ( SchemaSet& schema_set : schema_set_list_ ){
-			//
-			// 	set<int> dive;
-			//
-			// 	traverse(schema_set, traversed);
-			//
-			// 	// schema_set_ptrs.emplace_back(
-			// 	// 	&schema_set
-			// 	// );
-			// }
-
-			//traversed set must be a reference, dive must be a copy
-			// void traverse (const SchemaSet& schema_set, set<int>& traversed, set<int> dive){
-			//
-			// 	if (dive.find(schema_set.id()) != dive.end()){
-			// 		throw std::domain_error("data format is invalid. : data strucure does not form a tree");
-			// 	}
-			//
-			// 	if (dive.find(schema_set.id()) != dive.end()){
-			// 		throw std::domain_error("data format is invalid. : data strucure does not form a tree");
-			// 	}
-			// 	traversed.insert(schema_set.id());
-			//
-			// }
 		}
 	};
 }

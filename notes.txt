@@ -1,3 +1,35 @@
+for ( int i = 1; i < dependency_graph_.size(); i++ ){
+
+	auto set_search = schema_set_ptr_map.find(
+		dependency_graph_.at(i)
+	);
+
+	if ( set_search == schema_set_ptr_map.end()){
+		throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
+	}
+
+	auto parent_search = schema_set_ptr_map.find(set_search->second->parent());
+	if ( parent_search == schema_set_ptr_map.end()){
+		throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
+	}
+	parent_search->second->connect(*set_search->second);
+
+}
+
+
+
+
+determine that there is one root
+
+
+traverse set via parent child relationship
+
+if cyclic fail
+
+if list size = num sets, pass and you have sorted dependancy graph
+
+
+
 parameters
 
 action

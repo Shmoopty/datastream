@@ -17,13 +17,12 @@ namespace datastream {
 			data_set_list.clear();
 		}
 
-		void build(Schema& schema){
+		void build(const Schema& schema){
 			load(schema.schemaSets());
-			map(); //schema.schemaSets());
-			connect();
+			map(schema); //schema.schemaSets());
 		}
 
-		void write(ostream & os, Formatter& formatter ) const {
+		void write(ostream & os, Formatter& formatter, const Schema& schema ) const {
 
 			// no data loaded
 			//throw error?
@@ -31,20 +30,22 @@ namespace datastream {
 				return;
 			}
 
-			auto root_set = std::find_if(
-				data_set_list.begin(),
-				data_set_list.end(),
-				[](const DataSet& d){
-					return d.isRoot();
-				}
-			);
+			// no graph loaded
+			//throw error?
+			if(!schema.dependencyGraph().size()){
+				return;
+			}
 
-			if (root_set == data_set_list.end()){
-				throw std::domain_error("cannot find root element to begin writing");
+			int root_id = schema.dependencyGraph().at(0);
+
+			auto root_search = data_set_ptr_map.find(root_id);
+
+			if (root_search == data_set_ptr_map.end()){
+				throw std::domain_error("sorry, I cannot find the beginning of the data to begin writing");
 			}
 
 			//only support one root for now
-			root_set->write(os, formatter);
+			root_search->second->write(os, formatter);
 		}
 
 	private:
@@ -83,48 +84,40 @@ namespace datastream {
 			}
 		}
 
-		//with a little work we can
-		// combine map and connect
-		// and get rid of a member variable conatiner in data_row
+		void map(const Schema& schema){
 
-		// to do this we must understand the dependancies in the
-		// set graph
-
-		// first is it cyclic?
-		// http://www.geeksforgeeks.org/detect-cycle-in-a-graph/
-		// throw if it is!
-
-		// then perform a topological sort
-		// https://en.wikipedia.org/wiki/Topological_sorting
-
-		// see schema.h
-		void map(){ //} const list<SchemaSet>& schema_set_list){
-
+			//map sets
 			for (DataSet& data_set : data_set_list){
-
-				//map set rows
-				data_set.mapRows();
-
 				//map sets
 				data_set_ptr_map.emplace(
 					data_set.id(),
 					&data_set
 				);
 			}
-		}
 
-		void connect(){
-			for (DataSet& data_set : data_set_list){
-				//root has no parent and does not need to be woven into tree
-				if(data_set.isRoot()){
-					continue;
+			//map rows
+			auto& dependency_graph = schema.dependencyGraph();
+
+			for ( int set_id : dependency_graph){
+
+				auto set_search = data_set_ptr_map.find(set_id);
+
+				if ( set_search == data_set_ptr_map.end()){
+					throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
 				}
 
-				auto parent_search = data_set_ptr_map.find(data_set.parent());
-				if ( parent_search == data_set_ptr_map.end()){
-					throw std::domain_error("data structure is invalid. parent unknown");
+				DataSet* parent_set_ptr = nullptr;
+
+				if (set_search->second->hasParent()){
+					auto parent_search = data_set_ptr_map.find(set_search->second->parent());
+					if ( parent_search == data_set_ptr_map.end()){
+						throw std::domain_error("data structure is invalid. parent unknown");
+					}
+					parent_set_ptr = parent_search->second;
 				}
-				data_set.connect(*parent_search->second);
+
+				//map set rows
+				set_search->second->mapRows(parent_set_ptr);
 			}
 		}
 	};

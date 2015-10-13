@@ -9,4 +9,4 @@ build:
 clean:
 		rm -f ../run_datastream
 run:
-		../run_datastream ./sample_data/schema.csv ./sample_data/schema_element.csv | tee output.json
+		../run_datastream ./sample_data/schema.csv ./sample_data/schema_element.csv | tee output_02.json

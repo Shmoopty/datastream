@@ -50,10 +50,8 @@ namespace datastream {
 		// now put pointers to rows into vector
 		// for sorting and random access
 
-		void mapRows()
+		void mapRows(DataSet* parent_set_ptr = nullptr)
 		{
-			//id_to_rows_map.clear();
-
 			//push pointer to rows from list into vector
 			vector<DataRow*> row_ptrs;
 
@@ -92,7 +90,9 @@ namespace datastream {
 				}
 			}
 
-			if(!schema_set.isRoot()){
+			if(schema_set.hasParent() && parent_set_ptr != nullptr){
+
+				//reuse vector
 				//sort vector by row parent
 				std::sort(
 					row_ptrs.begin(),
@@ -106,13 +106,8 @@ namespace datastream {
 					}
 				);
 
-				// map rows by parent
-				// if we use a dependancy algorithm to determine correct processing order for sets
-				// we will not need to retain in a member variable
-				// we will be able to use it here and dispose of it
-				// we can't do that now because we don't know whether parent set has been processed yet
+				std::map<int, std::shared_ptr<std::vector<DataRow*>>> rows_by_parent_map;
 
-				// more notes in data.h
 				for (DataRow* row_ptr : row_ptrs){
 
 					auto rows_by_parent_map_search = rows_by_parent_map.find(row_ptr->parent());
@@ -128,20 +123,18 @@ namespace datastream {
 						rows_by_parent_map_search->second.get()->push_back(row_ptr);
 					}
 				}
-			}
-		}
 
-		void connect(DataSet& parent_set)
-		{
-			for (auto& parent_id_child_rows : rows_by_parent_map){
+				for (auto& parent_id_child_rows : rows_by_parent_map){
 
-				auto parent_rows_search = parent_set.id_to_rows_map.find(parent_id_child_rows.first);
-				if(parent_rows_search != parent_set.id_to_rows_map.end()){
+					auto parent_rows_search = parent_set_ptr->id_to_rows_map.find(parent_id_child_rows.first);
 
-					auto parent_rows = parent_rows_search->second;
-					for(DataRow* parent_row : parent_rows)
-					{
-						parent_row->connect(id(), parent_id_child_rows.second);
+					if(parent_rows_search != parent_set_ptr->id_to_rows_map.end()){
+
+						auto parent_rows = parent_rows_search->second;
+						for(DataRow* parent_row : parent_rows)
+						{
+							parent_row->connect(id(), parent_id_child_rows.second);
+						}
 					}
 				}
 			}
@@ -165,7 +158,11 @@ namespace datastream {
 		}
 
 		bool isRoot() const {
-			return schema_set.isRoot();
+			return !schema_set.hasParent();
+		}
+
+		bool hasParent() const {
+			return schema_set.hasParent();
 		}
 
 		unsigned int parent() const {
@@ -180,7 +177,7 @@ namespace datastream {
 			const SchemaSet& schema_set;
 			list<DataRow> rows;
 			map<int, vector<DataRow*>> id_to_rows_map;
-			std::map<int, std::shared_ptr<std::vector<DataRow*>>> rows_by_parent_map;
+
 	};
 }
 #endif

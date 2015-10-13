@@ -4,20 +4,20 @@
 #	  group name,
 #			row name,
 #	  			filename,     ADVANCED FEATURES BE CAREFUL !
-#                           	is root?,
+
 #					          		hide_when_empty,
 #					            		limit_single_child,
 #						   	      		 wrapper_around_group,
 # 								       		  wrapper_around_row
 
-0,0,roots,root,./sample_data/0.csv,1,0,1,none,object
+7,0,roots,root,./sample_data/7.csv,0,1,none,object
 
-1,2,colors,color,./sample_data/1.csv,0,0,0,array,none
+1,2,colors,color,./sample_data/1.csv,0,0,array,none
 
-2,4,people,person,./sample_data/2.csv,0,0,0,array,object
+2,4,people,person,./sample_data/2.csv,0,0,array,object
 
-3,5,numbers,number,./sample_data/3.csv,0,1,0,array,object
+3,5,numbers,number,./sample_data/3.csv,1,0,array,object
 
-4,0,regions,region,./sample_data/4.csv,0,0,0,array,object
+4,7,regions,region,./sample_data/4.csv,0,0,array,object
 
-5,0,number_type,value,./sample_data/5.csv,0,0,0,array,object
+5,7,number_type,value,./sample_data/5.csv,0,0,array,object
