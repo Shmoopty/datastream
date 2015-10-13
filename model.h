@@ -10,6 +10,10 @@ namespace datastream {
 	class Model{
 	public:
 
+		// if this was adapted to produce multiple reports
+		// schema can be reused
+		// data currently cannot
+		
 		Model() = default;
 
 		Model(const string & schema_sets_filename, const string & schema_elements_filename){
@@ -22,7 +26,7 @@ namespace datastream {
 		}
 
 		void write(ostream & os, Formatter& formatter) const{
-			data.write(os, formatter);
+			data.write(os, formatter, schema);
 		}
 
 	private:

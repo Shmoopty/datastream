@@ -113,11 +113,11 @@ namespace datastream {
 	const unsigned int match_index_group_name  = 3;
 	const unsigned int match_index_row_name  = 4;
 	const unsigned int match_index_input_filename = 5;
-	const unsigned int match_index_is_root = 6;
-	const unsigned int match_index_hide_when_empty = 7;
-	const unsigned int match_force_single_row_per_parent = 8;
-	const unsigned int match_group_wrapper_type = 9;
-	const unsigned int match_row_wrapper_type = 10;
+	//const unsigned int match_index_is_root = 6;
+	const unsigned int match_index_hide_when_empty = 6;
+	const unsigned int match_force_single_row_per_parent = 7;
+	const unsigned int match_group_wrapper_type = 8;
+	const unsigned int match_row_wrapper_type = 9;
 
 	const unsigned int match_index_element_id = 1;
 	const unsigned int match_index_element_set = 2;
@@ -148,8 +148,8 @@ namespace datastream {
 			// filename,
 			rx_comma_any +
 
-			// is root,
-			rx_comma_bit +
+			// // is root,
+			// rx_comma_bit +
 
 			// hide_when_empty,
 			rx_comma_bit +

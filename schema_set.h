@@ -20,8 +20,8 @@ namespace datastream {
 
 	public:
 		SchemaSet(
-			bool root,
 			unsigned int id,
+			unsigned int order,
 			unsigned int parent,
 			string&& group_name,
 			string&& row_name,
@@ -33,8 +33,8 @@ namespace datastream {
 			GroupWrapper groupWrapper = GroupWrapper::array_wrapper,
 			RowWrapper rowWrapper = RowWrapper::object_wrapper
 		):
-		root_(root),
 		id_(id),
+		order_(order),
 		parent_(parent),
 		group_name_(group_name),
 		row_name_(row_name),
@@ -47,9 +47,9 @@ namespace datastream {
 		row_wrapper_ (rowWrapper)
 		{};
 
-		bool isRoot() const
+		bool hasParent() const
 		{
-			return root_;
+			return !( parent_ == 0 || id_ == parent_) ;
 		}
 
 		unsigned int id() const
@@ -91,11 +91,13 @@ namespace datastream {
 		//can do better than this
 		const vector<SchemaSet*>& childSets() const {return child_sets_;}
 		const list<SchemaElement>& childElements() const {return child_elements_;}
+		unsigned int order() const {return order_;}
 
 	private:
 
-		bool root_;
+		//bool root_;
 		unsigned int id_;
+		unsigned int order_;
 		unsigned int parent_;
 		string group_name_;
 		string row_name_;
