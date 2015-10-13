@@ -8,6 +8,9 @@
 #include <string>
 #include <regex>
 #include <map>
+#include <type_traits>
+#include <memory>
+#include <functional>
 
 namespace datastream {
 
@@ -113,7 +116,6 @@ namespace datastream {
 	const unsigned int match_index_group_name  = 3;
 	const unsigned int match_index_row_name  = 4;
 	const unsigned int match_index_input_filename = 5;
-	//const unsigned int match_index_is_root = 6;
 	const unsigned int match_index_hide_when_empty = 6;
 	const unsigned int match_force_single_row_per_parent = 7;
 	const unsigned int match_group_wrapper_type = 8;
@@ -187,9 +189,6 @@ namespace datastream {
 			rx_end
 		);
 
-		//auto data_row_line_pattern = std::regex("^([0-9]{1,3})(?:,)([0-9]{1,3})(?:,{0,1})(.*)$");
-		//refactored
-		//^([0-9]{1,3})((?:,{1})(.+))*$
 		auto data_row_line_pattern = regex(
 			rx_start +
 			//row
@@ -212,29 +211,6 @@ namespace datastream {
 		}
 
 		typedef std::sregex_token_iterator pattern_iterator;
-
-		// template <typename T>
-		// T* point(T const& obj )
-		// {
-		// 	return &obj;
-		// }
-		//
-		// template <typename T>
-		// T& unpoint(T * obj )
-		// {
-		// 	return *obj;
-		// }
-
-		//errors
-		const string error_text_not_understood("sorry, the data cannot be understood");
-		const string error_text_missing_parent("sorry, the data cannot be understood : a section is missing.");
-
-
-
-
-		#include <type_traits>
-		#include <memory>
-		#include <functional>
 
 		template<typename T>
 		T& deref(T &v) {
@@ -260,15 +236,6 @@ namespace datastream {
 		const T& deref(const std::weak_ptr<T>& v) {
 		  return deref(*v);
 		}
-
-
-
-
-
-
-
-
-
 }
 
 #endif
