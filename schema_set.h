@@ -32,58 +32,30 @@ namespace datastream {
 
 			GroupWrapper groupWrapper = GroupWrapper::array_wrapper,
 			RowWrapper rowWrapper = RowWrapper::object_wrapper
-		):
-		id_(id),
-		order_(order),
-		parent_(parent),
-		group_name_(group_name),
-		row_name_(row_name),
-		input_filename_ (filename),
+		);
 
-		hide_when_empty_ (hide_when_empty),
-		limit_single_child_ (limit_single_child),
+		bool hasParent() const;
 
-		group_wrapper_ (groupWrapper),
-		row_wrapper_ (rowWrapper)
-		{};
+		inline unsigned int id() const {return id_;};
+		inline unsigned int parent() const {return parent_;}
 
-		bool hasParent() const
-		{
-			return !( parent_ == 0 || id_ == parent_) ;
-		}
+		inline const string & groupName () const { return group_name_;}
+		inline const string & rowName () const { return row_name_;}
+		inline const string & inputFileName() const { return input_filename_;}
+		inline bool hideWhenEmpty() const {return hide_when_empty_;}
+		inline bool limitSingleChild() const {return limit_single_child_;}
 
-		unsigned int id() const {return id_;};
-		unsigned int parent() const {return parent_;}
+		inline RowWrapper rowWrapper () const {return row_wrapper_;}
+		inline GroupWrapper groupWrapper () const {return group_wrapper_;}
 
-		const string & groupName () const { return group_name_;}
-		const string & rowName () const { return row_name_;}
-		const string & inputFileName() const { return input_filename_;}
-		bool hideWhenEmpty() const {return hide_when_empty_;}
-		bool limitSingleChild() const {return limit_single_child_;}
+		void connect(SchemaSet& child_set);
 
-		RowWrapper rowWrapper () const {return row_wrapper_;}
-		GroupWrapper groupWrapper () const {return group_wrapper_;}
+		void addElement(int element_id, int element_parent, string&& element_name, ElementDataType element_data_type);
+		bool hasChildSets() const;
 
-		void connect(SchemaSet& child_set)
-		{
-			child_sets_.push_back(&child_set);
-		}
-
-		void addElement(int element_id, int element_parent, string&& element_name, ElementDataType element_data_type)
-		{
-			child_elements_.emplace_back(
-				element_id,
-				element_parent,
-				std::move(element_name),
-				element_data_type
-			);
-		}
-
-		bool hasChildSets() const { return child_sets_.size() > 0;}
-
-		const vector<SchemaSet*>& childSets() const {return child_sets_;}
-		const list<SchemaElement>& childElements() const {return child_elements_;}
-		unsigned int order() const {return order_;}
+		inline const vector<SchemaSet*>& childSets() const {return child_sets_;}
+		inline const list<SchemaElement>& childElements() const {return child_elements_;}
+		inline unsigned int order() const {return order_;}
 
 	private:
 
