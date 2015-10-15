@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS= -std=c++11
 LDFLAGS=
-SOURCES=run_datastream.cpp data_element.cpp schema.cpp schema_set.cpp schema_element.cpp
+SOURCES=run_datastream.cpp data.cpp data_set.cpp data_row.cpp data_element.cpp schema.cpp schema_set.cpp schema_element.cpp
 /OBJECTS=$(SOURCES:.cpp.o)
 
 RUN_PARAMETERS =  ./sample_data/schema.csv ./sample_data/schema_element.csv | tee output.json
