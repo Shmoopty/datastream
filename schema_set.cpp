@@ -8,9 +8,11 @@ namespace datastream {
 	using std::map;
 
 	SchemaSet::SchemaSet(
+		unsigned int position,
+		
 		unsigned int id,
-		unsigned int order,
 		unsigned int parent,
+
 		string&& group_name,
 		string&& row_name,
 		string&& filename,
@@ -21,9 +23,10 @@ namespace datastream {
 		GroupWrapper groupWrapper,
 		RowWrapper rowWrapper
 	):
+	position_(position),
 	id_(id),
-	order_(order),
 	parent_(parent),
+
 	group_name_(group_name),
 	row_name_(row_name),
 	input_filename_ (filename),

@@ -57,9 +57,9 @@ namespace datastream {
 			RowWrapper row_wrapper = row_wrapper_lookup->second;
 
 			schema_set_list_.emplace_back(
-				std::stoi(matched[match_index_schema_id]),
 				schema_set_list_.size(),
-				std::stoi(matched[match_index_schema_parent]),
+				std::stoi(matched[match_index_schema_id]),
+				std::stoi(matched[match_index_schema_parent]),	
 				std::move(matched[match_index_group_name]),
 				std::move(matched[match_index_row_name]),
 				std::move(matched[match_index_input_filename]),
@@ -162,14 +162,14 @@ namespace datastream {
 
 		// step 1
 		// reuse vector
-		// sort by parent id, original order
+		// sort by parent id, original position
 		*/
 		std::sort(
 			set_ptrs.begin(),
 			set_ptrs.end(),
 			[](const SchemaSet* a, const SchemaSet* b){
 				if (a->parent() == b->parent()){
-					return a->order() < b->order();
+					return a->position() < b->position();
 				}
 				return a->parent() < b->parent();
 			}

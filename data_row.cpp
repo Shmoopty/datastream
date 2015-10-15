@@ -8,10 +8,10 @@ namespace datastream {
 	using std::list;
 	using std::ostream;
 
-	DataRow::DataRow (unsigned int id, unsigned int parent, unsigned int order):
+	DataRow::DataRow (unsigned int id, unsigned int parent, unsigned int position):
 	id_(id),
 	parent_(parent),
-	order_(order)
+	position_(position)
 	{};
 
 	void DataRow::load(const list<SchemaElement> & schema_elements, const string & line_values){

@@ -3,20 +3,13 @@
 
 #include <string>
 #include <sstream>
-
 #include <iomanip>
+
 #include "datastream_definitions.h"
 
 namespace datastream {
 
 	using std::string;
-
-	//return (*reader_)(name_, value, precision_);
-
-
-
-
-
 
 	inline string read_bool(const string & name, const string & value, unsigned int precision = 0){
 
@@ -65,9 +58,9 @@ namespace datastream {
 		){
 			return &read_string;
 		}
-		else //if(data_type_ == ElementDataType::type_raw){
-			return &read_string;
-		//}
+
+		return &read_string;
+
 	};
 }
 

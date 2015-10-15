@@ -2,8 +2,6 @@
 #define datastream_schema_element_h
 
 #include <string>
-#include <vector>
-#include <list>
 
 #include "datastream_definitions.h"
 #include "reader.h"
@@ -19,10 +17,13 @@ namespace datastream {
 		SchemaElement(unsigned int id,  unsigned int parent, string&& name, ElementDataType data_type, unsigned int precision=0);
 		string read(const string & value) const ;
 
-		int id () const ; //{return id_;}
-		int parent () const ; //{return parent_;}
-		const string& name () const ;//const {return name_;}
-		const ElementDataType dataType () const;// {return data_type_;}
+		inline unsigned int id () const {return id_;}
+		inline unsigned int parent () const {return parent_;}
+
+		inline const string& name () const {return name_;}
+		inline const ElementDataType dataType () const {return data_type_;}
+
+		inline unsigned int precision () const {return precision_;}
 
 	private:
 

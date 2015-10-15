@@ -57,7 +57,7 @@ namespace datastream {
 				[](const DataRow* a, const DataRow* b){
 					if (a->id() == b->id())
 					{
-						return a->order() < b->order();
+						return a->position() < b->position();
 					}
 					return a->id() < b->id();
 				}
@@ -88,7 +88,7 @@ namespace datastream {
 				[](const DataRow* a, const DataRow* b){
 					if (a->parent() == b->parent())
 					{
-						return a->order() < b->order();
+						return a->position() < b->position();
 					}
 					return a->parent() < b->parent();
 				}

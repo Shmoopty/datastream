@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <map>
-#include <iostream>
 
 #include "schema_element.h"
 
@@ -20,9 +18,11 @@ namespace datastream {
 
 	public:
 		SchemaSet(
+			unsigned int position,
+
 			unsigned int id,
-			unsigned int order,
 			unsigned int parent,
+
 			string&& group_name,
 			string&& row_name,
 			string&& filename,
@@ -38,6 +38,7 @@ namespace datastream {
 
 		inline unsigned int id() const {return id_;};
 		inline unsigned int parent() const {return parent_;}
+		inline unsigned int position() const {return position_;}
 
 		inline const string & groupName () const { return group_name_;}
 		inline const string & rowName () const { return row_name_;}
@@ -47,20 +48,18 @@ namespace datastream {
 
 		inline RowWrapper rowWrapper () const {return row_wrapper_;}
 		inline GroupWrapper groupWrapper () const {return group_wrapper_;}
+		inline const vector<SchemaSet*>& childSets() const {return child_sets_;}
+		inline const list<SchemaElement>& childElements() const {return child_elements_;}
 
 		void connect(SchemaSet& child_set);
-
 		void addElement(int element_id, int element_parent, string&& element_name, ElementDataType element_data_type);
 		bool hasChildSets() const;
 
-		inline const vector<SchemaSet*>& childSets() const {return child_sets_;}
-		inline const list<SchemaElement>& childElements() const {return child_elements_;}
-		inline unsigned int order() const {return order_;}
-
 	private:
 
+		unsigned int position_;
+
 		unsigned int id_;
-		unsigned int order_;
 		unsigned int parent_;
 		string group_name_;
 		string row_name_;

@@ -38,19 +38,15 @@ namespace datastream {
 		map<int, SchemaSet*> schema_set_ptr_map;
 		vector<int> dependency_graph_;
 
-		inline list<SchemaSet>& getSets()
+		inline const list<SchemaSet>& sets() const
 		{
 			return schema_set_list_;
 		}
 
 		void clear();
-
 		void loadSets(const string & schema_sets_filename);
-
 		void mapSets();
-
 		void connect();
-
 		void loadElements(const string & schema_elements_filename);
 	};
 }

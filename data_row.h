@@ -118,7 +118,7 @@ namespace datastream {
 
 	public:
 
-		DataRow (unsigned int id, unsigned int parent, unsigned int order);
+		DataRow (unsigned int id, unsigned int parent, unsigned int position);
 		
 		void load(const list<SchemaElement> & schema_elements, const string & line_values);
 
@@ -128,13 +128,13 @@ namespace datastream {
 
 		inline unsigned int id() const {return id_;}
 		inline unsigned int parent() const {return parent_;}
-		inline unsigned int order() const {return order_;}
+		inline unsigned int position() const {return position_;}
 
 	private:
 
 		unsigned int id_;
 		unsigned int parent_;
-		unsigned int order_;
+		unsigned int position_;
 		list<DataElement> child_elements;
 
 		// shared with other rows in this set with the same id

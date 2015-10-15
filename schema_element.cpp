@@ -13,15 +13,11 @@ namespace datastream {
 	reader_(getReader(data_type))
 	{}
 
-	string SchemaElement::read(const string & value) const {
+	string SchemaElement::read(const string & value) const
+	{
 		//some database stuff to retrieve value
 
 		//then return data
 		return (*reader_)(name_, value, precision_);
 	}
-
-	int SchemaElement::id () const {return id_;}
-	int SchemaElement::parent () const {return parent_;}
-	const string& SchemaElement::name () const {return name_;}
-	const ElementDataType SchemaElement::dataType () const {return data_type_;}
 };
