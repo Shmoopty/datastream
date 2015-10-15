@@ -52,15 +52,8 @@ namespace datastream {
 			return !( parent_ == 0 || id_ == parent_) ;
 		}
 
-		unsigned int id() const
-		{
-			return id_;
-		};
-
-		unsigned int parent() const
-		{
-			return parent_;
-		}
+		unsigned int id() const {return id_;};
+		unsigned int parent() const {return parent_;}
 
 		const string & groupName () const { return group_name_;}
 		const string & rowName () const { return row_name_;}
@@ -70,7 +63,6 @@ namespace datastream {
 
 		RowWrapper rowWrapper () const {return row_wrapper_;}
 		GroupWrapper groupWrapper () const {return group_wrapper_;}
-
 
 		void connect(SchemaSet& child_set)
 		{
@@ -88,14 +80,13 @@ namespace datastream {
 		}
 
 		bool hasChildSets() const { return child_sets_.size() > 0;}
-		//can do better than this
+
 		const vector<SchemaSet*>& childSets() const {return child_sets_;}
 		const list<SchemaElement>& childElements() const {return child_elements_;}
 		unsigned int order() const {return order_;}
 
 	private:
 
-		//bool root_;
 		unsigned int id_;
 		unsigned int order_;
 		unsigned int parent_;
@@ -110,7 +101,6 @@ namespace datastream {
 
 		list<SchemaElement> child_elements_;
 		vector<SchemaSet*> child_sets_;
-
 	};
 };
 

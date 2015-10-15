@@ -55,7 +55,7 @@ namespace datastream {
 	};
 
 	//look up maps
-	std::map<string, ElementDataType> element_data_type_map = {
+	const std::map<string, ElementDataType> element_data_type_map = {
 		{"bool", 		ElementDataType::type_boolean },
 		{"boolean", 	ElementDataType::type_boolean },
 
@@ -73,16 +73,16 @@ namespace datastream {
 		{"raw", 		ElementDataType::type_raw     }    //raw string, do not quote
 	 };
 
-	 std::map<string, GroupWrapper> group_wrapper_map = {
-  		{"array", 		GroupWrapper::array_wrapper },
-  		{"none", 		GroupWrapper::no_wrapper }
-  	 };
+	 const std::map<string, GroupWrapper> group_wrapper_map = {
+		{"array", 		GroupWrapper::array_wrapper },
+		{"none", 		GroupWrapper::no_wrapper }
+	 };
 
- 	std::map<string, RowWrapper> row_wrapper_map = {
- 		{"object", 		RowWrapper::object_wrapper },
- 		{"array", 		RowWrapper::array_wrapper },
- 		{"none", 		RowWrapper::no_wrapper }
- 	 };
+	const std::map<string, RowWrapper> row_wrapper_map = {
+		{"object", 		RowWrapper::object_wrapper },
+		{"array", 		RowWrapper::array_wrapper },
+		{"none", 		RowWrapper::no_wrapper }
+	 };
 
 	const string rx_start   	= "^";
 
@@ -108,8 +108,8 @@ namespace datastream {
 	const string rx_comma_row_wrap = rx_comma + rx_row_wrap;
 	const string rx_comma_group_wrap = rx_comma + rx_group_wrap;
 
-	auto blank_pattern   = regex(rx_start + rx_whitespace + rx_end);
-	auto comment_pattern = regex(rx_start + rx_hash + rx_any);
+	const regex blank_pattern   = regex(rx_start + rx_whitespace + rx_end);
+	const regex comment_pattern = regex(rx_start + rx_hash + rx_any);
 
 	const unsigned int match_index_schema_id = 1;
 	const unsigned int match_index_schema_parent = 2;
@@ -130,112 +130,113 @@ namespace datastream {
 	const unsigned int match_index_data_parent = 2;
 	const unsigned int match_index_data_element_values = 4;
 
-	auto schema_set_line_pattern = regex
-		(
-			//start
-			rx_start +
+	const regex schema_set_line_pattern = regex
+	(
+		//start
+		rx_start +
 
-			// id
-			rx_int+
+		// id
+		rx_int+
 
-			// parent,
-			rx_comma_int +
+		// parent,
+		rx_comma_int +
 
-			// group name,
-			rx_comma_any +
+		// group name,
+		rx_comma_any +
 
-			// row name,
-			rx_comma_any +
+		// row name,
+		rx_comma_any +
 
-			// filename,
-			rx_comma_any +
+		// filename,
+		rx_comma_any +
 
-			// // is root,
-			// rx_comma_bit +
+		// // is root,
+		// rx_comma_bit +
 
-			// hide_when_empty,
-			rx_comma_bit +
+		// hide_when_empty,
+		rx_comma_bit +
 
-			// limit_single_child,
-			rx_comma_bit +
+		// limit_single_child,
+		rx_comma_bit +
 
-			// wrapper_around_group,
-			rx_comma_group_wrap +
+		// wrapper_around_group,
+		rx_comma_group_wrap +
 
-			// wrapper_around_row
-			rx_comma_row_wrap +
+		// wrapper_around_row
+		rx_comma_row_wrap +
 
-			// end
-			rx_end
-		);
+		// end
+		rx_end
+	);
 
-		auto schema_element_line_pattern = regex(
-			//start
-			rx_start +
+	const regex schema_element_line_pattern = regex(
+		//start
+		rx_start +
 
-			// id,
-			rx_int +
+		// id,
+		rx_int +
 
-			// parent,
-			rx_comma_int +
+		// parent,
+		rx_comma_int +
 
-			// name,
-			rx_comma_any +
+		// name,
+		rx_comma_any +
 
-			// data_type,
-			rx_comma + rx_data_type +
+		// data_type,
+		rx_comma + rx_data_type +
 
-			// end
-			rx_end
-		);
+		// end
+		rx_end
+	);
 
-		auto data_row_line_pattern = regex(
-			rx_start +
-			//row
-			rx_int +
-			// parent,
-			rx_comma_int +
-			//values
-			rx_comma_any_optional +
-			rx_end
-		);
+	const regex data_row_line_pattern = regex(
+		rx_start +
+		//row
+		rx_int +
+		// parent,
+		rx_comma_int +
+		//values
+		rx_comma_any_optional +
+		rx_end
+	);
 
-		auto comma_pattern = regex(rx_comma);
+	const regex comma_pattern = regex(rx_comma);
 
-		bool isBlank (const std::string & line){
-			return std::regex_match (line,blank_pattern);
-		}
+	inline bool isBlank (const std::string & line){
+		return std::regex_match (line,blank_pattern);
+	}
 
-		bool isComment (const std::string & line){
-			return std::regex_match(line,comment_pattern);
-		}
+	inline bool isComment (const std::string & line){
+		return std::regex_match(line,comment_pattern);
+	}
 
-		typedef std::sregex_token_iterator pattern_iterator;
+	typedef std::sregex_token_iterator pattern_iterator;
 
-		template<typename T>
-		T& deref(T &v) {
-		  return v;
-		}
+	template<typename T>
+	T& deref(T &v) {
+	  return v;
+	}
 
-		template<typename T>
-		const T& deref(const T& v) {
-		  return v;
-		}
+	template<typename T>
+	const T& deref(const T& v) {
+	  return v;
+	}
 
-		template<typename T>
-		typename std::enable_if<!std::is_function<T>::value, T&>::type deref(T* v) {
-		  return deref(*v);
-		}
+	template<typename T>
+	typename std::enable_if<!std::is_function<T>::value, T&>::type deref(T* v) {
+	  return deref(*v);
+	}
 
-		template<typename T>
-		const T& deref(const std::shared_ptr<T>& v) {
-		  return deref(*v);
-		}
+	template<typename T>
+	const T& deref(const std::shared_ptr<T>& v) {
+	  return deref(*v);
+	}
 
-		template<typename T>
-		const T& deref(const std::weak_ptr<T>& v) {
-		  return deref(*v);
-		}
+	template<typename T>
+	const T& deref(const std::weak_ptr<T>& v) {
+	  return deref(*v);
+	}
+
 }
 
 #endif

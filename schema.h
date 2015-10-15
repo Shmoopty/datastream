@@ -31,7 +31,6 @@ namespace datastream {
 			loadSets(schema_sets_filename);
 			mapSets();
 			loadElements(schema_elements_filename);
-
 		}
 
 		const list<SchemaSet> & schemaSets() const { return schema_set_list_;}

@@ -66,7 +66,7 @@ namespace datastream {
 			unsigned int & siblings_written
 		)
 		{
-			if( rows.size() == 0 ){
+			if(rows.size() == 0 ){
 				if (schema_set.hideWhenEmpty() == false){
 
 					formatter.writeEmptyGroup(

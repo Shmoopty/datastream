@@ -23,13 +23,13 @@ namespace datastream {
 
 		Datastream(Model& model, Formatter& formatter):
 		model(model),
-		formatter(formatter){};
+		formatter(formatter)
+		{};
 
-		friend std::ostream& operator<<(std::ostream& os, const Datastream& obj){
-
+		friend std::ostream& operator<<(std::ostream& os, const Datastream& obj)
+		{
 			obj.model.write(os, obj.formatter);
-
-		  return os;
+			return os;
 		}
 
 	private:
