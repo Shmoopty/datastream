@@ -21,7 +21,7 @@ namespace datastream {
 	public:
 		Datastream() = default;
 
-		Datastream(Model& model, Formatter& formatter):
+		inline Datastream(Model& model, Formatter& formatter):
 		model(model),
 		formatter(formatter)
 		{};
