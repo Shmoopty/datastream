@@ -40,9 +40,9 @@ namespace datastream {
 		inline unsigned int parent() const {return parent_;}
 		inline unsigned int position() const {return position_;}
 
-		inline const string & groupName () const { return group_name_;}
-		inline const string & rowName () const { return row_name_;}
-		inline const string & inputFileName() const { return input_filename_;}
+		inline const string & groupName () const {return group_name_;}
+		inline const string & rowName () const {return row_name_;}
+		inline const string & inputFileName() const {return input_filename_;}
 		inline bool hideWhenEmpty() const {return hide_when_empty_;}
 		inline bool limitSingleChild() const {return limit_single_child_;}
 

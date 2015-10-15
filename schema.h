@@ -28,20 +28,18 @@ namespace datastream {
 			const string & schema_elements_filename
 		);
 
-		inline const list<SchemaSet> & schemaSets() const { return schema_set_list_;}
-		inline const vector<int> & dependencyGraph() const {return dependency_graph_;}
-		inline const map<int, SchemaSet*> & schemaSetsMap() { return schema_set_ptr_map;}
+		inline const list<SchemaSet> & sets() const { return schema_set_list_;}
+		inline const vector<int> & dependencySequence() const {return dependency_order_;}
+
+		//not required for tree output as writing begins from root
+		//may be usefule for flat output
+		//inline const map<int, SchemaSet*> & schemaSetsById() { return schema_set_by_id;}
 
 	private:
 
 		list<SchemaSet> schema_set_list_;
-		map<int, SchemaSet*> schema_set_ptr_map;
-		vector<int> dependency_graph_;
-
-		inline const list<SchemaSet>& sets() const
-		{
-			return schema_set_list_;
-		}
+		map<int, SchemaSet*> schema_set_by_id;
+		vector<int> dependency_order_;
 
 		void clear();
 		void loadSets(const string & schema_sets_filename);

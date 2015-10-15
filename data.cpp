@@ -8,8 +8,8 @@ namespace datastream {
 	}
 
 	void Data::build(const Schema& schema){
-		load(schema.schemaSets());
-		map(schema); //schema.schemaSets());
+		load(schema.sets());
+		map(schema); //schema.sets());
 	}
 
 	void Data::write(ostream & os, Formatter& formatter, const Schema& schema ) const {
@@ -22,11 +22,11 @@ namespace datastream {
 
 		// no graph loaded
 		//throw error?
-		if(!schema.dependencyGraph().size()){
+		if(!schema.dependencySequence().size()){
 			return;
 		}
 
-		int root_id = schema.dependencyGraph().at(0);
+		int root_id = schema.dependencySequence().at(0);
 
 		auto root_search = data_set_ptr_map.find(root_id);
 
@@ -81,9 +81,9 @@ namespace datastream {
 		}
 
 		//map rows
-		auto& dependency_graph = schema.dependencyGraph();
+		auto& dependency_order = schema.dependencySequence();
 
-		for ( int set_id : dependency_graph){
+		for ( int set_id : dependency_order){
 
 			auto set_search = data_set_ptr_map.find(set_id);
 

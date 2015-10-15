@@ -19,7 +19,7 @@ namespace datastream {
 
 	void Schema::clear()
 	{
-		schema_set_ptr_map.clear();
+		schema_set_by_id.clear();
 		schema_set_list_.clear();
 	}
 
@@ -59,7 +59,7 @@ namespace datastream {
 			schema_set_list_.emplace_back(
 				schema_set_list_.size(),
 				std::stoi(matched[match_index_schema_id]),
-				std::stoi(matched[match_index_schema_parent]),	
+				std::stoi(matched[match_index_schema_parent]),
 				std::move(matched[match_index_group_name]),
 				std::move(matched[match_index_row_name]),
 				std::move(matched[match_index_input_filename]),
@@ -101,10 +101,10 @@ namespace datastream {
 			}
 		);
 
-			//insert pairs into map
+		//insert pairs into map
 		for ( SchemaSet* set_ptr : set_ptrs ){
-			schema_set_ptr_map.emplace_hint(
-				schema_set_ptr_map.end(),
+			schema_set_by_id.emplace_hint(
+				schema_set_by_id.end(),
 				int(set_ptr->id()),
 				set_ptr
 			);
@@ -179,7 +179,7 @@ namespace datastream {
 			//step 2
 			insert records into the parent row id : * map
 		*/
-		std::map<unsigned int, std::vector<unsigned int>> set_ids_by_parent_map;
+		std::map<unsigned int, std::vector<unsigned int>> set_ids_by_parent;
 
 		for (SchemaSet* set_ptr : set_ptrs){
 
@@ -187,17 +187,17 @@ namespace datastream {
 				continue;
 			}
 
-			auto set_ids_by_parent_map_search = set_ids_by_parent_map.find(set_ptr->parent());
+			auto set_ids_by_parent_find = set_ids_by_parent.find(set_ptr->parent());
 
-			if (set_ids_by_parent_map_search == set_ids_by_parent_map.end()){
-				set_ids_by_parent_map.emplace_hint(
-					set_ids_by_parent_map.end(),
+			if (set_ids_by_parent_find == set_ids_by_parent.end()){
+				set_ids_by_parent.emplace_hint(
+					set_ids_by_parent.end(),
 					set_ptr->parent(),
 					std::vector<unsigned int>{set_ptr->id()}
 				);
 			}
 			else {
-				set_ids_by_parent_map_search->second.push_back(set_ptr->id());
+				set_ids_by_parent_find->second.push_back(set_ptr->id());
 			}
 		}
 
@@ -215,20 +215,20 @@ namespace datastream {
 			//cyclic dependancy check
 			if (
 				std::find(
-					dependency_graph_.begin(),
-					dependency_graph_.end(),
+					dependency_order_.begin(),
+					dependency_order_.end(),
 					set_id
-				) != dependency_graph_.end()
+				) != dependency_order_.end()
 			){
 				//oh dear this doesn't look good
 				throw std::domain_error("sorry about this, the data seems to be connected in an endless loop");
 			}
 
-			dependency_graph_.push_back(set_id);
+			dependency_order_.push_back(set_id);
 
-		  	auto child_ids_search = set_ids_by_parent_map.find(set_id);
+		  	auto child_ids_search = set_ids_by_parent.find(set_id);
 
-			if (child_ids_search != set_ids_by_parent_map.end()){
+			if (child_ids_search != set_ids_by_parent.end()){
 				for (int child_id : child_ids_search->second){
 					walk(child_id);
 				}
@@ -237,13 +237,13 @@ namespace datastream {
 
 		// now use the lambda,
 		// walk the tree populating dependency graph
-		dependency_graph_.reserve(set_ptrs.size());
+		dependency_order_.reserve(set_ptrs.size());
 		walk(root_search->id());
 
 		// validate step 3
 		// this should be redundant given that we have checked for multiple roots
 		// check that all nodes have been visited by walk
-		if (dependency_graph_.size() != set_ptrs.size()){
+		if (dependency_order_.size() != set_ptrs.size()){
 			throw std::domain_error("sorry about this, the data doesn't seem to be connected into a single document");
 		}
 		connect();
@@ -260,11 +260,11 @@ namespace datastream {
 				continue;
 			}
 
-			auto schema_set_ptr_map_search = schema_set_ptr_map.find(schema_set.parent());
-			if ( schema_set_ptr_map_search == schema_set_ptr_map.end()){
+			auto schema_set_by_id_search = schema_set_by_id.find(schema_set.parent());
+			if ( schema_set_by_id_search == schema_set_by_id.end()){
 				throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
 			}
-			schema_set_ptr_map_search->second->connect(schema_set);
+			schema_set_by_id_search->second->connect(schema_set);
 		}
 	}
 
@@ -300,9 +300,9 @@ namespace datastream {
 			ElementDataType element_data_type = data_type_lookup->second;
 
 			int element_set_id = std::stoi(matched[match_index_element_set]);
-			auto set_search = schema_set_ptr_map.find(element_set_id);
+			auto set_search = schema_set_by_id.find(element_set_id);
 
-			if ( set_search == schema_set_ptr_map.end()){
+			if ( set_search == schema_set_by_id.end()){
 				throw std::domain_error("sorry. data is incomplete and cannot be understood. ");
 			}
 
