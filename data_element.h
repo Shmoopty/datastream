@@ -29,7 +29,7 @@ namespace datastream {
 		}
 
 	private:
-
+		
 		string value_ = blank;
 		bool   is_null_ = true;
 	};
