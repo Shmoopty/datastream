@@ -10,24 +10,13 @@ namespace datastream {
 	class Model{
 	public:
 
-		// if this was adapted to produce multiple reports
-		// schema can be reused
-		// data currently cannot
-		
 		Model() = default;
 
-		Model(const string & schema_sets_filename, const string & schema_elements_filename){
-			build(schema_sets_filename, schema_elements_filename);
-		}
+		Model(const string & schema_sets_filename, const string & schema_elements_filename);
 
-		void build(const string & schema_sets_filename, const string & schema_elements_filename){
-			schema.build(schema_sets_filename, schema_elements_filename);
-			data.build(schema);
-		}
+		void build(const string & schema_sets_filename, const string & schema_elements_filename);
 
-		void write(ostream & os, Formatter& formatter) const{
-			data.write(os, formatter, schema);
-		}
+		void write(ostream & os, Formatter& formatter) const;
 
 	private:
 
