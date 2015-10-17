@@ -7,10 +7,11 @@ namespace datastream {
 	const int arg_schema_elements_file_name = 2;
 
 	const string usage(
-		"usage:\n\
-		datapipe schema_file element_file\n\
-		[-x] format xml (default is json)\n\
-		[-p] pretty print (default is compact)"
+		"usage:\n"
+		"datapipe schema_file element_file\n"
+		"options:"
+		"-x format xml (default is json)\n"
+		"-p pretty print (default is compact)\n"
 	);
 }
 
