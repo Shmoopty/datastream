@@ -11,11 +11,9 @@ namespace datastream {
 	public:
 
 		Model() = default;
-
 		Model(const string & schema_sets_filename, const string & schema_elements_filename);
 
 		void build(const string & schema_sets_filename, const string & schema_elements_filename);
-
 		void write(ostream & os, Formatter& formatter) const;
 
 	private:

@@ -14,10 +14,8 @@ namespace datastream {
 	position_(position)
 	{};
 
-	void DataRow::load(const list<SchemaElement> & schema_elements, const string & line_values){
-
-		auto schema_elements_it = schema_elements.begin();
-
+	void DataRow::load(const list<SchemaElement> & schema_elements, const string & line_values)
+	{
 		pattern_iterator const regex_end;
 		pattern_iterator regex_it(
 			line_values.begin(),
@@ -25,6 +23,8 @@ namespace datastream {
 			comma_pattern,
 			-1
 		);
+
+		auto schema_elements_it = schema_elements.begin();
 
 		while(
 			schema_elements_it != schema_elements.end() &&
@@ -34,11 +34,11 @@ namespace datastream {
 			//db version will not do this
 			//null value is explicit not a string compare
 			if (*regex_it == null_keyword){
-				child_elements.emplace_back();
+				child_elements_.emplace_back();
 			}
 			else{
 				// add element using schema formatter
-				child_elements
+				child_elements_
 					.emplace_back((*schema_elements_it)
 					.read(*regex_it));
 			}
@@ -48,8 +48,9 @@ namespace datastream {
 		}
 	};
 
-	void DataRow::connect(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows_ptr){
-		data_child_rows_ptr_by_set_id_map.emplace(set_id, child_rows_ptr);
+	void DataRow::connect(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows)
+	{
+		child_rows_by_set_id_.emplace(set_id, child_rows);
 	}
 
 	void DataRow::write(ostream & os, const SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const
@@ -65,7 +66,7 @@ namespace datastream {
 
 		boost::range::for_each(
 			schema_set.childElements(),
-            child_elements,
+            child_elements_,
 			[&](
 				const SchemaElement& schema_child,
 				const DataElement& data_child
@@ -85,17 +86,17 @@ namespace datastream {
 			}
 		);
 
-		//WRITE CHILD ROWS
-		for (auto schema_child_set_ptr : schema_set.childSets()){
+		//write child rows
+		for (auto child_schema_set : schema_set.childSets()){
 
-			auto child_rows_ptr_it =  data_child_rows_ptr_by_set_id_map.find(schema_child_set_ptr->id());
+			auto child_rows_it =  child_rows_by_set_id_.find(child_schema_set->id());
 
-			if(child_rows_ptr_it != data_child_rows_ptr_by_set_id_map.end()){
+			if(child_rows_it != child_rows_by_set_id_.end()){
 				writeRows (
 					os,
 					schema_set.rowWrapper(), 		//parent row wrapper
-					*schema_child_set_ptr, 		//schema set for rows
-					*child_rows_ptr_it->second, //rows
+					*child_schema_set, 		//schema set for rows
+					*child_rows_it->second, //rows
 					formatter,
 					children_written       		//number of siblings written
 				);
@@ -103,7 +104,7 @@ namespace datastream {
 				writeRows (
 					os,
 					schema_set.rowWrapper(), 		//parent row wrapper
-					*schema_child_set_ptr, 		//schema set for rows
+					*child_schema_set, 		//schema set for rows
 					vector<DataRow*>{},    		//empty rows
 					formatter,
 					children_written       		//number of siblings written

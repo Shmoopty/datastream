@@ -58,7 +58,6 @@ namespace datastream {
 	private:
 
 		unsigned int position_;
-
 		unsigned int id_;
 		unsigned int parent_;
 		string group_name_;
@@ -67,6 +66,7 @@ namespace datastream {
 
 		bool hide_when_empty_;
 		bool limit_single_child_;
+		
 		GroupWrapper group_wrapper_;
 		RowWrapper row_wrapper_;
 

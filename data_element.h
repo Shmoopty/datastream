@@ -1,6 +1,8 @@
 #ifndef datastream_data_element_h
 #define datastream_data_element_h
 
+#include <string>
+
 #include "datastream_definitions.h"
 
 namespace datastream {

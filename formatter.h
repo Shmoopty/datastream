@@ -204,6 +204,8 @@ namespace datastream {
 		string indent = tab;
 		string quote = double_quote;
 		int depth = 0;
+		bool clean = true;
+
 	};
 }
 #endif

@@ -19,8 +19,8 @@ namespace datastream {
 
 	void Schema::clear()
 	{
-		schema_set_by_id.clear();
-		schema_set_list_.clear();
+		sets_by_id_.clear();
+		sets_.clear();
 	}
 
 	void Schema::loadSets(const string & schema_sets_filename){
@@ -56,8 +56,8 @@ namespace datastream {
 			}
 			RowWrapper row_wrapper = row_wrapper_lookup->second;
 
-			schema_set_list_.emplace_back(
-				schema_set_list_.size(),
+			sets_.emplace_back(
+				sets_.size(),
 				std::stoi(matched[match_index_schema_id]),
 				std::stoi(matched[match_index_schema_parent]),
 				std::move(matched[match_index_group_name]),
@@ -80,9 +80,9 @@ namespace datastream {
 		*/
 		//copy pointers to temporary vector
 		vector <SchemaSet*> set_ptrs;
-		set_ptrs.reserve(schema_set_list_.size());
+		set_ptrs.reserve(sets_.size());
 
-		for ( SchemaSet& schema_set : schema_set_list_ ){
+		for ( SchemaSet& schema_set : sets_ ){
 
 			set_ptrs.emplace_back(
 				&schema_set
@@ -103,8 +103,8 @@ namespace datastream {
 
 		//insert pairs into map
 		for ( SchemaSet* set_ptr : set_ptrs ){
-			schema_set_by_id.emplace_hint(
-				schema_set_by_id.end(),
+			sets_by_id_.emplace_hint(
+				sets_by_id_.end(),
 				int(set_ptr->id()),
 				set_ptr
 			);
@@ -122,8 +122,8 @@ namespace datastream {
 		// does structure have one root?
 		//find a quick way to do this on std::find_if iterator and this can be cut
 		int root_count = std::count_if(
-			schema_set_list_.begin(),
-			schema_set_list_.end(),
+			sets_.begin(),
+			sets_.end(),
 			[](const SchemaSet& set){
 				return !set.hasParent();
 			}
@@ -135,14 +135,14 @@ namespace datastream {
 
 		//locate the root
 		auto root_search = std::find_if(
-			schema_set_list_.begin(),
-			schema_set_list_.end(),
+			sets_.begin(),
+			sets_.end(),
 			[](const SchemaSet& set){
 				return !set.hasParent();
 			}
 		);
 
-		if (root_search == schema_set_list_.end()){
+		if (root_search == sets_.end()){
 			throw std::domain_error("sorry about this, i cannot find the starting point to begin writing.");
 		}
 
@@ -254,14 +254,14 @@ namespace datastream {
 		// for schema using dependancy graph for connect has no advantage
 		// will be useful when connecting data row
 
-		for ( SchemaSet& schema_set : schema_set_list_ ){
+		for ( SchemaSet& schema_set : sets_ ){
 
 			if (!schema_set.hasParent()){
 				continue;
 			}
 
-			auto schema_set_by_id_search = schema_set_by_id.find(schema_set.parent());
-			if ( schema_set_by_id_search == schema_set_by_id.end()){
+			auto schema_set_by_id_search = sets_by_id_.find(schema_set.parent());
+			if ( schema_set_by_id_search == sets_by_id_.end()){
 				throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
 			}
 			schema_set_by_id_search->second->connect(schema_set);
@@ -300,9 +300,9 @@ namespace datastream {
 			ElementDataType element_data_type = data_type_lookup->second;
 
 			int element_set_id = std::stoi(matched[match_index_element_set]);
-			auto set_search = schema_set_by_id.find(element_set_id);
+			auto set_search = sets_by_id_.find(element_set_id);
 
-			if ( set_search == schema_set_by_id.end()){
+			if ( set_search == sets_by_id_.end()){
 				throw std::domain_error("sorry. data is incomplete and cannot be understood. ");
 			}
 

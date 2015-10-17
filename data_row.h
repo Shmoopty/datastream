@@ -119,10 +119,10 @@ namespace datastream {
 	public:
 
 		DataRow (unsigned int id, unsigned int parent, unsigned int position);
-		
+
 		void load(const list<SchemaElement> & schema_elements, const string & line_values);
 
-		void connect(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows_ptr);
+		void connect(int set_id, std::shared_ptr<std::vector<DataRow*>> child_rows);
 
 		void write(ostream & os, const SchemaSet& schema_set, Formatter& formatter, unsigned int & siblings_written) const;
 
@@ -135,10 +135,10 @@ namespace datastream {
 		unsigned int id_;
 		unsigned int parent_;
 		unsigned int position_;
-		list<DataElement> child_elements;
+		list<DataElement> child_elements_;
 
 		// shared with other rows in this set with the same id
-		map<int, shared_ptr<vector<DataRow*>>> data_child_rows_ptr_by_set_id_map;
+		map<int, shared_ptr<vector<DataRow*>>> child_rows_by_set_id_;
 
 	};
 }

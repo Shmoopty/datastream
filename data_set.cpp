@@ -8,8 +8,8 @@ namespace datastream {
 	schema_set(schema_set)
 	{};
 
-	void DataSet::load(const list<SchemaElement> & schema_elements, const string & line){
-
+	void DataSet::load(const list<SchemaElement> & schema_elements, const string & line)
+	{
 		std::smatch matched;
 		std::regex_match(
 			line,

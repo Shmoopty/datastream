@@ -54,6 +54,26 @@ namespace datastream {
 		no_wrapper
 	};
 
+	enum class Format{
+		json,
+		xml
+	};
+
+	enum class Style{
+		pretty,
+		compact
+	};
+
+	const std::map<string, Format> format_map = {
+	   {"json", 		Format::json },
+	   {"xml", 			Format::xml }
+	};
+
+   const std::map<string, Style> style_map = {
+	   {"pretty", 		Style::pretty },
+	   {"compact", 		Style::compact }
+	};
+
 	//look up maps
 	const std::map<string, ElementDataType> element_data_type_map = {
 		{"bool", 		ElementDataType::type_boolean },
