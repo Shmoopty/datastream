@@ -25,26 +25,16 @@ namespace datastream {
 		// for sorting and random access
 
 		void mapRows(DataSet* parent_set_ptr = nullptr);
-
 		void write (ostream & os, Formatter& formatter) const;
 
-		inline bool hasParent() const {
-			return schema_set.hasParent();
-		}
-
-		inline unsigned int parent() const {
-			return schema_set.parent();
-		}
-
-		inline unsigned int id() const {
-			return schema_set.id();
-		}
+		inline bool hasParent() const {return schema_set.hasParent();}
+		inline unsigned int parent() const {return schema_set.parent();}
+		inline unsigned int id() const {return schema_set.id();}
 
 		private:
 			const SchemaSet& schema_set;
 			list<DataRow> rows;
 			map<int, vector<DataRow*>> id_to_rows_map;
-
 	};
 }
 #endif

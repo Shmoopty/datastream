@@ -3,34 +3,34 @@
 namespace datastream {
 
 	void Data::clear(){
-		data_set_ptr_map.clear();
-		data_set_list.clear();
+		sets_by_id_.clear();
+		sets_.clear();
 	}
 
 	void Data::build(const Schema& schema){
 		load(schema.sets());
-		map(schema); //schema.sets());
+		map(schema);
 	}
 
 	void Data::write(ostream & os, Formatter& formatter, const Schema& schema ) const {
 
 		// no data loaded
 		//throw error?
-		if (!data_set_ptr_map.size()){
+		if (!sets_by_id_.size()){
 			return;
 		}
 
 		// no graph loaded
 		//throw error?
-		if(!schema.dependencySequence().size()){
+		if(!schema.dependencyOrder().size()){
 			return;
 		}
 
-		int root_id = schema.dependencySequence().at(0);
+		int root_id = schema.dependencyOrder().at(0);
 
-		auto root_search = data_set_ptr_map.find(root_id);
+		auto root_search = sets_by_id_.find(root_id);
 
-		if (root_search == data_set_ptr_map.end()){
+		if (root_search == sets_by_id_.end()){
 			throw std::domain_error("sorry, I cannot find the beginning of the data to begin writing");
 		}
 
@@ -38,11 +38,11 @@ namespace datastream {
 		root_search->second->write(os, formatter);
 	}
 
-	void Data::load(const list<SchemaSet>& schema_set_list){
+	void Data::load(const list<SchemaSet>& schema_sets){
 
 		clear();
 
-		for(const SchemaSet& schema_set : schema_set_list){
+		for(const SchemaSet& schema_set : schema_sets){
 
 			ifstream file (schema_set.inputFileName());
 
@@ -50,7 +50,7 @@ namespace datastream {
 				throw std::domain_error("cannot open schema file");
 			}
 
-			data_set_list.emplace_back(
+			sets_.emplace_back(
 				schema_set
 			);
 
@@ -63,7 +63,7 @@ namespace datastream {
 
 				// current data set is last added,
 				// load rows
-				data_set_list.rbegin()->load(schema_set.childElements(), line);
+				sets_.rbegin()->load(schema_set.childElements(), line);
 			}
 			file.close();
 		}
@@ -71,31 +71,31 @@ namespace datastream {
 
 	void Data::map(const Schema& schema){
 
-		//map sets
-		for (DataSet& data_set : data_set_list){
-			//map sets
-			data_set_ptr_map.emplace(
+		//map sets_
+		for (DataSet& data_set : sets_){
+			//map sets_
+			sets_by_id_.emplace(
 				data_set.id(),
 				&data_set
 			);
 		}
 
 		//map rows
-		auto& dependency_order = schema.dependencySequence();
+		auto& dependency_order = schema.dependencyOrder();
 
 		for ( int set_id : dependency_order){
 
-			auto set_search = data_set_ptr_map.find(set_id);
+			auto set_search = sets_by_id_.find(set_id);
 
-			if ( set_search == data_set_ptr_map.end()){
+			if ( set_search == sets_by_id_.end()){
 				throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
 			}
 
 			DataSet* parent_set_ptr = nullptr;
 
 			if (set_search->second->hasParent()){
-				auto parent_search = data_set_ptr_map.find(set_search->second->parent());
-				if ( parent_search == data_set_ptr_map.end()){
+				auto parent_search = sets_by_id_.find(set_search->second->parent());
+				if ( parent_search == sets_by_id_.end()){
 					throw std::domain_error("data structure is invalid. parent unknown");
 				}
 				parent_set_ptr = parent_search->second;

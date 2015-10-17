@@ -6,8 +6,9 @@ SOURCES=run_datastream.cpp json_formatter.cpp data.cpp model.cpp data_set.cpp da
 
 RUN_PARAMETERS =  ./sample_data/schema.csv ./sample_data/schema_element.csv | tee output.json
 # OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=../run_datastream
-
+#../run_datastream ./sample_data/schema.csv ./sample_data/schema_element.csv | tee output.json
+EXECUTABLE=../datapipe
+# ../run_datastream
 # all: $(SOURCES) $(EXECUTABLE)
 
 # $(EXECUTABLE): $(OBJECTS)

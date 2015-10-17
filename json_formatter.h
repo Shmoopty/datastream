@@ -43,22 +43,9 @@ namespace datastream {
 			GroupWrapper group_wrapper
 		);
 		//
-		// //6 parameter version in parent
-		// virtual void labelElement(
-		// 	ostream & os,
-		// 	const string& group_label,
-		// 	const string& row_label,
-		// 	bool single_child_per_parent,
-		//
-		// 	RowWrapper parent_row_wrapper,
-		// 	unsigned int & siblings_written
-		//
-		// ){
-		// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
-		// 		labelElement(os,(single_child_per_parent?row_label:group_label), parent_row_wrapper, siblings_written);
-		// 	}
-		// };
-		//
+		// 6 parameter version in parent
+		// virtual void labelElement (...)
+
 		virtual void label(
 			ostream & os,
 			const string& label,
@@ -93,15 +80,10 @@ namespace datastream {
 
 		);
 
-
 		virtual void open(ostream & os, GroupWrapper group_wrapper);
-
-
 
 		virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group);
 
-
-		//RF
 		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written );
 
 		virtual void writeEmptyGroup(
@@ -125,8 +107,6 @@ namespace datastream {
 
 		virtual void close(ostream & os, GroupWrapper group_wrapper);
 
-	protected:
-		bool clean = true;
 	};
 }
 #endif

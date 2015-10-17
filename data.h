@@ -21,10 +21,10 @@ namespace datastream {
 
 	private:
 
-		list<DataSet> data_set_list;
-		map<int, DataSet*> data_set_ptr_map;
+		list<DataSet> sets_;
+		map<int, DataSet*> sets_by_id_;
 
-		void load(const list<SchemaSet>& schema_set_list);
+		void load(const list<SchemaSet>& schema_sets);
 
 		void map(const Schema& schema);
 	};
