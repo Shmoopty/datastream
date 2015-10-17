@@ -40,27 +40,20 @@ namespace datastream {
 
 	typedef string (*ReaderPtr)(const string &, const string &, const unsigned int);
 
-	inline ReaderPtr getReader( const ElementDataType data_type_)
-	{
-		if(data_type_ == ElementDataType::type_boolean){
-			return &read_bool;
-		}
-		else if(data_type_ == ElementDataType::type_integer){
-			return &read_int;
-		}
-		else if(data_type_ == ElementDataType::type_double){
-			return &read_double;
-		}
-		else if(
-			data_type_ == ElementDataType::type_string ||
-			data_type_ == ElementDataType::type_datetime ||
-			data_type_ == ElementDataType::type_date ||
-			data_type_ == ElementDataType::type_time
-		){
-			return &read_string;
-		}
+	const std::map<ElementDataType, ReaderPtr> reader_map = {
+		{ElementDataType::type_boolean, 	&read_bool },
+		{ElementDataType::type_integer, 	&read_int },
+		{ElementDataType::type_double, 		&read_double },
+		{ElementDataType::type_string, 		&read_string },
+		{ElementDataType::type_datetime, 	&read_string },
+		{ElementDataType::type_date, 		&read_string },
+		{ElementDataType::type_time, 		&read_string },
+		{ElementDataType::type_raw, 		&read_string }
+	 };
 
-		return &read_string;
+	inline ReaderPtr getReader( const ElementDataType data_type)
+	{
+		return reader_map.at(data_type);
 	};
 }
 
