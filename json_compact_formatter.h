@@ -1,10 +1,11 @@
-#ifndef datastream_json_formatter
-#define datastream_json_formatter
+#ifndef datastream_json_compact_formatter
+#define datastream_json_compact_formatter
 
-#include "formatter.h"
+
+#include "json_formatter.h"
 namespace datastream {
 
-	class jsonFormatter:public Formatter{
+	class jsonCompactFormatter:public jsonFormatter{
 
 	public:
 

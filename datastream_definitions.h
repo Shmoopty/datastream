@@ -76,15 +76,15 @@ namespace datastream {
 	};
 
 	enum class Structure{
-		tree,
-		flat,
-		denormalised
+		// flat,
+		// denormalised, //not yet implemented
+		tree
 	};
 
-	const std::map<char, Structure> strucure_map = {
- 	   {'t', 		Structure::tree },
- 	   {'f', 		Structure::flat },
-	   {'d', 		Structure::denormalised },
+	const std::map<char, Structure> structure_map = {
+		// {'f', 		Structure::flat },
+		// {'d', 		Structure::denormalised },
+		{'t', 		Structure::tree }
  	};
 
 
