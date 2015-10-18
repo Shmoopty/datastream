@@ -74,7 +74,7 @@ namespace datastream {
 			depth = i;
 		}
 
-		inline virtual void seperate(
+		inline virtual void separate(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
