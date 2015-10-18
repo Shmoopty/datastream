@@ -139,15 +139,11 @@ namespace datastream {
 		writeValue(os, name, value, isNull, data_type, siblings_written);
 	};
 
-
 	void jsonFormatter::open(ostream & os, GroupWrapper group_wrapper){
 	};
 
-
-
 	void jsonFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
 	};
-
 
 	void jsonFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
 
