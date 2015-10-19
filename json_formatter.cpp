@@ -108,7 +108,6 @@ namespace datastream {
 		}
 	};
 
-
 	void jsonFormatter::writeElement(
 		ostream & os,
 		const string& name,
@@ -132,13 +131,6 @@ namespace datastream {
 		writeValue(os, name, value, isNull, data_type, siblings_written);
 	};
 
-	void jsonFormatter::open(ostream & os, GroupWrapper group_wrapper){
-		//add array tag here if group wrapper requires it
-	};
-
-	// void jsonFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
-	// };
-
 	void jsonFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
 
 		if (rowWrapper == RowWrapper::object_wrapper){
@@ -154,9 +146,7 @@ namespace datastream {
 		else if (rowWrapper == RowWrapper::no_wrapper){
 			separate(os, siblings_written);
 		}
-
 		up();
-
 	}
 
 	void jsonFormatter::writeEmptyGroup(
@@ -199,18 +189,15 @@ namespace datastream {
 			return;
 		}
 
-		//override
-		unsigned int none = 0;
+		unsigned int no_children = 0;
 
-		openRow(os, row_label, rowWrapper, none);
+		openRow(os, row_label, rowWrapper, no_children);
 		closeRow(os, row_label, rowWrapper);
 
 		if (rowWrapper != RowWrapper::no_wrapper){
 			return;
 		}
-
-		writeValue(os, blank, blank, true, ElementDataType::type_raw, none);
-
+		writeValue(os, blank, blank, true, ElementDataType::type_raw, no_children);
 	};
 
 	void jsonFormatter::closeRow(ostream & os, const string& name, RowWrapper rowWrapper)
@@ -230,28 +217,8 @@ namespace datastream {
 		}
 	};
 
-	// void jsonFormatter::closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group)
-	// {
-	//
-	// };
-
 	void jsonFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )
 	{
-		//down();
 		stepDown(os);
-		// if (row_wrapper != RowWrapper::no_wrapper){
-		// 	stepDown(os);
-		// }
 	};
-
-	void jsonFormatter::close(ostream & os, GroupWrapper group_wrapper)
-	{
-		//DEV
-		// enum class GroupWrapper {
-		// 	array_wrapper,
-		// 	no_wrapper
-		// };
-		//close array here!
-	};
-
 }
