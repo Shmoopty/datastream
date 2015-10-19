@@ -1,6 +1,6 @@
 #id, scheme, name, type
 
-0,1,color,string
+0,1,value,string
 
 0,2,first,string
 
@@ -8,7 +8,7 @@
 
 2,2,last,string
 
-0,3,size,integer
+0,3,value,integer
 
 0,4,region,string
 1,4,flag,string
