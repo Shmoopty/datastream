@@ -27,6 +27,9 @@ namespace datastream {
 	const string close_brace = "}";
 	const string open_bracket = "[";
 	const string close_bracket = "]";
+	const string open_angle = "<";
+	const string close_angle = ">";
+	const string slash = "/";
 	const string null_keyword = "null";
 	const string space_colon_space = " : ";
 

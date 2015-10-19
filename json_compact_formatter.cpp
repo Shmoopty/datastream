@@ -33,7 +33,7 @@ namespace datastream {
 	){
 		separate(os, siblings_written);
 
-		labelElement(os, group_label, row_label, single_child_per_parent, parent_row_wrapper, siblings_written );
+		labelChild(os, group_label, parent_row_wrapper, siblings_written );
 
 		if (group_wrapper == GroupWrapper::array_wrapper){
 			os  << open_array_token;
@@ -53,24 +53,8 @@ namespace datastream {
 			os << close_array_token;
 		}
 	};
-	//
-	// //6 parameter version in parent
-	// virtual void labelElement(
-	// 	ostream & os,
-	// 	const string& group_label,
-	// 	const string& row_label,
-	// 	bool single_child_per_parent,
-	//
-	// 	RowWrapper parent_row_wrapper,
-	// 	unsigned int & siblings_written
-	//
-	// ){
-	// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
-	// 		labelElement(os,(single_child_per_parent?row_label:group_label), parent_row_wrapper, siblings_written);
-	// 	}
-	// };
-	//
-	void jsonCompactFormatter::label(
+
+	void jsonCompactFormatter::labelChild(
 		ostream & os,
 		const string& label,
 		RowWrapper parent_row_wrapper,
@@ -119,12 +103,13 @@ namespace datastream {
 		const string& value,
 		bool isNull,
 		ElementDataType data_type,
+		GroupWrapper parent_group_wrapper,
 		RowWrapper parent_row_wrapper,
 		unsigned int & siblings_written
 
 	){
 		separate(os, siblings_written);
-		label(os, name, parent_row_wrapper, siblings_written);
+		labelChild(os, name, parent_row_wrapper, siblings_written);
 		writeValue(os, name, value, isNull, data_type, siblings_written);
 	};
 
@@ -134,8 +119,8 @@ namespace datastream {
 
 
 
-	void jsonCompactFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
-	};
+	// void jsonCompactFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
+	// };
 
 
 	void jsonCompactFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
@@ -220,14 +205,14 @@ namespace datastream {
 		// }
 	};
 
-	void jsonCompactFormatter::closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group)
-	{
+	// void jsonCompactFormatter::closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group)
+	// {
+	//
+	// };
 
-	};
-
-	void jsonCompactFormatter::closeElement(ostream & os, const string& name, bool no_array_wrapper_around_group)
+	void jsonCompactFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )
 	{
-		if (!no_array_wrapper_around_group){
+		if (row_wrapper != RowWrapper::no_wrapper){
 			separate(os);
 		}
 	};

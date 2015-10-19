@@ -8,9 +8,9 @@
 
 2,2,last,string
 
-0,3,number,integer
+0,3,size,integer
 
 0,4,region,string
 1,4,flag,string
 
-0,5,number_type,string
+0,5,description,string

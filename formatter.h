@@ -123,29 +123,8 @@ namespace datastream {
 			unsigned int & siblings_written,
 
 			RowWrapper parent_row_wrapper,
-			GroupWrapper group_wrapper
-		){};
-
-		inline virtual void labelElement(
-			ostream & os,
-			const string& group_label,
-			const string& row_label,
 			bool single_child_per_parent,
-
-			RowWrapper parent_row_wrapper,
-			unsigned int & siblings_written
-
-		){
-			if (parent_row_wrapper == RowWrapper::object_wrapper){
-				label(os,(single_child_per_parent?row_label:group_label), parent_row_wrapper, siblings_written);
-			}
-		};
-
-		inline virtual void label(
-			ostream & os,
-			const string& label,
-			RowWrapper parent_row_wrapper,
-			unsigned int & siblings_written
+			GroupWrapper group_wrapper
 		){};
 
 		inline virtual void openElement(
@@ -163,6 +142,7 @@ namespace datastream {
 			const string& value,
 			bool isNull,
 			ElementDataType data_type,
+			GroupWrapper parent_group_wrapper,
 			RowWrapper parent_row_wrapper,
 			unsigned int & siblings_written
 
@@ -182,11 +162,11 @@ namespace datastream {
 		){};
 
 		inline virtual void open(ostream & os, GroupWrapper group_wrapper){};
-		inline virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
+		//inline virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
 		inline virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){}
 		inline virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper){};
-		inline virtual void closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
-		inline virtual void closeElement(ostream & os, const string& name, bool no_array_wrapper_around_group = false){};
+		//inline virtual void closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
+		inline virtual void closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written ){};
 		inline virtual void close(ostream & os, GroupWrapper group_wrapper){};
 
 	protected:

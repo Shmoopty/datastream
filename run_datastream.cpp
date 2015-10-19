@@ -1,5 +1,6 @@
 #include "json_formatter.h"
 #include "json_compact_formatter.h"
+#include "xml_formatter.h"
 #include "model.h"
 #include "datastream.h"
 
@@ -42,6 +43,7 @@ void setter(const char ch, bool & isSet, T & val, const std::map<char,T> & m){
 		throw std::invalid_argument(datastream::usage);
 	}
 	val = search->second;
+	isSet = true;
 }
 
 void readArgs(
@@ -123,12 +125,17 @@ Formatter * createFormatter(
 	Style style
 ){
 
-	if (style == Style::compact){
-		return new jsonCompactFormatter();
+	if (format == Format::json){
+		if (style == Style::compact){
+			return new jsonCompactFormatter();
+		}
+		else {
+			return new jsonFormatter();
+		}
 	}
-	else {
-		return new jsonFormatter();
-	}
+	//else
+	return new xmlFormatter();
+
 }
 
 int main(int argc, char *argv[]){

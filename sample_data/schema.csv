@@ -12,12 +12,12 @@
 
 7,0,roots,root,./sample_data/7.csv,0,1,none,object
 
-1,2,colors,color,./sample_data/1.csv,0,0,array,none
+1,2,color_group,color_row,./sample_data/1.csv,0,0,array,none
 
 2,4,people,person,./sample_data/2.csv,0,0,array,object
 
-3,5,numbers,number,./sample_data/3.csv,1,0,array,object
+3,5,pairs,pair,./sample_data/3.csv,1,0,array,object
 
-4,7,regions,region,./sample_data/4.csv,0,0,array,object
+4,7,regions_group,region_row,./sample_data/4.csv,0,0,array,object
 
-5,7,number_type,value,./sample_data/5.csv,0,0,array,object
+5,7,shoes,type,./sample_data/5.csv,0,0,array,object

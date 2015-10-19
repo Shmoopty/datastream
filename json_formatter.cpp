@@ -37,7 +37,7 @@ namespace datastream {
 	){
 		step(os, siblings_written);
 
-		labelElement(os, group_label, row_label, single_child_per_parent, parent_row_wrapper, siblings_written );
+		labelChild(os, group_label, parent_row_wrapper, siblings_written );
 
 		if (group_wrapper == GroupWrapper::array_wrapper){
 			os  << open_array_token;
@@ -52,6 +52,7 @@ namespace datastream {
 		unsigned int & siblings_written,
 
 		RowWrapper parent_row_wrapper,
+		bool single_child_per_parent,
 		GroupWrapper group_wrapper
 	){
 		if (group_wrapper == GroupWrapper::array_wrapper){
@@ -60,24 +61,8 @@ namespace datastream {
 			clean = false;
 		}
 	};
-	//
-	// //6 parameter version in parent
-	// virtual void labelElement(
-	// 	ostream & os,
-	// 	const string& group_label,
-	// 	const string& row_label,
-	// 	bool single_child_per_parent,
-	//
-	// 	RowWrapper parent_row_wrapper,
-	// 	unsigned int & siblings_written
-	//
-	// ){
-	// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
-	// 		labelElement(os,(single_child_per_parent?row_label:group_label), parent_row_wrapper, siblings_written);
-	// 	}
-	// };
-	//
-	void jsonFormatter::label(
+
+	void jsonFormatter::labelChild(
 		ostream & os,
 		const string& label,
 		RowWrapper parent_row_wrapper,
@@ -130,20 +115,29 @@ namespace datastream {
 		const string& value,
 		bool isNull,
 		ElementDataType data_type,
+		GroupWrapper parent_group_wrapper,
 		RowWrapper parent_row_wrapper,
 		unsigned int & siblings_written
 
 	){
-		step(os, siblings_written);
-		label(os, name, parent_row_wrapper, siblings_written);
+		if (!
+			(
+				parent_row_wrapper == RowWrapper::no_wrapper &&
+				parent_group_wrapper == GroupWrapper::no_wrapper
+			)
+		){
+			step(os, siblings_written);
+		}
+		labelChild(os, name, parent_row_wrapper, siblings_written);
 		writeValue(os, name, value, isNull, data_type, siblings_written);
 	};
 
 	void jsonFormatter::open(ostream & os, GroupWrapper group_wrapper){
+		//add array tag here if group wrapper requires it
 	};
 
-	void jsonFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
-	};
+	// void jsonFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
+	// };
 
 	void jsonFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
 
@@ -197,6 +191,7 @@ namespace datastream {
 			siblings_written,
 
 			parent_row_wrapper,
+			single_child_per_parent,
 			group_wrapper
 		);
 
@@ -235,21 +230,28 @@ namespace datastream {
 		}
 	};
 
-	void jsonFormatter::closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group)
-	{
+	// void jsonFormatter::closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group)
+	// {
+	//
+	// };
 
-	};
-
-	void jsonFormatter::closeElement(ostream & os, const string& name, bool no_array_wrapper_around_group)
+	void jsonFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )
 	{
-		down();
-		if (!no_array_wrapper_around_group){
-			stepDown(os);
-		}
+		//down();
+		stepDown(os);
+		// if (row_wrapper != RowWrapper::no_wrapper){
+		// 	stepDown(os);
+		// }
 	};
 
 	void jsonFormatter::close(ostream & os, GroupWrapper group_wrapper)
 	{
+		//DEV
+		// enum class GroupWrapper {
+		// 	array_wrapper,
+		// 	no_wrapper
+		// };
+		//close array here!
 	};
 
 }
