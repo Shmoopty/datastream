@@ -96,7 +96,6 @@ namespace datastream {
 		}
 	};
 
-
 	void jsonCompactFormatter::writeElement(
 		ostream & os,
 		const string& name,
@@ -112,16 +111,6 @@ namespace datastream {
 		labelChild(os, name, parent_row_wrapper, siblings_written);
 		writeValue(os, name, value, isNull, data_type, siblings_written);
 	};
-
-
-	void jsonCompactFormatter::open(ostream & os, GroupWrapper group_wrapper){
-	};
-
-
-
-	// void jsonCompactFormatter::openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){
-	// };
-
 
 	void jsonCompactFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
 
@@ -177,18 +166,15 @@ namespace datastream {
 			return;
 		}
 
-		//override
-		unsigned int none = 0;
+		unsigned int no_children = 0;
 
-		openRow(os, row_label, rowWrapper, none);
+		openRow(os, row_label, rowWrapper, no_children);
 		closeRow(os, row_label, rowWrapper);
 
 		if (rowWrapper != RowWrapper::no_wrapper){
 			return;
 		}
-
-		writeValue(os, blank, blank, true, ElementDataType::type_raw, none);
-
+		writeValue(os, blank, blank, true, ElementDataType::type_raw, no_children);
 	};
 
 	void jsonCompactFormatter::closeRow(ostream & os, const string& name, RowWrapper rowWrapper)
@@ -201,14 +187,7 @@ namespace datastream {
 			separate(os);
 			os  << close_array_token;
 		}
-		// else if (rowWrapper == RowWrapper::no_wrapper){
-		// }
 	};
-
-	// void jsonCompactFormatter::closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group)
-	// {
-	//
-	// };
 
 	void jsonCompactFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )
 	{
@@ -216,9 +195,4 @@ namespace datastream {
 			separate(os);
 		}
 	};
-
-	void jsonCompactFormatter::close(ostream & os, GroupWrapper group_wrapper)
-	{
-	};
-
 }
