@@ -78,7 +78,8 @@ namespace datastream {
 					data_child.isNull(),
 					schema_child.dataType(),
 
-					//parent row wrapper
+					//parent wrappers
+					schema_set.groupWrapper(),
 					schema_set.rowWrapper(),
 					children_written
 				);

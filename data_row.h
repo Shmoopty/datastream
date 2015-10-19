@@ -101,6 +101,10 @@ namespace datastream {
 
 			for (auto& row : rows){
 				deref(row).write(os, schema_set, formatter, children_written);
+
+				if(schema_set.limitSingleChild() && children_written > 0){
+					break;
+				}
 			}
 
 			formatter.closeGroup(
@@ -110,6 +114,7 @@ namespace datastream {
 				siblings_written,
 
 				parent_row_wrapper_type,
+				schema_set.limitSingleChild(),
 				schema_set.groupWrapper()
 			);
 
