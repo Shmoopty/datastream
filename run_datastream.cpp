@@ -1,6 +1,7 @@
 #include "json_formatter.h"
 #include "json_compact_formatter.h"
 #include "xml_formatter.h"
+#include "xml_compact_formatter.h"
 #include "model.h"
 #include "datastream.h"
 
@@ -133,9 +134,16 @@ Formatter * createFormatter(
 			return new jsonFormatter();
 		}
 	}
-	//else
-	return new xmlFormatter();
 
+	//format == Format::xml
+	else {
+		if (style == Style::compact){
+			return new xmlCompactFormatter();
+		}
+		else {
+			return new xmlFormatter();
+		}
+	}
 }
 
 int main(int argc, char *argv[]){
