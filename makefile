@@ -1,33 +1,40 @@
 CC=g++
-CFLAGS= -std=c++11 -Wall
+CFLAGS= -c -std=c++11 -Wall
 LDFLAGS=
-#
-SOURCES=run_datastream.cpp datastream.cpp data.cpp model.cpp data_set.cpp data_row.cpp data_element.cpp schema.cpp schema_set.cpp schema_element.cpp xml_compact_formatter.cpp xml_formatter.cpp json_compact_formatter.cpp json_formatter.cpp formatter.cpp indent.cpp quote.cpp
 
-RUN_PARAMETERS =  ./sample_data/schema.csv ./sample_data/schema_element.csv -jp | tee output.json
+SOURCES=main.cpp datastream.cpp data.cpp model.cpp data_set.cpp data_row.cpp data_element.cpp schema.cpp schema_set.cpp schema_element.cpp xml_compact_formatter.cpp xml_formatter.cpp json_compact_formatter.cpp json_formatter.cpp formatter.cpp indent.cpp quote.cpp
+
+RUN_PARAMETERS_JSON =  ./sample_data/schema.csv ./sample_data/schema_element.csv -jp | tee ./output/output.json
+RUN_PARAMETERS_JSON_COMPACT =  ./sample_data/schema.csv ./sample_data/schema_element.csv -jc > ./output/output_compact.json
+RUN_PARAMETERS_XML =  ./sample_data/schema.csv ./sample_data/schema_element.csv -xp | tee ./output/output.xml
+RUN_PARAMETERS_XML_COMPACT =  ./sample_data/schema.csv ./sample_data/schema_element.csv -xc > ./output/output_compact.xml
+
 OBJECTS=$(SOURCES:.cpp=.o)
-#../run_datastream ./sample_data/schema.csv ./sample_data/schema_element.csv -p | tee output.json
-EXECUTABLE=../ds
 
-.PHONY: clean all build run clearscreen
+EXECUTABLE=./ds
 
-all:	clearscreen clean build run
+.PHONY: all clearscreen clean_before build clean_after run
+
+all:	clearscreen clean_before build clean_after run
 
 clearscreen:
 		clear
 
-build:
-	$(CC) $(CFLAGS) $(SOURCES) -o $(EXECUTABLE)
-#	$(SOURCES) $(EXECUTABLE)
-#
+build: $(SOURCES) $(EXECUTABLE)
 
-# $(EXECUTABLE): $(OBJECTS)
-# 		$(CC) $(LDFLAGS) $(OBJECTS) -o -v $@
-#
-# .cpp.o:
-# 		$(CC) $(CFLAGS) $< -o $@
+$(EXECUTABLE): $(OBJECTS)
+		$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-clean:
+.cpp.o:
+		$(CC) $(CFLAGS) $< -o $@
+
+clean_before:
 		rm -f $(EXECUTABLE)
+
+clean_after:
+		rm *.o
 run:
-		$(EXECUTABLE) $(RUN_PARAMETERS)
+		$(EXECUTABLE) $(RUN_PARAMETERS_JSON_COMPACT)
+		$(EXECUTABLE) $(RUN_PARAMETERS_XML_COMPACT)
+		$(EXECUTABLE) $(RUN_PARAMETERS_JSON)
+		$(EXECUTABLE) $(RUN_PARAMETERS_XML)
