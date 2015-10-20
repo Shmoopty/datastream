@@ -1,7 +1,7 @@
 #include "formatter.h"
 
 namespace datastream {
-	
+
 	//Formatter::Formatter(){};
 
 	void Formatter::up(unsigned int i ){

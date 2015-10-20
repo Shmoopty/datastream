@@ -7,6 +7,7 @@ namespace datastream {
 	class jsonFormatter:public Formatter{
 
 	public:
+		virtual ~jsonFormatter() = default;
 
 		virtual void separate(
 			ostream & os,
@@ -95,7 +96,6 @@ namespace datastream {
 
 		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper);
 
-		virtual void closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written );
 	};
 }
 #endif

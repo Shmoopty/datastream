@@ -190,11 +190,4 @@ namespace datastream {
 			os  << close_array_token;
 		}
 	};
-
-	void jsonCompactFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )
-	{
-		if (row_wrapper != RowWrapper::no_wrapper){
-			separate(os);
-		}
-	};
 }

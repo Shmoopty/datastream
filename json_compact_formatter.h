@@ -2,12 +2,13 @@
 #define datastream_json_compact_formatter
 
 
-#include "json_formatter.h"
+#include "formatter.h"
 namespace datastream {
 
-	class jsonCompactFormatter:public jsonFormatter{
+	class jsonCompactFormatter:public Formatter{
 
 	public:
+		virtual ~jsonCompactFormatter() = default;
 
 		virtual void separate(
 			ostream & os,
@@ -31,7 +32,6 @@ namespace datastream {
 
 			bool single_child_per_parent,
 			GroupWrapper group_wrapper
-
 		);
 
 		virtual void closeGroup(
@@ -96,8 +96,6 @@ namespace datastream {
 		);
 
 		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper);
-
-		virtual void closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written );
 
 	};
 }

@@ -216,9 +216,4 @@ namespace datastream {
 			down();
 		}
 	};
-
-	void jsonFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )
-	{
-		stepDown(os);
-	};
 }

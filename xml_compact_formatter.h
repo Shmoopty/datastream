@@ -67,10 +67,6 @@ namespace datastream {
 
 		);
 
-		virtual void open(ostream & os, GroupWrapper group_wrapper);
-
-		//virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group);
-
 		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written );
 
 		virtual void writeEmptyGroup(
@@ -88,11 +84,7 @@ namespace datastream {
 
 		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper);
 
-		//virtual void closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group);
-
 		virtual void closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written );
-
-		virtual void close(ostream & os, GroupWrapper group_wrapper);
 
 	};
 }

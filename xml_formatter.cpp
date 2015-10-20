@@ -115,8 +115,8 @@ namespace datastream {
 		closeElement(os, name, parent_row_wrapper, siblings_written);
 	};
 
-	void xmlFormatter::open(ostream & os, GroupWrapper group_wrapper){
-	};
+	// void xmlFormatter::open(ostream & os, GroupWrapper group_wrapper){
+	// };
 
 	void xmlFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
 		if (rowWrapper == RowWrapper::object_wrapper || rowWrapper == RowWrapper::array_wrapper){
@@ -205,8 +205,8 @@ namespace datastream {
 	};
 
 
-	void xmlFormatter::close(ostream & os, GroupWrapper group_wrapper)
-	{
-	};
+	// void xmlFormatter::close(ostream & os, GroupWrapper group_wrapper)
+	// {
+	// };
 
 }

@@ -14,7 +14,7 @@ namespace datastream {
 
 	public:
 		virtual ~Formatter() = default;
-		
+
 		virtual void up(unsigned int i = 1);
 
 		virtual void down(unsigned int i = 1);

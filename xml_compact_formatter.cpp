@@ -85,9 +85,6 @@ namespace datastream {
 		closeElement(os, name, parent_row_wrapper, siblings_written);
 	};
 
-	void xmlCompactFormatter::open(ostream & os, GroupWrapper group_wrapper){
-	};
-
 	void xmlCompactFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
 		if (rowWrapper == RowWrapper::object_wrapper || rowWrapper == RowWrapper::array_wrapper){
 			os << open_angle << name << close_angle;
@@ -150,23 +147,17 @@ namespace datastream {
 			return;
 		}
 
-		//override
-		unsigned int none = 0;
+		//override?
+		unsigned int no_children = 0;
 
-		openRow(os, row_label, rowWrapper, none);
+		openRow(os, row_label, rowWrapper, no_children);
 		closeRow(os, row_label, rowWrapper);
 
 		if (rowWrapper != RowWrapper::no_wrapper){
 			return;
 		}
 
-		writeValue(os, blank, blank, true, ElementDataType::type_raw, none);
+		writeValue(os, blank, blank, true, ElementDataType::type_raw, no_children);
 
 	};
-
-
-	void xmlCompactFormatter::close(ostream & os, GroupWrapper group_wrapper)
-	{
-	};
-
 }
