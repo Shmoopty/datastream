@@ -4,6 +4,10 @@
 #include "schema.h"
 #include "data.h"
 #include "formatter.h"
+#include "json_formatter.h"
+#include "json_compact_formatter.h"
+#include "xml_formatter.h"
+#include "xml_compact_formatter.h"
 
 namespace datastream {
 

@@ -12,6 +12,10 @@
 #include <stdexcept>
 #include <sstream>
 #include "formatter.h"
+#include "json_formatter.h"
+// #include "json_compact_formatter.h"
+// #include "xml_formatter.h"
+// #include "xml_compact_formatter.h"
 #include "model.h"
 
 namespace datastream {
@@ -19,12 +23,9 @@ namespace datastream {
 	class Datastream{
 
 	public:
-		Datastream() = default;
+		Datastream() = delete;
 
-		inline Datastream(Model& model, Formatter& formatter):
-		model(model),
-		formatter(formatter)
-		{};
+		Datastream(Model& model, Formatter& formatter);
 
 		friend std::ostream& operator<<(std::ostream& os, const Datastream& obj)
 		{
@@ -35,7 +36,6 @@ namespace datastream {
 	private:
 		Model& model;
 		Formatter& formatter;
-
 	};
 }
 #endif

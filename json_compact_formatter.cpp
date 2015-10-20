@@ -47,6 +47,7 @@ namespace datastream {
 		unsigned int & siblings_written,
 
 		RowWrapper parent_row_wrapper,
+		bool single_child_per_parent,
 		GroupWrapper group_wrapper
 	){
 		if (group_wrapper == GroupWrapper::array_wrapper){
@@ -159,6 +160,7 @@ namespace datastream {
 			siblings_written,
 
 			parent_row_wrapper,
+			single_child_per_parent,
 			group_wrapper
 		);
 
