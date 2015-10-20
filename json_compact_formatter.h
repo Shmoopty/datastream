@@ -41,6 +41,7 @@ namespace datastream {
 			unsigned int & siblings_written,
 
 			RowWrapper parent_row_wrapper,
+			bool single_child_per_parent,
 			GroupWrapper group_wrapper
 		);
 

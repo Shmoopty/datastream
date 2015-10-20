@@ -2,121 +2,50 @@
 #define datastream_formatter
 
 #include "datastream_definitions.h"
-
+#include "quote.h"
+#include "indent.h"
 #include <iostream>
 
 namespace datastream {
 
 	using std::ostream;
 
-	class Formatter;
-
-	class Quote{
-	public:
-		friend ostream& operator<<(std::ostream& os, const Quote& obj){
-			obj.write(os);
-		  return os;
-		}
-		Quote() = delete;
-
-		inline Quote(const string & text, const string & quote):
-		text(text), quote(quote){}
-
-		inline void write(ostream & os) const{
-			os << quote << text << quote;
-		}
-
-	private:
-		const string & text;
-		const string & quote;
-	};
-
-	class Indent{
-	public:
-
-		friend ostream& operator<<(std::ostream& os, const Indent& obj){
-			obj.write(os);
-		  return os;
-		}
-
-		Indent() = delete;
-		inline Indent(const string & indent, unsigned int depth = 1):
-			indent(indent),
-			depth(depth){}
-
-		inline void write(ostream & os) const{
-			for (int i=0; i < depth; ++i){
-				os << indent;
-			}
-		}
-
-	private:
-		const string & indent;
-		unsigned int depth;
-	};
-
 	class Formatter{
 
 	public:
+		virtual ~Formatter() = default;
+		
+		virtual void up(unsigned int i = 1);
 
-		inline virtual void up(unsigned int i = 1){
-			depth += i;
-		}
+		virtual void down(unsigned int i = 1);
 
-		inline virtual void down(unsigned int i = 1){
-			depth -= i;
-			if (depth < 0){
-				depth=0;
-			}
-		}
+		virtual void setDepth(unsigned int i = 1);
 
-		inline virtual void setDepth(unsigned int i = 1){
-			depth = i;
-		}
-
-		inline virtual void separate(
+		virtual void separate(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		){}
+		);
 
-		inline virtual void step(
+		virtual void step(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		){}
+		);
 
-		inline virtual void stepUp(
+		virtual void stepUp(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		){
-			up();
-			step(os, siblings_written, extraIndent);
-		}
+		);
 
-		inline virtual void stepDown(
+		virtual void stepDown(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		){
-			down();
-			step(os, siblings_written, extraIndent);
-		}
+		);
 
-		inline virtual void openGroup(
-			ostream & os,
-			const string& group_label,
-			const string& row_label,
-			unsigned int & siblings_written,
-
-			RowWrapper parent_row_wrapper,
-
-			bool single_child_per_parent,
-			GroupWrapper group_wrapper
-		){};
-
-		inline virtual void closeGroup(
+		virtual void openGroup(
 			ostream & os,
 			const string& group_label,
 			const string& row_label,
@@ -125,18 +54,36 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 			bool single_child_per_parent,
 			GroupWrapper group_wrapper
-		){};
+		);
 
-		inline virtual void openElement(
+		virtual void closeGroup(
+			ostream & os,
+			const string& group_label,
+			const string& row_label,
+			unsigned int & siblings_written,
+
+			RowWrapper parent_row_wrapper,
+			bool single_child_per_parent,
+			GroupWrapper group_wrapper
+		);
+
+		virtual void openElement(
 			ostream & os,
 			const string& label,
 			RowWrapper row_wrapper,
 			unsigned int & siblings_written
-		){};
+		);
 
-		inline virtual void writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, unsigned int & siblings_written){};
+		virtual void writeValue(
+			ostream & os,
+			const string& name,
+			const string& value,
+			bool isNull,
+			ElementDataType data_type,
+			unsigned int & siblings_written
+		);
 
-		inline virtual void writeElement(
+		virtual void writeElement(
 			ostream & os,
 			const string& name,
 			const string& value,
@@ -146,9 +93,9 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 			unsigned int & siblings_written
 
-		){};
+		);
 
-		inline virtual void writeEmptyGroup(
+		virtual void writeEmptyGroup(
 			ostream & os,
 			const string& group_label,
 			const string& row_label,
@@ -159,15 +106,13 @@ namespace datastream {
 			bool single_child_per_parent,
 			GroupWrapper group_wrapper,
 			RowWrapper rowWrapper
-		){};
+		);
 
-		inline virtual void open(ostream & os, GroupWrapper group_wrapper){};
-		//inline virtual void openRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
-		inline virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){}
-		inline virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper){};
-		//inline virtual void closeRows(ostream & os, const string& name, bool no_array_wrapper_around_group){};
-		inline virtual void closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written ){};
-		inline virtual void close(ostream & os, GroupWrapper group_wrapper){};
+		virtual void open(ostream & os, GroupWrapper group_wrapper);
+		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written );
+		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper);
+		virtual void closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written );
+		virtual void close(ostream & os, GroupWrapper group_wrapper);
 
 	protected:
 
