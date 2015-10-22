@@ -31,7 +31,12 @@ using namespace datastream;
 template <typename T>
 std::string concatenateFlags(const std::map<char,T> & m){
 	std::string s;
-	for (auto & f : m){
+	/* Drew Dormann - 
+		Only for the purpose of code consistency in a large project -
+		range-based loops can consistently use "auto &&" when mutating
+		a range, and "const auto &" when not mutating. */
+
+	for (const auto & f : m){
 		s += f.first;
 	}
 	return s;
@@ -122,27 +127,32 @@ void readArgs(
 	}
 }
 
-Formatter * createFormatter(
+	/* Drew Dormann - 
+		It's a safe assumption that std::unique_ptr will be as efficient as
+		a raw pointer in production code.  This fixes memory leaks in the
+		"catch" below. */
+
+std::unique_ptr<Formatter> createFormatter(
 	Format format,
 	Style style
 ){
 
 	if (format == Format::json){
 		if (style == Style::compact){
-			return new jsonCompactFormatter();
+			return std::unique_ptr<Formatter>{new jsonCompactFormatter()};
 		}
 		else {
-			return new jsonFormatter();
+			return std::unique_ptr<Formatter>{new jsonFormatter()};
 		}
 	}
 
 	//format == Format::xml
 	else {
 		if (style == Style::compact){
-			return new xmlCompactFormatter();
+			return std::unique_ptr<Formatter>{new xmlCompactFormatter()};
 		}
 		else {
-			return new xmlFormatter();
+			return std::unique_ptr<Formatter>{new xmlFormatter()};
 		}
 	}
 }
@@ -161,7 +171,7 @@ int main(int argc, char *argv[]){
 
 		readArgs(argc, argv, schema_file_path, element_file_path, format, style );
 
-		Formatter * formatter = createFormatter(format, style);
+		auto formatter = createFormatter(format, style);
 
 		Model model(
 			schema_file_path,
@@ -170,7 +180,6 @@ int main(int argc, char *argv[]){
 
 		std::cout << Datastream(model,*formatter);
 
-		delete formatter;
 
 	}
 	catch( const std::exception& e ){

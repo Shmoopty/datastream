@@ -12,7 +12,6 @@ namespace datastream {
 	using std::string;
 	using std::vector;
 	using std::list;
-	using std::map;
 
 	class SchemaSet {
 
@@ -23,9 +22,21 @@ namespace datastream {
 			unsigned int id,
 			unsigned int parent,
 
-			string&& group_name,
-			string&& row_name,
-			string&& filename,
+		/* Drew Dormann - 
+			Since std::string can be move-constructed, passing these by value
+			will work with both l-values and r-values, performing minimum copies
+			in both cases.  The old form would only be preferable, I believe,
+			only if you wanted to force calling code to perform whatever actions were
+			necessary to convert their value to an r-value.   I don't think you want
+			that.
+
+			http://stackoverflow.com/questions/7592630
+			https://web.archive.org/web/20140205194657/http://cpp-next.com/archive/2009/08/want-speed-pass-by-value/
+		*/
+
+			string group_name,
+			string row_name,
+			string filename,
 
 			bool limit_single_child = false,
 			bool hide_when_empty = false,
@@ -52,7 +63,7 @@ namespace datastream {
 		inline const list<SchemaElement>& childElements() const {return child_elements_;}
 
 		void connect(SchemaSet& child_set);
-		void addElement(int element_id, int element_parent, string&& element_name, ElementDataType element_data_type);
+		void addElement(int element_id, int element_parent, string element_name, ElementDataType element_data_type);
 		bool hasChildSets() const;
 
 	private:

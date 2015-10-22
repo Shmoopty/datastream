@@ -11,7 +11,7 @@ namespace datastream {
 		depth(depth){}
 
 	void Indent::write(ostream & os) const{
-		for (int i=0; i < depth; ++i){
+		for (unsigned int i=0; i < depth; ++i){
 			os << indent;
 		}
 	}

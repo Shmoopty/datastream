@@ -10,7 +10,8 @@
 
 namespace datastream {
 
-	using std::map;
+	/* Drew Dormann - 
+		Comments are elsewhere on the removal of "using std::map" */
 	using namespace datastream;
 
 	class DataSet{
@@ -34,7 +35,7 @@ namespace datastream {
 		private:
 			const SchemaSet& schema_set;
 			list<DataRow> rows;
-			map<int, vector<DataRow*>> id_to_rows_map;
+			std::map<int, vector<DataRow*>> id_to_rows_map;
 	};
 }
 #endif

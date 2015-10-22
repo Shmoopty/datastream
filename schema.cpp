@@ -64,8 +64,10 @@ namespace datastream {
 				std::move(matched[match_index_row_name]),
 				std::move(matched[match_index_input_filename]),
 
-				(bool)std::stoi(matched[match_index_hide_when_empty]),
-				(bool)std::stoi(matched[match_force_single_row_per_parent]),
+				/* Drew Dormann - 
+					Not a functional change, but C-style casts are very often frowned upon */
+				static_cast<bool>(std::stoi(matched[match_index_hide_when_empty])),
+				static_cast<bool>(std::stoi(matched[match_force_single_row_per_parent])),
 				group_wrapper,
 				row_wrapper
 			);
@@ -117,23 +119,12 @@ namespace datastream {
 				it must be acyclic
 				all nodes must be connected
 		*/
+		/* Drew Dormann - 
+			The changes below only iterate the set once.  Instead of
+			"count, then find", this does "find, then continue the same find". */
 
 		// test 1:
-		// does structure have one root?
-		//find a quick way to do this on std::find_if iterator and this can be cut
-		int root_count = std::count_if(
-			sets_.begin(),
-			sets_.end(),
-			[](const SchemaSet& set){
-				return !set.hasParent();
-			}
-		);
-
-		if (root_count != 1){
-			throw std::domain_error("sorry, the data does not contain a starting point to begin writing");
-		}
-
-		//locate the root
+		// locate the root
 		auto root_search = std::find_if(
 			sets_.begin(),
 			sets_.end(),
@@ -143,7 +134,27 @@ namespace datastream {
 		);
 
 		if (root_search == sets_.end()){
-			throw std::domain_error("sorry about this, i cannot find the starting point to begin writing.");
+			throw std::domain_error("sorry about this, i cannot find the starting point to begin writing");
+		}
+
+		/* Drew Dormann - 
+			The "find_if" below could be changed to "count_if", should some
+			future need - like an error message - require the actual number
+			of roots detected. */
+
+		// validate that root_search is the only root
+		auto remaining_sets_begin = root_search;
+		++remaining_sets_begin;
+		auto multiple_roots_search = std::find_if(
+			remaining_sets_begin,
+			sets_.end(),
+			[](const SchemaSet& set){
+				return !set.hasParent();
+			}
+		);
+
+		if (multiple_roots_search != sets_.end()){
+			throw std::domain_error("sorry, the data does not contain one starting point to begin writing.");
 		}
 
 		// now we have a root make a map of parent to child to begin
@@ -271,7 +282,7 @@ namespace datastream {
 	void Schema::loadElements(const string & schema_elements_filename)
 	{
 		ifstream file (schema_elements_filename);
-	    if ( !file.is_open()){
+		if ( !file.is_open()){
 			throw std::domain_error("cannot open element schema.");
 		}
 

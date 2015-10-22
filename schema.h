@@ -38,7 +38,7 @@ namespace datastream {
 	private:
 
 		list<SchemaSet> sets_;
-		map<int, SchemaSet*> sets_by_id_;
+		std::map<int, SchemaSet*> sets_by_id_;
 		vector<int> dependency_order_;
 
 		void clear();
