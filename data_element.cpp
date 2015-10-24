@@ -6,22 +6,15 @@ namespace datastream {
 	/* Drew Dormann -
 		move would be apprpriate here regardless of whether it's passed 
 		as string or string&& */
-	value_(std::move(value)),
-	is_null_(false)
+	value_{std::move(value)}
 	{}
 
 	DataElement::DataElement():
-	value_(blank),
-	is_null_(true)
+	value_{}
 	{}
 
-	bool DataElement::isNull() const
+	const boost::optional<string>& DataElement::getValue() const
 	{
-		return is_null_;
-	}
-
-	const string& DataElement::getValue() const
-	{
-		return is_null_?blank:value_;
+		return value_;
 	}
 }

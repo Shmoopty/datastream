@@ -59,10 +59,10 @@ namespace datastream {
 
 		inline RowWrapper rowWrapper () const {return row_wrapper_;}
 		inline GroupWrapper groupWrapper () const {return group_wrapper_;}
-		inline const vector<SchemaSet*>& childSets() const {return child_sets_;}
+		inline const vector<const SchemaSet*>& childSets() const {return child_sets_;}
 		inline const list<SchemaElement>& childElements() const {return child_elements_;}
 
-		void connect(SchemaSet& child_set);
+		void connect(const SchemaSet& child_set);
 		void addElement(int element_id, int element_parent, string element_name, ElementDataType element_data_type);
 		bool hasChildSets() const;
 
@@ -82,7 +82,7 @@ namespace datastream {
 		RowWrapper row_wrapper_;
 
 		list<SchemaElement> child_elements_;
-		vector<SchemaSet*> child_sets_;
+		vector<const SchemaSet*> child_sets_;
 	};
 };
 

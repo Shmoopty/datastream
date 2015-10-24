@@ -87,13 +87,13 @@ namespace datastream {
 		clean = false;
 	};
 
-	void xmlFormatter::writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, unsigned int & siblings_written){
+	void xmlFormatter::writeValue(ostream & os, const string& name, const boost::optional<string>& value, ElementDataType data_type, unsigned int & siblings_written){
 
-		if (isNull){
-			os << null_keyword;
+		if (value){
+			os << *value;
 		}
 		else{
-			os << value;
+			os << null_keyword;
 		}
 		clean = false;
 	};
@@ -101,8 +101,7 @@ namespace datastream {
 	void xmlFormatter::writeElement(
 		ostream & os,
 		const string& name,
-		const string& value,
-		bool isNull,
+		const boost::optional<string>& value,
 		ElementDataType data_type,
 		GroupWrapper parent_group_wrapper,
 		RowWrapper parent_row_wrapper,
@@ -111,7 +110,7 @@ namespace datastream {
 	){
 		step(os, siblings_written);
 		openElement(os, name, parent_row_wrapper, siblings_written);
-		writeValue(os, name, value, isNull, data_type, siblings_written);
+		writeValue(os, name, value, data_type, siblings_written);
 		closeElement(os, name, parent_row_wrapper, siblings_written);
 	};
 
@@ -200,7 +199,7 @@ namespace datastream {
 			return;
 		}
 
-		writeValue(os, blank, blank, true, ElementDataType::type_raw, none);
+		writeValue(os, blank, {}, ElementDataType::type_raw, none);
 
 	};
 

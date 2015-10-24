@@ -75,7 +75,6 @@ namespace datastream {
 					os,
 					schema_child.name(),
 					data_child.getValue(),
-					data_child.isNull(),
 					schema_child.dataType(),
 
 					//parent wrappers

@@ -38,7 +38,7 @@ namespace datastream {
 		root_search->second->write(os, formatter);
 	}
 
-	void Data::load(const list<SchemaSet>& schema_sets){
+	void Data::load(const Schema::Sets& schema_sets){
 
 		clear();
 
