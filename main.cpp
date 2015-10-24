@@ -31,7 +31,12 @@ using namespace datastream;
 template <typename T>
 std::string concatenateFlags(const std::map<char,T> & m){
 	std::string s;
-	for (auto & f : m){
+	/* Drew Dormann - 
+		Only for the purpose of code consistency in a large project -
+		range-based loops can consistently use "auto &&" when mutating
+		a range, and "const auto &" when not mutating. */
+
+	for (const auto & f : m){
 		s += f.first;
 	}
 	return s;
@@ -122,29 +127,52 @@ void readArgs(
 	}
 }
 
-Formatter * createFormatter(
+	/* Drew Dormann - 
+		It's a safe assumption that std::unique_ptr will be as efficient as
+		a raw pointer in production code.  This fixes memory leaks in the
+		"catch" below. */
+
+std::unique_ptr<Formatter> createFormatter(
 	Format format,
 	Style style
 ){
+    /* Drew Dormann -
+            Algo changed to ensure that potential changes to Format or Style
+            enums are reflected here.
 
-	if (format == Format::json){
-		if (style == Style::compact){
-			return new jsonCompactFormatter();
-		}
-		else {
-			return new jsonFormatter();
-		}
-	}
+	    Another approach in situations like this would be to have a:
+		static std::map<Format,std::map<Style,std::unique_ptr<Formatter>>> formatters;
+	    and the single line "return formatters.at(format).at(style);" would
+	    return the correct match or throw, but it would have to be decided that
+	    construction of the map is trivial enough.
+     */
 
-	//format == Format::xml
-	else {
-		if (style == Style::compact){
-			return new xmlCompactFormatter();
+	switch (format)
+	{
+	case Format::json:
+		switch(style)
+		{
+                case Style::compact:
+			return std::unique_ptr<Formatter>{new jsonCompactFormatter()};
+                case Style::pretty:
+			return std::unique_ptr<Formatter>{new jsonFormatter()};
+                default:
+                        throw std::invalid_argument("Unknown Formatter json style");
 		}
-		else {
-			return new xmlFormatter();
+        case Format::xml:
+		switch(style)
+		{
+                case Style::compact:
+			return std::unique_ptr<Formatter>{new xmlCompactFormatter()};
+                case Style::pretty:
+			return std::unique_ptr<Formatter>{new xmlFormatter()};
+                default:
+                        throw std::invalid_argument("Unknown Formatter xml style");
 		}
-	}
+            
+        default:
+            throw std::invalid_argument("Unknown Formatter format");
+	    }
 }
 
 int main(int argc, char *argv[]){
@@ -161,7 +189,7 @@ int main(int argc, char *argv[]){
 
 		readArgs(argc, argv, schema_file_path, element_file_path, format, style );
 
-		Formatter * formatter = createFormatter(format, style);
+		auto formatter = createFormatter(format, style);
 
 		Model model(
 			schema_file_path,
@@ -170,7 +198,6 @@ int main(int argc, char *argv[]){
 
 		std::cout << Datastream(model,*formatter);
 
-		delete formatter;
 
 	}
 	catch( const std::exception& e ){

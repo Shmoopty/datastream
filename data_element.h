@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <boost/flyweight.hpp>
 #include "datastream_definitions.h"
 
 namespace datastream {
@@ -10,7 +11,7 @@ namespace datastream {
 	class DataElement{
 	public:
 
-		DataElement(string&& value);
+		DataElement(string value);
 
 		DataElement();
 
@@ -20,7 +21,7 @@ namespace datastream {
 
 	private:
 
-		string value_ = blank;
+		boost::flyweight<string> value_ = boost::flyweight<string>{blank};
 		bool is_null_ = true;
 	};
 }

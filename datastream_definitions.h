@@ -15,7 +15,8 @@
 namespace datastream {
 
 	using std::string;
-	using std::map;
+	/* Drew Dormann - 
+		Comments are elsewhere on the removal of "using std::map" */
 	using std::regex;
 
 	const string tab = "	";
@@ -240,6 +241,9 @@ namespace datastream {
 	const regex comma_pattern = regex(rx_comma);
 
 	inline bool isBlank (const std::string & line){
+		/* Drew Dormann - 
+			I'm assuming that the regex matching here is for consistency
+			and that's why "return line.empty();" isn't used. */
 		return std::regex_match (line,blank_pattern);
 	}
 

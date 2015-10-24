@@ -13,9 +13,21 @@ namespace datastream {
 		unsigned int id,
 		unsigned int parent,
 
-		string&& group_name,
-		string&& row_name,
-		string&& filename,
+		/* Drew Dormann - 
+			Since std::string can be move-constructed, passing these by value
+			will work with both l-values and r-values, performing minimum copies
+			in both cases.  The old form would only be preferable, I believe,
+			only if you wanted to force calling code to perform whatever actions were
+			necessary to convert their value to an r-value.   I don't think you want
+			that.
+
+			http://stackoverflow.com/questions/7592630
+			https://web.archive.org/web/20140205194657/http://cpp-next.com/archive/2009/08/want-speed-pass-by-value/
+ 		*/
+
+		string group_name,
+		string row_name,
+		string filename,
 
 		bool limit_single_child,
 		bool hide_when_empty,
@@ -27,9 +39,11 @@ namespace datastream {
 	id_(id),
 	parent_(parent),
 
-	group_name_(group_name),
-	row_name_(row_name),
-	input_filename_ (filename),
+	/* Drew Dormann - 
+		These were getting copied in the old code, despite being passed as && */
+	group_name_( std::move(group_name) ),
+	row_name_( std::move(row_name) ),
+	input_filename_ ( std::move(filename) ),
 
 	hide_when_empty_ (hide_when_empty),
 	limit_single_child_ (limit_single_child),
@@ -48,7 +62,7 @@ namespace datastream {
 		child_sets_.push_back(&child_set);
 	}
 
-	void SchemaSet::addElement(int element_id, int element_parent, string&& element_name, ElementDataType element_data_type)
+	void SchemaSet::addElement(int element_id, int element_parent, string element_name, ElementDataType element_data_type)
 	{
 		child_elements_.emplace_back(
 			element_id,
