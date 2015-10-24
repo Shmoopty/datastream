@@ -4,6 +4,7 @@
 #include <string>
 
 #include <boost/flyweight.hpp>
+#include <boost/optional.hpp>
 #include "datastream_definitions.h"
 
 namespace datastream {
@@ -15,14 +16,26 @@ namespace datastream {
 
 		DataElement();
 
-		bool isNull() const;
+		/* Drew Dormann -
+			I'm preserving the interface when convenient, but I
+			suggest a change here because there is a strong relationship 
+			between isNull() and getValue() that the interface doesn't
+			communicate - that the value returned from getValue might not
+			be "the truth" 
+		 */
+				
+		// bool isNull() const;
 
-		const string& getValue() const;
+		// const string& getValue() const;
+
+		using StringType = boost::flyweight<string>;
+		const boost::optional<string>& getValue() const;
 
 	private:
 
-		boost::flyweight<string> value_ = boost::flyweight<string>{blank};
-		bool is_null_ = true;
+		/* Drew Dormann -
+			A default-constructed optional is always "no value" */
+		boost::optional<string> value_ = {};
 	};
 }
 #endif

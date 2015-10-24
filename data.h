@@ -29,7 +29,7 @@ namespace datastream {
 			it wasn't portable C++. */
 		std::map<int, DataSet*> sets_by_id_;
 
-		void load(const list<SchemaSet>& schema_sets);
+		void load(const Schema::Sets& schema_sets);
 
 		void map(const Schema& schema);
 	};

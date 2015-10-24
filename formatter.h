@@ -5,6 +5,7 @@
 #include "quote.h"
 #include "indent.h"
 #include <iostream>
+#include <boost/optional.hpp>
 
 namespace datastream {
 
@@ -21,6 +22,17 @@ namespace datastream {
 
 		virtual void setDepth(unsigned int i = 1);
 
+		/* Drew Dormann -
+			This was perhaps overlooked?  I'm not certain.  I noticed it
+			after implementing the "override" modifier. */
+
+		virtual void labelChild(
+			ostream & os,
+			const string& label,
+			RowWrapper parent_row_wrapper,
+			unsigned int & siblings_written
+		) = 0;
+				
 		virtual void separate(
 			ostream & os,
 			unsigned int siblings_written = 0,
@@ -77,8 +89,7 @@ namespace datastream {
 		virtual void writeValue(
 			ostream & os,
 			const string& name,
-			const string& value,
-			bool isNull,
+			const boost::optional<string>& value,
 			ElementDataType data_type,
 			unsigned int & siblings_written
 		);
@@ -86,8 +97,7 @@ namespace datastream {
 		virtual void writeElement(
 			ostream & os,
 			const string& name,
-			const string& value,
-			bool isNull,
+			const boost::optional<string>& value,
 			ElementDataType data_type,
 			GroupWrapper parent_group_wrapper,
 			RowWrapper parent_row_wrapper,

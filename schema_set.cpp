@@ -57,7 +57,7 @@ namespace datastream {
 		return !( parent_ == 0 || id_ == parent_) ;
 	}
 
-	void SchemaSet::connect(SchemaSet& child_set)
+	void SchemaSet::connect(const SchemaSet& child_set)
 	{
 		child_sets_.push_back(&child_set);
 	}
