@@ -136,25 +136,43 @@ std::unique_ptr<Formatter> createFormatter(
 	Format format,
 	Style style
 ){
+    /* Drew Dormann -
+            Algo changed to ensure that potential changes to Format or Style
+            enums are reflected here.
 
-	if (format == Format::json){
-		if (style == Style::compact){
+	    Another approach in situations like this would be to have a:
+		static std::map<Format,std::map<Style,std::unique_ptr<Formatter>>> formatters;
+	    and the single line "return formatters.at(format).at(style);" would
+	    return the correct match or throw, but it would have to be decided that
+	    construction of the map is trivial enough.
+     */
+
+	switch (format)
+	{
+	case Format::json:
+		switch(style)
+		{
+                case Style::compact:
 			return std::unique_ptr<Formatter>{new jsonCompactFormatter()};
-		}
-		else {
+                case Style::pretty:
 			return std::unique_ptr<Formatter>{new jsonFormatter()};
+                default:
+                        throw std::invalid_argument("Unknown Formatter json style");
 		}
-	}
-
-	//format == Format::xml
-	else {
-		if (style == Style::compact){
+        case Format::xml:
+		switch(style)
+		{
+                case Style::compact:
 			return std::unique_ptr<Formatter>{new xmlCompactFormatter()};
-		}
-		else {
+                case Style::pretty:
 			return std::unique_ptr<Formatter>{new xmlFormatter()};
+                default:
+                        throw std::invalid_argument("Unknown Formatter xml style");
 		}
-	}
+            
+        default:
+            throw std::invalid_argument("Unknown Formatter format");
+	    }
 }
 
 int main(int argc, char *argv[]){

@@ -24,7 +24,7 @@ parameters
 // we use the integer id from the child set to retrieve rows
 // from a map which is a member of this object
 
-// why such a convoluted path to the data we alreay have in this object?
+// why such a convoluted path to the data we already have in this object?
 
 // 1.
 // because there may not be any child rows in the data for this row,

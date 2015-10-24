@@ -26,7 +26,7 @@ namespace datastream {
 	void Schema::loadSets(const string & schema_sets_filename){
 
 		ifstream file (schema_sets_filename);
-	    if (!file.is_open()){
+		if (!file.is_open()){
 			throw std::domain_error("cannot open schema.");
 		}
 
@@ -71,6 +71,12 @@ namespace datastream {
 				group_wrapper,
 				row_wrapper
 			);
+		}
+		/* Drew Dormann -
+			Only the EOF state is acceptable here. */
+		if (!file.eof())
+		{
+			throw std::runtime_error("file operation failure while reading " + schema_sets_filename);
 		}
 		file.close();
 	}
@@ -325,6 +331,12 @@ namespace datastream {
 			);
 
 			element_count++;
+		}
+		/* Drew Dormann -
+			Only the EOF state is acceptable here. */
+		if (!file.eof())
+		{
+			throw std::runtime_error("file operation failure while reading " + schema_elements_filename);
 		}
 		file.close();
 	}

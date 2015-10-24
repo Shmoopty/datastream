@@ -1,6 +1,6 @@
-CC=g++
+CC=g++-5
 CFLAGS= -c -std=c++11 -Wall
-LDFLAGS=
+LDFLAGS= -pthread
 
 SOURCES=main.cpp datastream.cpp data.cpp model.cpp data_set.cpp data_row.cpp data_element.cpp schema.cpp schema_set.cpp schema_element.cpp xml_compact_formatter.cpp xml_formatter.cpp json_compact_formatter.cpp json_formatter.cpp formatter.cpp indent.cpp quote.cpp
 

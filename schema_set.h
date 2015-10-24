@@ -26,7 +26,7 @@ namespace datastream {
 			Since std::string can be move-constructed, passing these by value
 			will work with both l-values and r-values, performing minimum copies
 			in both cases.  The old form would only be preferable, I believe,
-			only if you wanted to force calling code to perform whatever actions were
+			if you wanted to force calling code to perform whatever actions were
 			necessary to convert their value to an r-value.   I don't think you want
 			that.
 

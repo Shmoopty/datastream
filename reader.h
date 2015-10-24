@@ -17,7 +17,9 @@ namespace datastream {
 		// input will probably be repaced with handle to db cursor
 		// and name might be needed to retrieve value
 
-		return (bool)std::stoi(input)?"true":"false";
+                /* Drew Dormann - typo? */
+		// return (bool)std::stoi(input)?"true":"false";
+		return std::stoi(input)?"true":"false";
 	}
 
 	inline string read_int(const string & name, const string & input, unsigned int precision = 0)

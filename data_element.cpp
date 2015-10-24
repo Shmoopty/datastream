@@ -2,8 +2,11 @@
 
 namespace datastream {
 
-	DataElement::DataElement(string&& value):
-	value_(value),
+	DataElement::DataElement(string value):
+	/* Drew Dormann -
+		move would be apprpriate here regardless of whether it's passed 
+		as string or string&& */
+	value_(std::move(value)),
 	is_null_(false)
 	{}
 
