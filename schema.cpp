@@ -5,7 +5,7 @@ namespace datastream {
 
 	using std::ifstream;
 	using std::sort;
-	using std::set;
+	//using std::set;
 
 	void Schema::build(
 		const string & schema_sets_filename,
@@ -150,23 +150,23 @@ namespace datastream {
 		*/
 		std::map<unsigned int, std::vector<unsigned int>> set_ids_by_parent;
 
-		for (const SchemaSet& set_ptr : mi_sets_.get<ordered_by_parent_and_position>() ){
+		for (const SchemaSet& set : mi_sets_.get<ordered_by_parent_and_position>() ){
 
-			if (!set_ptr.hasParent()){
+			if (!set.hasParent()){
 				continue;
 			}
 
-			auto set_ids_by_parent_find = set_ids_by_parent.find(set_ptr.parent());
+			auto set_ids_by_parent_find = set_ids_by_parent.find(set.parent());
 
 			if (set_ids_by_parent_find == set_ids_by_parent.end()){
 				set_ids_by_parent.emplace_hint(
 					set_ids_by_parent.end(),
-					set_ptr.parent(),
-					std::vector<unsigned int>{set_ptr.id()}
+					set.parent(),
+					std::vector<unsigned int>{set.id()}
 				);
 			}
 			else {
-				set_ids_by_parent_find->second.push_back(set_ptr.id());
+				set_ids_by_parent_find->second.push_back(set.id());
 			}
 		}
 

@@ -2,7 +2,6 @@
 
 namespace datastream {
 
-
 	DataSet::DataSet(const SchemaSet& schema_set):
 	schema_set(schema_set)
 	{};
@@ -102,7 +101,7 @@ namespace datastream {
 
 				auto rows_by_parent_map_search = rows_by_parent_map.find(row_ptr->parent());
 
-		/* Drew Dormann - 
+		/* Drew Dormann -
 			It's a shame that "std::make_shared" doesn't recognize initilizer lists
 			unless they're explicit.  The original code here wasn't exception-
 			unsafe in its current form, but this change reduces 2 heap allocs to
