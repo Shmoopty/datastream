@@ -24,15 +24,13 @@ namespace datastream {
 
 		/* Drew Dormann -
 			This was perhaps overlooked?  I'm not certain.  I noticed it
-			after implementing the "override" modifier. */
+			after implementing the "override" modifier.
 
-		virtual void labelChild(
-			ostream & os,
-			const string& label,
-			RowWrapper parent_row_wrapper,
-			unsigned int & siblings_written
-		) = 0;
-				
+			Mat
+			  LabelChild is only needed internally in the json classes,
+			  i've made it private
+			*/
+
 		virtual void separate(
 			ostream & os,
 			unsigned int siblings_written = 0,

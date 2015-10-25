@@ -1,8 +1,3 @@
-//#include "formatter.h"
-//#include "json_formatter.h"
-// #include "json_compact_formatter.h"
-// #include "xml_formatter.h"
-// #include "xml_compact_formatter.h"
 #include "model.h"
 #include "datastream.h"
 
@@ -31,10 +26,6 @@ using namespace datastream;
 template <typename T>
 std::string concatenateFlags(const std::map<char,T> & m){
 	std::string s;
-	/* Drew Dormann - 
-		Only for the purpose of code consistency in a large project -
-		range-based loops can consistently use "auto &&" when mutating
-		a range, and "const auto &" when not mutating. */
 
 	for (const auto & f : m){
 		s += f.first;
@@ -127,7 +118,7 @@ void readArgs(
 	}
 }
 
-	/* Drew Dormann - 
+	/* Drew Dormann -
 		It's a safe assumption that std::unique_ptr will be as efficient as
 		a raw pointer in production code.  This fixes memory leaks in the
 		"catch" below. */
@@ -169,7 +160,7 @@ std::unique_ptr<Formatter> createFormatter(
                 default:
                         throw std::invalid_argument("Unknown Formatter xml style");
 		}
-            
+
         default:
             throw std::invalid_argument("Unknown Formatter format");
 	    }

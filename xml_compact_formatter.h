@@ -32,12 +32,12 @@ namespace datastream {
 			GroupWrapper group_wrapper
 		) override;
 
-		virtual void labelChild(
-			ostream & os,
-			const string& label,
-			RowWrapper parent_row_wrapper,
-			unsigned int & siblings_written
-		) override;
+		// virtual void labelChild(
+		// 	ostream & os,
+		// 	const string& label,
+		// 	RowWrapper parent_row_wrapper,
+		// 	unsigned int & siblings_written
+		// ) override;
 
 		virtual void openElement(
 			ostream & os,

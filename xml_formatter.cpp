@@ -57,17 +57,17 @@ namespace datastream {
 		}
 	};
 
-	void xmlFormatter::labelChild(
-		ostream & os,
-		const string& label,
-		RowWrapper parent_row_wrapper,
-		unsigned int & siblings_written
-	){
-		if (parent_row_wrapper == RowWrapper::object_wrapper){
-			os << Quote(label, quote) << divider;
-			clean = false;
-		}
-	};
+	// void xmlFormatter::labelChild(
+	// 	ostream & os,
+	// 	const string& label,
+	// 	RowWrapper parent_row_wrapper,
+	// 	unsigned int & siblings_written
+	// ){
+	// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
+	// 		os << Quote(label, quote) << divider;
+	// 		clean = false;
+	// 	}
+	// };
 
 	void xmlFormatter::openElement(
 		ostream & os,
@@ -88,12 +88,8 @@ namespace datastream {
 	};
 
 	void xmlFormatter::writeValue(ostream & os, const string& name, const boost::optional<string>& value, ElementDataType data_type, unsigned int & siblings_written){
-
 		if (value){
 			os << *value;
-		}
-		else{
-			os << null_keyword;
 		}
 		clean = false;
 	};
@@ -202,10 +198,4 @@ namespace datastream {
 		writeValue(os, blank, {}, ElementDataType::type_raw, none);
 
 	};
-
-
-	// void xmlFormatter::close(ostream & os, GroupWrapper group_wrapper)
-	// {
-	// };
-
 }

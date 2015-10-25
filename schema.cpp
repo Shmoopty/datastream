@@ -93,7 +93,7 @@ namespace datastream {
 				it must be acyclic
 				all nodes must be connected
 		*/
-		/* Drew Dormann - 
+		/* Drew Dormann -
 			The changes below only iterate the set once.  Instead of
 			"count, then find", this does "find, then continue the same find". */
 
@@ -111,7 +111,7 @@ namespace datastream {
 			throw std::domain_error("sorry about this, i cannot find the starting point to begin writing");
 		}
 
-		/* Drew Dormann - 
+		/* Drew Dormann -
 			The "find_if" below could be changed to "count_if", should some
 			future need - like an error message - require the actual number
 			of roots detected. */
@@ -213,6 +213,8 @@ namespace datastream {
 		// this should be redundant given that we have checked for multiple roots
 		// check that all nodes have been visited by walk
 		if (dependency_order_.size() != mi_sets_.size()){
+
+			//DEV
 			// TEMP throw std::domain_error("sorry about this, the data doesn't seem to be connected into a single document");
 			throw std::domain_error("sorry about this, dependency_order_.size() " + std::to_string(dependency_order_.size()) +
 				" doesn't seem to match mi_sets_.size() " + std::to_string(mi_sets_.size()) );

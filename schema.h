@@ -25,47 +25,47 @@ namespace datastream {
 	using std::sort;
 	using std::set;
 
-	/* Drew Dormann - 
+	/* Drew Dormann -
 		(Temporarily?) here to make the multi_indexed_container easier to read */
 	using namespace boost::multi_index;
-	
+
 	class Schema{
 
 	public:
 
-		/* Drew Dormann - 
+		/* Drew Dormann -
 			These structs  are completely optional, and simply allow an
 			indexing interface to have a (compile-time) readable name.
 			E.g.: container.get<indexed_by_id>() instead of container.get<1>().
 
 			 The structs and the lines that use them below could be removed. */
-		
+
 		struct indexed_by_id{};
 		struct ordered_by_parent_and_position{};
 
-		/* Drew Dormann - 
+		/* Drew Dormann -
 			Here's the fast rundown on a multi-indexed container.  A powerful
 		beast.
-		 
+
 		This declaration declares the contained object as its first template
 		parameter - same as any standard container.  The second "indexed_by"
 		parameter is a compile-time list of interfaces that can be used on the
 		container, accessed by member variable get<0-based index>() or
 		get<tag name>().  The first index's interface is also mapped onto
 		the container as a whole, so get<0>() is never needed.
-		
+
 		Our first index iterates the objects in the order they're pushed back.
 		Random-access is possible, but we're using "sequenced<>", which behaves
 		like a std::list, since that's all we need.
-		
+
 		The second index implements a set, ordered by the value returned from
 		SchemaSet::id().
-		
+
 		The third index also behaves like a set, but ordered from (effectively)
 		std::pair< (parent), (position) >.
-		  
+
 		*/
-		
+
 		using Sets = boost::multi_index_container<
 			SchemaSet,
 			indexed_by<
@@ -98,7 +98,7 @@ namespace datastream {
 		inline const vector<int> & dependencyOrder() const {return dependency_order_;}
 
 		//not required for tree output as writing begins from root
-		//may be usefule for flat output
+		//may be useful for flat output
 		//inline const map<int, SchemaSet*> & schemaSetsById() { return sets_by_id_;}
 
 	private:

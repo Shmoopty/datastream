@@ -16,18 +16,6 @@ namespace datastream {
 
 		DataElement();
 
-		/* Drew Dormann -
-			I'm preserving the interface when convenient, but I
-			suggest a change here because there is a strong relationship 
-			between isNull() and getValue() that the interface doesn't
-			communicate - that the value returned from getValue might not
-			be "the truth" 
-		 */
-				
-		// bool isNull() const;
-
-		// const string& getValue() const;
-
 		using StringType = boost::flyweight<string>;
 		const boost::optional<string>& getValue() const;
 

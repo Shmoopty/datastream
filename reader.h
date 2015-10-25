@@ -25,7 +25,6 @@ namespace datastream {
 		return std::to_string(std::stoi(input));
 	}
 
-
 	inline string read_double(const string & name, const string & input, unsigned int precision = 0)
 	{
 		std::ostringstream out;

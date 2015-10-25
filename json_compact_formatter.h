@@ -45,13 +45,6 @@ namespace datastream {
 			GroupWrapper group_wrapper
 		) override;
 
-		virtual void labelChild(
-			ostream & os,
-			const string& label,
-			RowWrapper parent_row_wrapper,
-			unsigned int & siblings_written
-		) override;
-
 		virtual void openElement(
 			ostream & os,
 			const string& label,
@@ -94,6 +87,14 @@ namespace datastream {
 		) override;
 
 		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper) override;
+		
+	private:
+		virtual void labelChild(
+			ostream & os,
+			const string& label,
+			RowWrapper parent_row_wrapper,
+			unsigned int & siblings_written
+		);
 
 	};
 }

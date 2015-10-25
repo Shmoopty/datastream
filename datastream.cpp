@@ -1,8 +1,8 @@
 #include "datastream.h"
 
-using namespace datastream;
-
+namespace datastream {
 	Datastream::Datastream(Model& model, Formatter& formatter):
 	model(model),
 	formatter(formatter)
 	{};
+}

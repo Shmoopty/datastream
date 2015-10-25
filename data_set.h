@@ -10,10 +10,6 @@
 
 namespace datastream {
 
-	/* Drew Dormann - 
-		Comments are elsewhere on the removal of "using std::map" */
-	using namespace datastream;
-
 	class DataSet{
 	public:
 
