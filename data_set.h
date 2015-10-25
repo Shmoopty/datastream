@@ -10,9 +10,6 @@
 
 namespace datastream {
 
-	using std::map;
-	using namespace datastream;
-
 	class DataSet{
 	public:
 
@@ -34,7 +31,7 @@ namespace datastream {
 		private:
 			const SchemaSet& schema_set;
 			list<DataRow> rows;
-			map<int, vector<DataRow*>> id_to_rows_map;
+			std::map<int, vector<DataRow*>> id_to_rows_map;
 	};
 }
 #endif

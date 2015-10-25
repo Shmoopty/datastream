@@ -38,7 +38,7 @@ namespace datastream {
 		root_search->second->write(os, formatter);
 	}
 
-	void Data::load(const list<SchemaSet>& schema_sets){
+	void Data::load(const Schema::Sets& schema_sets){
 
 		clear();
 
@@ -64,6 +64,12 @@ namespace datastream {
 				// current data set is last added,
 				// load rows
 				sets_.rbegin()->load(schema_set.childElements(), line);
+			}
+			/* Drew Dormann -
+				Only the EOF state is acceptable here. */
+			if (!file.eof())
+			{
+				throw std::runtime_error("file operation failure while reading " + schema_set.inputFileName());
 			}
 			file.close();
 		}

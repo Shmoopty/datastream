@@ -14,7 +14,10 @@
 
 namespace datastream {
 
-	using std::map;
+	/* Drew Dormann - 
+		I only removed "using std::map;" here, as it was triggering
+		a compiler error, but I recommend not moving any symbols out
+		of "std::" in a header. */
 	using std::vector;
 	using std::shared_ptr;
 	using std::list;
@@ -143,7 +146,7 @@ namespace datastream {
 		list<DataElement> child_elements_;
 
 		// shared with other rows in this set with the same id
-		map<int, shared_ptr<vector<DataRow*>>> child_rows_by_set_id_;
+		std::map<int, shared_ptr<vector<DataRow*>>> child_rows_by_set_id_;
 
 	};
 }

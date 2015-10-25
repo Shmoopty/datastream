@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <boost/flyweight.hpp>
+#include <boost/optional.hpp>
 #include "datastream_definitions.h"
 
 namespace datastream {
@@ -10,18 +12,18 @@ namespace datastream {
 	class DataElement{
 	public:
 
-		DataElement(string&& value);
+		DataElement(string value);
 
 		DataElement();
 
-		bool isNull() const;
-
-		const string& getValue() const;
+		using StringType = boost::flyweight<string>;
+		const boost::optional<string>& getValue() const;
 
 	private:
 
-		string value_ = blank;
-		bool is_null_ = true;
+		/* Drew Dormann -
+			A default-constructed optional is always "no value" */
+		boost::optional<string> value_ = {};
 	};
 }
 #endif

@@ -66,7 +66,7 @@ namespace datastream {
 
 		boost::range::for_each(
 			schema_set.childElements(),
-            child_elements_,
+			child_elements_,
 			[&](
 				const SchemaElement& schema_child,
 				const DataElement& data_child
@@ -75,7 +75,6 @@ namespace datastream {
 					os,
 					schema_child.name(),
 					data_child.getValue(),
-					data_child.isNull(),
 					schema_child.dataType(),
 
 					//parent wrappers

@@ -5,6 +5,7 @@
 #include "quote.h"
 #include "indent.h"
 #include <iostream>
+#include <boost/optional.hpp>
 
 namespace datastream {
 
@@ -20,6 +21,15 @@ namespace datastream {
 		virtual void down(unsigned int i = 1);
 
 		virtual void setDepth(unsigned int i = 1);
+
+		/* Drew Dormann -
+			This was perhaps overlooked?  I'm not certain.  I noticed it
+			after implementing the "override" modifier.
+
+			Mat
+			  LabelChild is only needed internally in the json classes,
+			  i've made it private
+			*/
 
 		virtual void separate(
 			ostream & os,
@@ -77,8 +87,7 @@ namespace datastream {
 		virtual void writeValue(
 			ostream & os,
 			const string& name,
-			const string& value,
-			bool isNull,
+			const boost::optional<string>& value,
 			ElementDataType data_type,
 			unsigned int & siblings_written
 		);
@@ -86,8 +95,7 @@ namespace datastream {
 		virtual void writeElement(
 			ostream & os,
 			const string& name,
-			const string& value,
-			bool isNull,
+			const boost::optional<string>& value,
 			ElementDataType data_type,
 			GroupWrapper parent_group_wrapper,
 			RowWrapper parent_row_wrapper,

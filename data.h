@@ -22,9 +22,14 @@ namespace datastream {
 	private:
 
 		list<DataSet> sets_;
-		map<int, DataSet*> sets_by_id_;
 
-		void load(const list<SchemaSet>& schema_sets);
+		/* Drew Dormann - 
+			"using std::map;" was making "map" resolve to both a function
+			and a type here.  VS2015 probably guessed the intention, but
+			it wasn't portable C++. */
+		std::map<int, DataSet*> sets_by_id_;
+
+		void load(const Schema::Sets& schema_sets);
 
 		void map(const Schema& schema);
 	};

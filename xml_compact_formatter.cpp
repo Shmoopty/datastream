@@ -33,17 +33,6 @@ namespace datastream {
 		}
 	};
 
-	void xmlCompactFormatter::labelChild(
-		ostream & os,
-		const string& label,
-		RowWrapper parent_row_wrapper,
-		unsigned int & siblings_written
-	){
-		if (parent_row_wrapper == RowWrapper::object_wrapper){
-			os << Quote(label, quote) << divider;
-		}
-	};
-
 	void xmlCompactFormatter::openElement(
 		ostream & os,
 		const string& label,
@@ -58,21 +47,16 @@ namespace datastream {
 		os << open_angle << slash << name << close_angle;
 	};
 
-	void xmlCompactFormatter::writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, unsigned int & siblings_written){
-
-		if (isNull){
-			os << null_keyword;
-		}
-		else{
-			os << value;
+	void xmlCompactFormatter::writeValue(ostream & os, const string& name, const boost::optional<string>& value, ElementDataType data_type, unsigned int & siblings_written){
+		if (value){
+			os << *value;
 		}
 	};
 
 	void xmlCompactFormatter::writeElement(
 		ostream & os,
 		const string& name,
-		const string& value,
-		bool isNull,
+		const boost::optional<string>& value,
 		ElementDataType data_type,
 		GroupWrapper parent_group_wrapper,
 		RowWrapper parent_row_wrapper,
@@ -81,7 +65,7 @@ namespace datastream {
 	){
 		step(os, siblings_written);
 		openElement(os, name, parent_row_wrapper, siblings_written);
-		writeValue(os, name, value, isNull, data_type, siblings_written);
+		writeValue(os, name, value, data_type, siblings_written);
 		closeElement(os, name, parent_row_wrapper, siblings_written);
 	};
 
@@ -157,7 +141,7 @@ namespace datastream {
 			return;
 		}
 
-		writeValue(os, blank, blank, true, ElementDataType::type_raw, no_children);
+		writeValue(os, blank, {}, ElementDataType::type_raw, no_children);
 
 	};
 }

@@ -14,13 +14,13 @@ namespace datastream {
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		);
+		) override;
 
 		virtual void step(
 			ostream & os,
 			unsigned int siblings_written = 0,
 			unsigned int extraIndent = 0
-		);
+		) override;
 
 		virtual void openGroup(
 			ostream & os,
@@ -32,7 +32,7 @@ namespace datastream {
 
 			bool single_child_per_parent,
 			GroupWrapper group_wrapper
-		);
+		) override;
 
 		virtual void closeGroup(
 			ostream & os,
@@ -43,44 +43,35 @@ namespace datastream {
 			RowWrapper parent_row_wrapper,
 			bool single_child_per_parent,
 			GroupWrapper group_wrapper
-		);
-
-		virtual void labelChild(
-			ostream & os,
-			const string& label,
-			RowWrapper parent_row_wrapper,
-			unsigned int & siblings_written
-		);
+		) override;
 
 		virtual void openElement(
 			ostream & os,
 			const string& label,
 			RowWrapper row_wrapper,
 			unsigned int & siblings_written
-		);
+		) override;
 
 		virtual void writeValue(
 			ostream & os,
 			const string& name,
-			const string& value,
-			bool isNull,
+			const boost::optional<string>& value,
 			ElementDataType data_type,
 			unsigned int & siblings_written
-		);
+		) override;
 
 		virtual void writeElement(
 			ostream & os,
 			const string& name,
-			const string& value,
-			bool isNull,
+			const boost::optional<string>& value,
 			ElementDataType data_type,
 			GroupWrapper parent_group_wrapper,
 			RowWrapper parent_row_wrapper,
 			unsigned int & siblings_written
 
-		);
+		) override;
 
-		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written );
+		virtual void openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ) override;
 
 		virtual void writeEmptyGroup(
 			ostream & os,
@@ -93,9 +84,17 @@ namespace datastream {
 			bool single_child_per_parent,
 			GroupWrapper group_wrapper,
 			RowWrapper rowWrapper
-		);
+		) override;
 
-		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper);
+		virtual void closeRow(ostream & os, const string& name, RowWrapper rowWrapper) override;
+		
+	private:
+		virtual void labelChild(
+			ostream & os,
+			const string& label,
+			RowWrapper parent_row_wrapper,
+			unsigned int & siblings_written
+		);
 
 	};
 }

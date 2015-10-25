@@ -5,7 +5,7 @@ namespace datastream {
 
 	using std::ifstream;
 	using std::sort;
-	using std::set;
+	//using std::set;
 
 	void Schema::build(
 		const string & schema_sets_filename,
@@ -19,14 +19,13 @@ namespace datastream {
 
 	void Schema::clear()
 	{
-		sets_by_id_.clear();
-		sets_.clear();
+		mi_sets_.clear();
 	}
 
 	void Schema::loadSets(const string & schema_sets_filename){
 
 		ifstream file (schema_sets_filename);
-	    if (!file.is_open()){
+		if (!file.is_open()){
 			throw std::domain_error("cannot open schema.");
 		}
 
@@ -56,19 +55,27 @@ namespace datastream {
 			}
 			RowWrapper row_wrapper = row_wrapper_lookup->second;
 
-			sets_.emplace_back(
-				sets_.size(),
+			mi_sets_.push_back(SchemaSet(
+				mi_sets_.size(),
 				std::stoi(matched[match_index_schema_id]),
 				std::stoi(matched[match_index_schema_parent]),
 				std::move(matched[match_index_group_name]),
 				std::move(matched[match_index_row_name]),
 				std::move(matched[match_index_input_filename]),
 
-				(bool)std::stoi(matched[match_index_hide_when_empty]),
-				(bool)std::stoi(matched[match_force_single_row_per_parent]),
+				/* Drew Dormann -
+					Not a functional change, but C-style casts are very often frowned upon */
+				static_cast<bool>(std::stoi(matched[match_index_hide_when_empty])),
+				static_cast<bool>(std::stoi(matched[match_force_single_row_per_parent])),
 				group_wrapper,
 				row_wrapper
-			);
+			));
+		}
+		/* Drew Dormann -
+			Only the EOF state is acceptable here. */
+		if (!file.eof())
+		{
+			throw std::runtime_error("file operation failure while reading " + schema_sets_filename);
 		}
 		file.close();
 	}
@@ -78,37 +85,6 @@ namespace datastream {
 		/*
 			copy pointers to a vector for sorting & processing
 		*/
-		//copy pointers to temporary vector
-		vector <SchemaSet*> set_ptrs;
-		set_ptrs.reserve(sets_.size());
-
-		for ( SchemaSet& schema_set : sets_ ){
-
-			set_ptrs.emplace_back(
-				&schema_set
-			);
-		}
-
-		/*
-			create row id : * map
-		*/
-		//sort by id for fast insert into map
-		sort(
-			set_ptrs.begin(),
-			set_ptrs.end(),
-			[](SchemaSet * a,  SchemaSet * b)->bool{
-				return a->id() < b->id();
-			}
-		);
-
-		//insert pairs into map
-		for ( SchemaSet* set_ptr : set_ptrs ){
-			sets_by_id_.emplace_hint(
-				sets_by_id_.end(),
-				int(set_ptr->id()),
-				set_ptr
-			);
-		}
 
 		/*
 			validate the structure of connected set
@@ -117,33 +93,42 @@ namespace datastream {
 				it must be acyclic
 				all nodes must be connected
 		*/
+		/* Drew Dormann -
+			The changes below only iterate the set once.  Instead of
+			"count, then find", this does "find, then continue the same find". */
 
 		// test 1:
-		// does structure have one root?
-		//find a quick way to do this on std::find_if iterator and this can be cut
-		int root_count = std::count_if(
-			sets_.begin(),
-			sets_.end(),
+		// locate the root
+		auto root_search = std::find_if(
+			mi_sets_.begin(),
+			mi_sets_.end(),
 			[](const SchemaSet& set){
 				return !set.hasParent();
 			}
 		);
 
-		if (root_count != 1){
-			throw std::domain_error("sorry, the data does not contain a starting point to begin writing");
+		if (root_search == mi_sets_.end()){
+			throw std::domain_error("sorry about this, i cannot find the starting point to begin writing");
 		}
 
-		//locate the root
-		auto root_search = std::find_if(
-			sets_.begin(),
-			sets_.end(),
+		/* Drew Dormann -
+			The "find_if" below could be changed to "count_if", should some
+			future need - like an error message - require the actual number
+			of roots detected. */
+
+		// validate that root_search is the only root
+		auto remaining_sets_begin = root_search;
+		++remaining_sets_begin;
+		auto multiple_roots_search = std::find_if(
+			remaining_sets_begin,
+			mi_sets_.end(),
 			[](const SchemaSet& set){
 				return !set.hasParent();
 			}
 		);
 
-		if (root_search == sets_.end()){
-			throw std::domain_error("sorry about this, i cannot find the starting point to begin writing.");
+		if (multiple_roots_search != mi_sets_.end()){
+			throw std::domain_error("sorry, the data does not contain one starting point to begin writing.");
 		}
 
 		// now we have a root make a map of parent to child to begin
@@ -160,44 +145,28 @@ namespace datastream {
 		/*
 			create parent : * map
 
-		// step 1
-		// reuse vector
-		// sort by parent id, original position
-		*/
-		std::sort(
-			set_ptrs.begin(),
-			set_ptrs.end(),
-			[](const SchemaSet* a, const SchemaSet* b){
-				if (a->parent() == b->parent()){
-					return a->position() < b->position();
-				}
-				return a->parent() < b->parent();
-			}
-		);
-
-		/*
-			//step 2
+			//step 1
 			insert records into the parent row id : * map
 		*/
 		std::map<unsigned int, std::vector<unsigned int>> set_ids_by_parent;
 
-		for (SchemaSet* set_ptr : set_ptrs){
+		for (const SchemaSet& set : mi_sets_.get<ordered_by_parent_and_position>() ){
 
-			if (!set_ptr->hasParent()){
+			if (!set.hasParent()){
 				continue;
 			}
 
-			auto set_ids_by_parent_find = set_ids_by_parent.find(set_ptr->parent());
+			auto set_ids_by_parent_find = set_ids_by_parent.find(set.parent());
 
 			if (set_ids_by_parent_find == set_ids_by_parent.end()){
 				set_ids_by_parent.emplace_hint(
 					set_ids_by_parent.end(),
-					set_ptr->parent(),
-					std::vector<unsigned int>{set_ptr->id()}
+					set.parent(),
+					std::vector<unsigned int>{set.id()}
 				);
 			}
 			else {
-				set_ids_by_parent_find->second.push_back(set_ptr->id());
+				set_ids_by_parent_find->second.push_back(set.id());
 			}
 		}
 
@@ -237,14 +206,18 @@ namespace datastream {
 
 		// now use the lambda,
 		// walk the tree populating dependency graph
-		dependency_order_.reserve(set_ptrs.size());
+		dependency_order_.reserve(mi_sets_.size());
 		walk(root_search->id());
 
 		// validate step 3
 		// this should be redundant given that we have checked for multiple roots
 		// check that all nodes have been visited by walk
-		if (dependency_order_.size() != set_ptrs.size()){
-			throw std::domain_error("sorry about this, the data doesn't seem to be connected into a single document");
+		if (dependency_order_.size() != mi_sets_.size()){
+
+			//DEV
+			// TEMP throw std::domain_error("sorry about this, the data doesn't seem to be connected into a single document");
+			throw std::domain_error("sorry about this, dependency_order_.size() " + std::to_string(dependency_order_.size()) +
+				" doesn't seem to match mi_sets_.size() " + std::to_string(mi_sets_.size()) );
 		}
 		connect();
 	}
@@ -254,28 +227,31 @@ namespace datastream {
 		// for schema using dependancy graph for connect has no advantage
 		// will be useful when connecting data row
 
-		for ( SchemaSet& schema_set : sets_ ){
+		auto& sets_by_id = mi_sets_.get<indexed_by_id>();
+
+		for ( const SchemaSet& schema_set : mi_sets_ ){
 
 			if (!schema_set.hasParent()){
 				continue;
 			}
 
-			auto schema_set_by_id_search = sets_by_id_.find(schema_set.parent());
-			if ( schema_set_by_id_search == sets_by_id_.end()){
+			auto schema_set_by_id_search = sets_by_id.find(schema_set.parent());
+			if ( schema_set_by_id_search == sets_by_id.end()){
 				throw std::domain_error("sorry, the data cannot be understood : a section is missing.");
 			}
-			schema_set_by_id_search->second->connect(schema_set);
+			sets_by_id.modify( schema_set_by_id_search, [&]( SchemaSet& set ){ set.connect(schema_set); } );
 		}
 	}
 
 	void Schema::loadElements(const string & schema_elements_filename)
 	{
 		ifstream file (schema_elements_filename);
-	    if ( !file.is_open()){
+		if ( !file.is_open()){
 			throw std::domain_error("cannot open element schema.");
 		}
 
 		unsigned int element_count = 0;
+		auto& sets_by_id = mi_sets_.get<indexed_by_id>();
 
 		string line;
 		while (std::getline(file, line)){
@@ -300,20 +276,28 @@ namespace datastream {
 			ElementDataType element_data_type = data_type_lookup->second;
 
 			int element_set_id = std::stoi(matched[match_index_element_set]);
-			auto set_search = sets_by_id_.find(element_set_id);
+			auto set_search = sets_by_id.find(element_set_id);
 
-			if ( set_search == sets_by_id_.end()){
+			if ( set_search == sets_by_id.end()){
 				throw std::domain_error("sorry. data is incomplete and cannot be understood. ");
 			}
 
-			set_search->second->addElement(
-				std::stoi(matched[match_index_element_id]),
-				element_set_id,
-				std::move(matched[match_index_element_name]),
-				element_data_type
-			);
+			sets_by_id.modify( set_search, [&]( SchemaSet& set ){
+				set.addElement(
+					std::stoi(matched[match_index_element_id]),
+					element_set_id,
+					std::move(matched[match_index_element_name]),
+					element_data_type
+				);
+			} );
 
 			element_count++;
+		}
+		/* Drew Dormann -
+			Only the EOF state is acceptable here. */
+		if (!file.eof())
+		{
+			throw std::runtime_error("file operation failure while reading " + schema_elements_filename);
 		}
 		file.close();
 	}

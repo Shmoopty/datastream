@@ -12,10 +12,6 @@
 #include <stdexcept>
 #include <sstream>
 #include "formatter.h"
-#include "json_formatter.h"
-// #include "json_compact_formatter.h"
-// #include "xml_formatter.h"
-// #include "xml_compact_formatter.h"
 #include "model.h"
 
 namespace datastream {

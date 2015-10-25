@@ -1,4 +1,15 @@
-datapipe schema_file element_file [-x format xml]|[-j format json] [-p style pretty]|[-c style compact]
+/*
+	Notes from Drew Dormann:
+
+	Only for the purpose of code consistency in a large project -
+	range-based loops can consistently use "auto &&" when mutating
+	a range, and "const auto &" when not mutating.
+
+*/
+
+
+
+ds schema_file element_file [-x format xml]|[-j format json] [-p style pretty]|[-c style compact]
 usage:
 datapipe schema_file element_file
 [-x] format xml (default is json)
@@ -24,7 +35,7 @@ parameters
 // we use the integer id from the child set to retrieve rows
 // from a map which is a member of this object
 
-// why such a convoluted path to the data we alreay have in this object?
+// why such a convoluted path to the data we already have in this object?
 
 // 1.
 // because there may not be any child rows in the data for this row,

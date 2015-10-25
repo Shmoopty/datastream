@@ -86,33 +86,32 @@ namespace datastream {
 		}
 	};
 
-	void jsonFormatter::writeValue(ostream & os, const string& name, const string& value, bool isNull, ElementDataType data_type, unsigned int & siblings_written){
+	void jsonFormatter::writeValue(ostream & os, const string& name, const boost::optional<string>& value, ElementDataType data_type, unsigned int & siblings_written){
 
-		if (isNull){
-			os << null_keyword;
-			clean = false;
-		}
-		else{
+		if (value){
 			if (
 				data_type == ElementDataType::type_string ||
 				data_type == ElementDataType::type_datetime ||
 				data_type == ElementDataType::type_date ||
 				data_type == ElementDataType::type_time
 			){
-				os << Quote(value, quote);
+				os << Quote(*value, quote);
 			}
 			else{
-				os << value;
+				os << *value;
 				clean = false;
 			}
+		}
+		else{
+			os << null_keyword;
+			clean = false;
 		}
 	};
 
 	void jsonFormatter::writeElement(
 		ostream & os,
 		const string& name,
-		const string& value,
-		bool isNull,
+		const boost::optional<string>& value,
 		ElementDataType data_type,
 		GroupWrapper parent_group_wrapper,
 		RowWrapper parent_row_wrapper,
@@ -128,7 +127,7 @@ namespace datastream {
 			step(os, siblings_written);
 		}
 		labelChild(os, name, parent_row_wrapper, siblings_written);
-		writeValue(os, name, value, isNull, data_type, siblings_written);
+		writeValue(os, name, value, data_type, siblings_written);
 	};
 
 	void jsonFormatter::openRow(ostream & os, const string& name, RowWrapper rowWrapper, unsigned int & siblings_written ){
@@ -197,7 +196,7 @@ namespace datastream {
 		if (rowWrapper != RowWrapper::no_wrapper){
 			return;
 		}
-		writeValue(os, blank, blank, true, ElementDataType::type_raw, no_children);
+		writeValue(os, blank, {}, ElementDataType::type_raw, no_children);
 	};
 
 	void jsonFormatter::closeRow(ostream & os, const string& name, RowWrapper rowWrapper)

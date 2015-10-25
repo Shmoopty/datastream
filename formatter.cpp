@@ -1,4 +1,5 @@
 #include "formatter.h"
+#include <boost/optional.hpp>
 
 namespace datastream {
 
@@ -82,8 +83,7 @@ namespace datastream {
 	void Formatter::writeValue(
 		ostream & os,
 		const string& name,
-		const string& value,
-		bool isNull,
+		const boost::optional<string>& value,
 		ElementDataType data_type,
 		unsigned int & siblings_written
 	){};
@@ -91,8 +91,7 @@ namespace datastream {
 	void Formatter::writeElement(
 		ostream & os,
 		const string& name,
-		const string& value,
-		bool isNull,
+		const boost::optional<string>& value,
 		ElementDataType data_type,
 		GroupWrapper parent_group_wrapper,
 		RowWrapper parent_row_wrapper,
