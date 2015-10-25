@@ -57,28 +57,14 @@ namespace datastream {
 		}
 	};
 
-	// void xmlFormatter::labelChild(
-	// 	ostream & os,
-	// 	const string& label,
-	// 	RowWrapper parent_row_wrapper,
-	// 	unsigned int & siblings_written
-	// ){
-	// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
-	// 		os << Quote(label, quote) << divider;
-	// 		clean = false;
-	// 	}
-	// };
-
 	void xmlFormatter::openElement(
 		ostream & os,
 		const string& label,
 		RowWrapper row_wrapper,
 		unsigned int & siblings_written
 	){
-		//if (row_wrapper == RowWrapper::object_wrapper || row_wrapper == RowWrapper::array_wrapper){
 		os << open_angle << label << close_angle;
 		clean = false;
-		//}
 	};
 
 	void xmlFormatter::closeElement(ostream & os, const string& name, RowWrapper row_wrapper, unsigned int & siblings_written )

@@ -33,17 +33,6 @@ namespace datastream {
 		}
 	};
 
-	// void xmlCompactFormatter::labelChild(
-	// 	ostream & os,
-	// 	const string& label,
-	// 	RowWrapper parent_row_wrapper,
-	// 	unsigned int & siblings_written
-	// ){
-	// 	if (parent_row_wrapper == RowWrapper::object_wrapper){
-	// 		os << Quote(label, quote) << divider;
-	// 	}
-	// };
-
 	void xmlCompactFormatter::openElement(
 		ostream & os,
 		const string& label,
